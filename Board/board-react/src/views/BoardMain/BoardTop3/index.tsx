@@ -4,27 +4,12 @@ import axios from "axios";
 import { useCookies } from "react-cookie";
 import { useUserStore } from "../../../stores";
 import { BoardTop3Api } from "../../../apis";
+import { Board } from "../../../interfaces";
 
 // 인터페이스를 정의합니다.
-interface Board {
-  boardNumber: number;
-  boardTitle: string;
-  boardContent: string;
-  boardImage: string;
-  boardVideo: string;
-  boardFile: string;
-  boardWriterEmail: string;
-  boardWriterProfile: string;
-  boardWriterNickname: string;
-  boardWriteDate: string;
-  boardClickCount: number;
-  boardLikeCount: number;
-  boardCommentCount: number;
-}
 
-interface BoardItemProps {
-  board: Board;
-}
+
+
 export default function BoardTop3() {
   // authView : true - signUp / false - signIn
   const [boardData, setBoardData] = useState<Board[]>([]); // 인터페이스를 적용하여 배열의 요소를 정확히 타입화합니다.

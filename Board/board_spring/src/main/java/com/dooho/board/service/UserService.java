@@ -10,6 +10,7 @@ import com.dooho.board.repository.BoardRepository;
 import com.dooho.board.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,15 @@ import java.util.List;
 @Service
 public class UserService {
 
+    private final UserRepository userRepository;
+    private final BoardRepository boardRepository;
+
     @Autowired
-    UserRepository userRepository;
-    @Autowired
-    BoardRepository boardRepository;
+    public UserService(UserRepository userRepository, BoardRepository boardRepository) {
+        this.userRepository = userRepository;
+        this.boardRepository = boardRepository;
+    }
+
 
     public ResponseDto<MyPageDto> myPage(String userEmail) {
 
@@ -46,19 +52,30 @@ public class UserService {
     public ResponseDto<PatchUserResponseDto> patchUser(PatchUserDto requestBody, String userEmail){
 
         UserEntity userEntity = null;
+        List<BoardEntity> boardEntity = new ArrayList<>();
+
         String userNickname = requestBody.getUserNickname();
         String userProfile = requestBody.getUserProfile();
+
+
 
         try{
             userEntity = userRepository.findByUserEmail(userEmail);
             if (userEntity == null){
                 return ResponseDto.setFailed("Does Not Exist User");
             }
-
             userEntity.setUserNickname(userNickname);
             userEntity.setUserProfile(userProfile);
 
             userRepository.save(userEntity);
+
+            boardEntity = boardRepository.findByBoardWriterEmail(userEmail);
+
+            for (BoardEntity board : boardEntity){
+                board.setBoardWriterNickname(userNickname);
+                boardRepository.save(board);
+            }
+
 
         }catch (Exception e){
             e.printStackTrace();

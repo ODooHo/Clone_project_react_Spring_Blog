@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import Navigation from '../../Navigation'
-import { Box } from '@mui/material'
 import Authentication from '../../Authentication'
 import BoardMain from '../../BoardMain'
 import { useUserStore } from '../../../stores'
 import { useCookies } from 'react-cookie'
-import axios from 'axios'
 import MyPage from '../../MyPage'
 
 

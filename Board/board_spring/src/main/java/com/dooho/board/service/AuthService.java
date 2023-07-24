@@ -15,13 +15,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    TokenProvider tokenProvider;
+
+    private final TokenProvider tokenProvider;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    @Autowired
+    public AuthService(UserRepository userRepository, TokenProvider tokenProvider) {
+        this.userRepository = userRepository;
+        this.tokenProvider = tokenProvider;
+    }
 
     public ResponseDto<?> signUp(SignUpDto dto){
         String userEmail = dto.getUserEmail();

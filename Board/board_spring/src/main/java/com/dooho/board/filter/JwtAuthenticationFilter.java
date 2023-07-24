@@ -11,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -23,8 +22,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     //request가 들어왔을 떄 request Header의 authorization 필드의 bearer token값을 가져옴
     // 가져온 토큰을 검증하고 검증 결과를 securityContext에 추가
 
+    private final TokenProvider tokenProvider;
+
     @Autowired
-    private TokenProvider tokenProvider;
+    public JwtAuthenticationFilter(TokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

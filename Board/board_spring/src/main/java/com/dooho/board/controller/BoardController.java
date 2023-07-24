@@ -45,4 +45,9 @@ public class BoardController {
         return null;
     }
 
+    @GetMapping("/{boardNumber}")
+    public ResponseDto<BoardEntity> getBoard(@PathVariable Integer boardNumber){
+        return boardService.getBoard(boardNumber);
+    }
+
 }

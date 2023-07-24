@@ -23,9 +23,9 @@ export const signUpApi = async (data: any) => {
 }
 
 
-export const BoardApi = async (token: string) => {
+export const BoardApi = async (token: string, index : number) => {
     try {
-      const response = await axios.get("http://localhost:4000/api/board", {
+      const response = await axios.get("http://localhost:4000/api/board/${index}", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -86,4 +86,33 @@ export const BoardTop3Api = async (token: string) => {
       return null;
     }
   };
+
+
+  export const BoardRegisterApi =  async (data: any, token: string) => {
+    const response = await axios.post("http://localhost:4000/api/board/register", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).catch((error)=> null);
+    if (!response){
+        return null;
+    }
+
+    const result = response.data;
+    return result    
+}
+
+export const PatchUserApi =  async (data: any, token: string) => {
+  const response = await axios.patch("http://localhost:4000/api/user/edit", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).catch((error)=> null);
+  if (!response){
+      return null;
+  }
+
+  const result = response.data;
+  return result    
+}
 

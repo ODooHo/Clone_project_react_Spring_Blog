@@ -13,9 +13,12 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @CrossOrigin(origins = "*")
     @PatchMapping("/edit")
     public ResponseDto<PatchUserResponseDto> patchUser(@RequestBody PatchUserDto requestBody, @AuthenticationPrincipal String userEmail){
-        return null;
+        ResponseDto<PatchUserResponseDto> result = userService.patchUser(requestBody,userEmail);
+
+        return result;
     }
 
     @GetMapping("/myPage")
