@@ -25,7 +25,7 @@ export const signUpApi = async (data: any) => {
 
 export const BoardApi = async (token: string, index : number) => {
     try {
-      const response = await axios.get("http://localhost:4000/api/board/${index}", {
+      const response = await axios.get("http://localhost:4000/api/board/" + index, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

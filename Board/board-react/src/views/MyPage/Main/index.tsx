@@ -14,6 +14,7 @@ import BoardItem from "../../BoardMain/BoardItem";
 interface MainProps {
   onWriteBoardClick: () => void;
   onPatchUserClick: () => void;
+  onDetailClick: (boardId:number) => void;
   currentPage: string;
 }
 
@@ -21,31 +22,17 @@ interface MainProps {
 export default function Main({
   onWriteBoardClick,
   onPatchUserClick,
+  onDetailClick,
   currentPage,
 }: MainProps) {
   // authView : true - signUp / false - signIn
   const [boardData, setBoardData] = useState<Board[]>([]); // 인터페이스를 적용하여 배열의 요소를 정확히 타입화합니다.
   const [userNickname, setUserNickname] = useState<string>("");
-  const [current, setCurrentPage] = useState(''); // 초기 페이지를 'boardMain'으로 설정합니다
-  const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
+  const [currentBoardId, setCurrentBoardId] = useState<number | null>(null); // 선택된 게시물의 ID를 상태로 관리
+  const [cookies] = useCookies();
 
 
 
-  const handleDetailClick = () => {
-    setCurrentPage('Detail')
-  }
-  const handleBoardClick = (board: Board) => {
-    setSelectedBoard(board);
-    setCurrentPage("Detail");
-  };
-
-  const handleMainClick = () => {
-    setCurrentPage('Main')
-  }
-
-
-
-  const [cookies, setCookies] = useCookies();
 
   useEffect(() => {
     async function fetchData() {
@@ -116,7 +103,19 @@ export default function Main({
 
             <Box width="50vw" height="50vh" overflow="auto">
               {boardData.map((board) => (
-                <BoardItem key={board.boardNumber} board={board}/>
+                   <div key={board.boardNumber}>
+                   <Button
+                     fullWidth
+                     variant="outlined"
+                     sx={{ my: 2 }}
+                     onClick={() => onDetailClick(board.boardNumber)}
+                   >
+                     <Box textAlign="center">
+                       <h3>{board.boardTitle}</h3>
+                       <p>{board.boardWriterNickname}</p>
+                     </Box>
+                   </Button>
+                 </div>
               ))}
             </Box>
           </Card>

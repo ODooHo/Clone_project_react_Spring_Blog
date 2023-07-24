@@ -8,9 +8,13 @@ import { Board } from "../../../interfaces";
 
 // 인터페이스를 정의합니다.
 
+interface BoardTop3Props{
+  onDetailClick:(boardId:number) => void;
+}
 
-
-export default function BoardTop3() {
+export default function BoardTop3({
+  onDetailClick
+}: BoardTop3Props) {
   // authView : true - signUp / false - signIn
   const [boardData, setBoardData] = useState<Board[]>([]); // 인터페이스를 적용하여 배열의 요소를 정확히 타입화합니다.
   const [boardTitle, setBoardTitle] = useState<string>("");
@@ -66,6 +70,7 @@ export default function BoardTop3() {
                 height: "200px",
                 margin: "10px",
               }}
+              onClick={() => onDetailClick(board.boardNumber)}
             >
               <Typography variant="h6" sx={{ marginRight: "10px" }}>
                 {board.boardTitle}

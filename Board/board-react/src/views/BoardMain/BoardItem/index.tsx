@@ -2,7 +2,10 @@ import React from "react";
 import { Box, Button } from "@mui/material";
 import { Board, BoardItemProps } from "../../../interfaces";
 
-const BoardItem: React.FC<BoardItemProps> = ({ board }) => {
+export default function BoardItem({ 
+  board,
+  onClick 
+  }: BoardItemProps) {
   const handleBoardClick = () => {
     console.log("게시물 클릭:", board.boardNumber);
     //onClick(board);
@@ -10,7 +13,12 @@ const BoardItem: React.FC<BoardItemProps> = ({ board }) => {
 
   return (
     <div key={board.boardNumber}>
-      <Button fullWidth variant="outlined" sx={{ my: 2 }} onClick={handleBoardClick}>
+      <Button
+        fullWidth
+        variant="outlined"
+        sx={{ my: 2 }}
+        onClick={handleBoardClick}
+      >
         <Box textAlign="center">
           <h3>{board.boardTitle}</h3>
           <p>{board.boardWriterNickname}</p>
@@ -18,6 +26,4 @@ const BoardItem: React.FC<BoardItemProps> = ({ board }) => {
       </Button>
     </div>
   );
-};
-
-export default BoardItem;
+}

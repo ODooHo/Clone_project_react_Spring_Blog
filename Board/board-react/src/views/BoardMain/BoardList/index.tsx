@@ -10,12 +10,15 @@ import BoardItem from "../BoardItem";
 // 인터페이스를 정의합니다.
 
 
+interface BoardListProps{
+  onDetailClick: (boardId:number) => void;
+}
 
-export default function BoardList() {
+export default function BoardList({
+  onDetailClick
+}: BoardListProps) {
   // authView : true - signUp / false - signIn
   const [boardData, setBoardData] = useState<Board[]>([]); // 인터페이스를 적용하여 배열의 요소를 정확히 타입화합니다.
-  const [boardTitle, setBoardTitle] = useState<string>("");
-  const [boardContent, setBoardContent] = useState<string>("");
   const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
 
   const [cookies, setCookies] = useCookies();
@@ -24,6 +27,8 @@ export default function BoardList() {
   const pageSize = 5; // 한 페이지에 보여줄 게시글 수
 
 
+
+  
 
   const BoardHandler = async () => {
     const token = cookies.token;
@@ -103,7 +108,19 @@ export default function BoardList() {
         <Box height={"50vh"} display="flex" flexDirection="column">
           <Box flex="1" overflow="auto">
             {pageData.map((board) => (
-              <BoardItem key={board.boardNumber} board={board}/>
+              <div key={board.boardNumber}>
+              <Button
+                fullWidth
+                variant="outlined"
+                sx={{ my: 2 }}
+                onClick={() => onDetailClick(board.boardNumber)}
+              >
+                <Box textAlign="center">
+                  <h3>{board.boardTitle}</h3>
+                  <p>{board.boardWriterNickname}</p>
+                </Box>
+              </Button>
+            </div>
             ))}
           </Box>
           {/* 페이징 처리 버튼 */}

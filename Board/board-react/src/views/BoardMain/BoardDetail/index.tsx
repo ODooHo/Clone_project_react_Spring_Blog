@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Board } from "../../../interfaces";
 import { BoardApi } from "../../../apis";
-import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, CardMedia, TextField, Typography } from "@mui/material";
 interface BoardDetailProps {
   onMainClick: () => void;
   currentPage: string;
-  boardNumber:number;
+  boardNumber: number; // 게시물 ID를 받아오도록 추가
 }
 
 export default function BoardDetail({
@@ -53,6 +53,7 @@ export default function BoardDetail({
 
   return (
     <>
+    <Box marginTop="70px">
     <Card>
       <CardContent>
         <Typography variant="h5" gutterBottom>
@@ -97,6 +98,38 @@ export default function BoardDetail({
         </Typography>
       </CardContent>
     </Card>
+    </Box>
+    <Box marginTop="20px">
+        <TextField
+          id="comment"
+          label="댓글 작성"
+          variant="outlined"
+          fullWidth
+          // Add your onChange and value handlers here for handling user input
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ marginTop: "10px" }}
+          // Add your onClick handler here for submitting the comment
+        >
+          댓글 작성
+        </Button>
+      </Box>
+
+      {/* {댓글 목록 }
+      <CommentSection
+        // Pass any required props to the CommentSection component
+      /> */}
+
+    <Button
+        variant="contained"
+        color="inherit"
+        sx={{ margin: "10px", backgroundColor: "#ffffff", color: "#000000" }}
+        onClick={onMainClick}
+      >
+        이전
+      </Button>
   </>
   );
 }

@@ -17,5 +17,5 @@ export interface Board {
 
   export interface BoardItemProps {
     board: Board;
-    //onClick: (board: Board) => void; 
+    onClick: () => void; 
   }
