@@ -54,7 +54,9 @@ export default function SignIn(props: Props) {
     const expires = new Date();
     expires.setMilliseconds(expires.getMilliseconds() + exprTime);
 
-    setCookies("token", token, { expires });
+    setCookies('token',token,{expires})
+    
+    
     setUser(user);
   };
 

@@ -18,17 +18,14 @@ interface NavigationProps {
 }
 
 export default function Navigation({onMyPageClick, onHomeClick, currentPage}: NavigationProps) {
-  const [cookies, setCookies] = useCookies();
   const { user, removeUser } = useUserStore();
+  const [cookies,setCookies] = useCookies();
 
   const logOutHandler = () => {
-    setCookies("token", "", { expires: new Date() });
+    setCookies('token',"");
     removeUser();
   };
 
-  const MyPageHandler = () => {
-
-  }
 
   return (
     <Box sx={{ flexGrow: 1 }}>

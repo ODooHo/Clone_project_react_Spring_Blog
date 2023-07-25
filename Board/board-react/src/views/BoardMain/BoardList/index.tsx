@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Card, Grid, Typography } from "@mui/material";
-import axios from "axios";
 import { useCookies } from "react-cookie";
 import { useUserStore } from "../../../stores";
 import { BoardListApi, BoardTop3Api } from "../../../apis";
 import { Board, BoardItemProps } from "../../../interfaces";
-import BoardItem from "../BoardItem";
 
 // 인터페이스를 정의합니다.
 
@@ -19,10 +17,8 @@ export default function BoardList({
 }: BoardListProps) {
   // authView : true - signUp / false - signIn
   const [boardData, setBoardData] = useState<Board[]>([]); // 인터페이스를 적용하여 배열의 요소를 정확히 타입화합니다.
-  const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
 
-  const [cookies, setCookies] = useCookies();
-  const { user, setUser } = useUserStore();
+  const [cookies] = useCookies();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 5; // 한 페이지에 보여줄 게시글 수
 

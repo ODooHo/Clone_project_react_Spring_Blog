@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Navigation from '../../Navigation'
 import Authentication from '../../Authentication'
 import BoardMain from '../../BoardMain'
@@ -8,7 +8,6 @@ import MyPage from '../../MyPage'
 
 
 export default function MainLayout() {
-    const [cookies] = useCookies();
     const {user} = useUserStore();
     const [currentPage, setCurrentPage] = useState('boardMain'); // 초기 페이지를 'boardMain'으로 설정합니다
 

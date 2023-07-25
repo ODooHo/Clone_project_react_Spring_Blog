@@ -2,12 +2,10 @@ package com.dooho.board.controller;
 
 import com.dooho.board.dto.BoardDto;
 import com.dooho.board.dto.ResponseDto;
-import com.dooho.board.dto.SignUpDto;
 import com.dooho.board.entity.BoardEntity;
 import com.dooho.board.entity.PopularSearchEntity;
 import com.dooho.board.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,8 +13,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/board")
 public class BoardController {
+
+    private final BoardService boardService;
+
     @Autowired
-    BoardService boardService;
+    public BoardController(BoardService boardService) {
+        this.boardService = boardService;
+    }
 
     @PostMapping("/register")
     public ResponseDto<?> register(@RequestBody BoardDto requestBody){
@@ -27,17 +30,20 @@ public class BoardController {
 
     @GetMapping("/top3")
     public ResponseDto<List<BoardEntity>> getTop3(){
-        return boardService.getTop3();
+        ResponseDto<List<BoardEntity>> result = boardService.getTop3();
+        return result;
     }
 
     @GetMapping("/list")
     public ResponseDto<List<BoardEntity>> getList(){
-        return boardService.getList();
+        ResponseDto<List<BoardEntity>> result = boardService.getList();
+        return result;
     }
 
     @GetMapping("/popularsearchList")
     public ResponseDto<List<PopularSearchEntity>> getPopularsearchList(){
-        return boardService.getPopularsearchList();
+        ResponseDto<List<PopularSearchEntity>> result = boardService.getPopularsearchList();
+        return result;
     }
 
     @GetMapping("/search/{boardTitle}")
@@ -47,7 +53,8 @@ public class BoardController {
 
     @GetMapping("/{boardNumber}")
     public ResponseDto<BoardEntity> getBoard(@PathVariable Integer boardNumber){
-        return boardService.getBoard(boardNumber);
+        ResponseDto<BoardEntity> result = boardService.getBoard(boardNumber);
+        return result;
     }
 
 }

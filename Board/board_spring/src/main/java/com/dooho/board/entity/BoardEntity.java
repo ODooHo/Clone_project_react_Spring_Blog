@@ -46,4 +46,12 @@ public class BoardEntity {
         this.boardLikeCount = dto.getBoardLikeCount();
         this.boardCommentCount = dto.getBoardCommentCount();
     }
+    public void setBoardLikeCount(Integer boardLikeCount) {
+        this.boardLikeCount = boardLikeCount;
+    }
+
+    public void setBoardCommentCount(Integer boardCommentCount){
+        this.boardCommentCount = boardCommentCount;
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.dooho.board.entity;
 
+import com.dooho.board.dto.LikyDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,4 +18,12 @@ public class LikyEntity {
     private String userEmail;
     private String likeUserProfile;
     private String likeUserNickname;
+
+    public LikyEntity(LikyDto dto) {
+        this.likeId = dto.getLikeId();
+        this.boardNumber = dto.getBoardNumber();
+        this.userEmail = dto.getUserEmail();
+        this.likeUserProfile = dto.getLikeUserProfile();
+        this.likeUserNickname = dto.getLikeUserNickname();
+    }
 }

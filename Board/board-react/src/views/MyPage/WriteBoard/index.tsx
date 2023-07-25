@@ -11,7 +11,6 @@ import React, { useState } from "react";
 import { useUserStore } from "../../../stores";
 import { BoardRegisterApi } from "../../../apis";
 import { useCookies } from "react-cookie";
-import { MarginRounded } from "@mui/icons-material";
 
 interface WriteBoardProps {
   onMainClick: () => void;
@@ -19,7 +18,6 @@ interface WriteBoardProps {
 }
 export default function WriteBoard({
   onMainClick,
-  currentPage,
 }: WriteBoardProps) {
   const [boardTitle, setBoardTitle] = useState<string>("");
   const [boardContent, setBoardContent] = useState<string>("");

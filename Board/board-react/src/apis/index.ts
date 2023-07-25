@@ -1,5 +1,4 @@
 import axios from "axios";
-import { type } from "os";
 
 export const signInApi = async (data : any) => {
 
@@ -23,9 +22,10 @@ export const signUpApi = async (data: any) => {
 }
 
 
-export const BoardApi = async (token: string, index : number) => {
+export const BoardApi = async (token: string | null, index : number) => {
+  const url = `http://localhost:4000/api/board/${index}`
     try {
-      const response = await axios.get("http://localhost:4000/api/board/" + index, {
+      const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -39,7 +39,7 @@ export const BoardApi = async (token: string, index : number) => {
     }
   };
 
-export const BoardTop3Api = async (token: string) => {
+export const BoardTop3Api = async (token: string | null) => {
     try {
       const response = await axios.get("http://localhost:4000/api/board/top3", {
         headers: {
@@ -55,7 +55,7 @@ export const BoardTop3Api = async (token: string) => {
     }
   };
   
-  export const BoardListApi = async (token: string) => {
+  export const BoardListApi = async (token: string | null) => {
     try {
       const response = await axios.get("http://localhost:4000/api/board/list", {
         headers: {
@@ -71,7 +71,7 @@ export const BoardTop3Api = async (token: string) => {
     }
   };
 
-  export const MyPageApi = async (token: string) => {
+  export const MyPageApi = async (token: string | null) => {
     try {
       const response = await axios.get("http://localhost:4000/api/user/myPage", {
         headers: {
@@ -88,7 +88,7 @@ export const BoardTop3Api = async (token: string) => {
   };
 
 
-  export const BoardRegisterApi =  async (data: any, token: string) => {
+  export const BoardRegisterApi =  async (data: any, token: string | null) => {
     const response = await axios.post("http://localhost:4000/api/board/register", data, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -102,8 +102,23 @@ export const BoardTop3Api = async (token: string) => {
     return result    
 }
 
-export const PatchUserApi =  async (data: any, token: string) => {
+export const PatchUserApi =  async (data: any, token: string | null) => {
   const response = await axios.patch("http://localhost:4000/api/user/edit", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).catch((error)=> null);
+  if (!response){
+      return null;
+  }
+
+  const result = response.data;
+  return result  
+}
+
+export const CommentRegisterApi =  async (data: any, token: string | null ,index : number) => {
+  const url = `http://localhost:4000/api/board/${index}/comment/register`
+  const response = await axios.post(url, data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -116,3 +131,56 @@ export const PatchUserApi =  async (data: any, token: string) => {
   return result    
 }
 
+export const CommentListApi = async (token: string | null , index : number) => {
+  const url = `http://localhost:4000/api/board/${index}/comment/list`;
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = response.data;
+    return result;
+  } catch (error) {
+    console.error("Error fetching board data:", error);
+    return null;
+  }
+};
+
+
+export const LikyApi = async (token: string | null, index:number) => {
+
+  const url = `http://localhost:4000/api/board/${index}/liky/get`
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = response.data;
+    return result;
+  } catch (error) {
+    console.error("Error fetching board data:", error);
+    return null;
+  }
+};
+
+export const LikyRegisterApi = async (data : any, token: string | null, index:number) => {
+
+  const url = `http://localhost:4000/api/board/${index}/liky/add`
+  try {
+    const response = await axios.post(url, data,{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = response.data;
+    return result;
+  } catch (error) {
+    console.error("Error fetching board data:", error);
+    return null;
+  }
+};

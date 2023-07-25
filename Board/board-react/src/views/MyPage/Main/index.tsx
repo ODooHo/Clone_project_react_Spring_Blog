@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Card, Divider, Grid, Typography } from "@mui/material";
-import axios from "axios";
-import { useCookies } from "react-cookie";
-import { useUserStore } from "../../../stores";
 import { MyPageApi } from "../../../apis";
 import { Board } from "../../../interfaces";
-import BoardItem from "../../BoardMain/BoardItem";
-
+import { useCookies } from "react-cookie";
 // 인터페이스를 정의합니다.
 
 
@@ -28,8 +24,7 @@ export default function Main({
   // authView : true - signUp / false - signIn
   const [boardData, setBoardData] = useState<Board[]>([]); // 인터페이스를 적용하여 배열의 요소를 정확히 타입화합니다.
   const [userNickname, setUserNickname] = useState<string>("");
-  const [currentBoardId, setCurrentBoardId] = useState<number | null>(null); // 선택된 게시물의 ID를 상태로 관리
-  const [cookies] = useCookies();
+  const [cookies,setCookies] = useCookies();
 
 
 

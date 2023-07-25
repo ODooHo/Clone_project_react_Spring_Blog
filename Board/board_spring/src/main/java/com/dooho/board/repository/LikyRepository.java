@@ -8,4 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public interface LikyRepository extends JpaRepository<LikyEntity,Integer> {
+
+    Integer countByBoardNumber(Integer boardNumber);
 }

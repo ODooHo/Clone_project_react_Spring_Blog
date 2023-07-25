@@ -1,4 +1,3 @@
-export const tmp = '';
 export interface Board {
     boardNumber: number;
     boardTitle: string;
@@ -18,4 +17,13 @@ export interface Board {
   export interface BoardItemProps {
     board: Board;
     onClick: () => void; 
+  }
+
+
+  export interface Comment{
+    commentId : number;
+    commentUserProfile: string;
+    commentUserNickname: string;
+    commentWriteDate: string;
+    commentContent: string;
   }

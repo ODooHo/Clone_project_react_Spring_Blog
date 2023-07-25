@@ -42,11 +42,9 @@ public class BoardService {
     public ResponseDto<?> register(BoardDto dto){
         String boardTitle = dto.getBoardTitle();
 
-        List<BoardEntity> boardList = new ArrayList<BoardEntity>();
 
         BoardEntity boardEntity = new BoardEntity(dto);
 
-        boardList = boardRepository.findAll();
 
 
 
@@ -54,15 +52,10 @@ public class BoardService {
             if(boardRepository.existsByBoardTitle(boardTitle)){
                 return ResponseDto.setFailed("Same Title already exist!");
             }
-        }catch (Exception e){
-            return ResponseDto.setFailed("DataBase Error!");
-
-        }
-        //repository(db)에 저d
-        try{
             boardRepository.save(boardEntity);
         }catch (Exception e){
             return ResponseDto.setFailed("DataBase Error!");
+
         }
 
         return ResponseDto.setSuccess("Register Success!",null);

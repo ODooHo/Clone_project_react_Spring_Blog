@@ -22,12 +22,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     //request가 들어왔을 떄 request Header의 authorization 필드의 bearer token값을 가져옴
     // 가져온 토큰을 검증하고 검증 결과를 securityContext에 추가
 
-    private final TokenProvider tokenProvider;
-
     @Autowired
-    public JwtAuthenticationFilter(TokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
-    }
+   TokenProvider tokenProvider;
+
+    //@Autowired
+    //public JwtAuthenticationFilter(TokenProvider tokenProvider) {
+    //    this.tokenProvider = tokenProvider;
+    //}
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

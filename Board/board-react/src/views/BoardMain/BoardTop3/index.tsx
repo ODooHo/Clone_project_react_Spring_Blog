@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Card, Divider, Grid, Typography } from "@mui/material";
-import axios from "axios";
+import { Box, Button,Divider,  Typography } from "@mui/material";
 import { useCookies } from "react-cookie";
 import { useUserStore } from "../../../stores";
 import { BoardTop3Api } from "../../../apis";
@@ -17,12 +16,10 @@ export default function BoardTop3({
 }: BoardTop3Props) {
   // authView : true - signUp / false - signIn
   const [boardData, setBoardData] = useState<Board[]>([]); // 인터페이스를 적용하여 배열의 요소를 정확히 타입화합니다.
-  const [boardTitle, setBoardTitle] = useState<string>("");
-  const [boardContent, setBoardContent] = useState<string>("");
+  const [cookies,setCookies] = useCookies();
 
-  const [cookies, setCookies] = useCookies();
-  const { user, setUser } = useUserStore();
 
+  
   useEffect(() => {
     async function fetchData() {
       try {

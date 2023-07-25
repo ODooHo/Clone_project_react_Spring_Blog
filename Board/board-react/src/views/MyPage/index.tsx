@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import Main from './Main';
 import WriteBoard from './WriteBoard';
 import PatchUser from './PatchUser';
-import { useUserStore } from '../../stores';
 import BoardDetail from '../BoardMain/BoardDetail';
 
 export default function MyPage() {
-  const {user} = useUserStore();
   const [currentPage, setCurrentPage] = useState('Main'); // 초기 페이지를 'boardMain'으로 설정합니다
   const [currentBoardId, setCurrentBoardId] = useState<number>(1); // 선택된 게시물의 ID를 상태로 관리
 

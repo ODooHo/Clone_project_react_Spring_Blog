@@ -1,7 +1,10 @@
 package com.dooho.board.entity;
 
+import com.dooho.board.dto.CommentDto;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -17,6 +20,17 @@ public class CommentEntity {
     private String userEmail;
     private String commentUserProfile;
     private String commentUserNickname;
-    private String commentWriteDate;
+    private LocalDate commentWriteDate;
     private String commentContent;
+
+    public CommentEntity(CommentDto dto){
+        this.commentId = dto.getCommentId();
+        this.boardNumber = dto.getBoardNumber();
+        this.userEmail = dto.getUserEmail();
+        this.commentUserProfile = dto.getCommentUserProfile();
+        this.commentUserNickname = dto.getCommentUserNickname();
+        this.commentWriteDate = dto.getCommentWriteDate();
+        this.commentContent = dto.getCommentContent();
+
+    }
 }
