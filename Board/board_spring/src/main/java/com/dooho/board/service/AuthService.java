@@ -40,6 +40,7 @@ public class AuthService {
                 return ResponseDto.setFailed("Email already exist!");
             }
         }catch (Exception e){
+            e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error!");
         }
 
@@ -58,6 +59,7 @@ public class AuthService {
         try{
             userRepository.save(userEntity);
         }catch (Exception e){
+            e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error!");
         }
 
@@ -79,6 +81,7 @@ public class AuthService {
             if (!passwordEncoder.matches(userPassword,userEntity.getUserPassword()))
                 return ResponseDto.setFailed("Sign in Failed");
         }catch (Exception e){
+            e.printStackTrace();
             ResponseDto.setFailed("DataBase Error!");
         }
         userEntity.setUserPassword("");

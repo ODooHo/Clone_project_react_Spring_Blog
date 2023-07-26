@@ -3,6 +3,7 @@ import Main from './Main';
 import WriteBoard from './WriteBoard';
 import PatchUser from './PatchUser';
 import BoardDetail from '../BoardMain/BoardDetail';
+import { useCookies } from 'react-cookie';
 
 export default function MyPage() {
   const [currentPage, setCurrentPage] = useState('Main'); // 초기 페이지를 'boardMain'으로 설정합니다

@@ -10,7 +10,9 @@ import java.util.List;
 @Repository
 @Transactional
 public interface CommentRepository extends JpaRepository<CommentEntity, Integer> {
-    List<CommentEntity> findByBoardNumberOrderByCommentWriteDateDesc(Integer boardNumber);
+    List<CommentEntity> findByBoardNumberOrderByCommentWriteDate(Integer boardNumber);
 
     Integer countByBoardNumber(Integer boardNumber);
+
+    void deleteByCommentId(Integer commentId);
 }

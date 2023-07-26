@@ -30,4 +30,10 @@ public class CommentController {
         return commentService.getComment(boardNumber);
     }
 
+    @GetMapping("/{boardNumber}/comment/{commentId}/delete")
+    public ResponseDto<?> deleteComment(@PathVariable Integer boardNumber, @PathVariable Integer commentId){
+        return commentService.deleteComment(boardNumber,commentId);
+    }
+
+
 }

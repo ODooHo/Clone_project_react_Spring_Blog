@@ -5,6 +5,7 @@ import com.dooho.board.dto.ResponseDto;
 import com.dooho.board.entity.BoardEntity;
 import com.dooho.board.entity.PopularSearchEntity;
 import com.dooho.board.service.BoardService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,4 +58,16 @@ public class BoardController {
         return result;
     }
 
+    @PostMapping("/{boardNumber}")
+    public ResponseDto<?>increaseView(@PathVariable Integer boardNumber, @RequestBody Integer requestBody){
+        ResponseDto<?> result = boardService.increaseView(boardNumber,requestBody);
+        return result;
+    }
+
+
+    @GetMapping  ("/{boardNumber}/delete")
+    public ResponseDto<?> deleteBoard(@PathVariable Integer boardNumber){
+        ResponseDto<?> result = boardService.deleteBoard(boardNumber);
+        return result;
+    }
 }

@@ -45,9 +45,6 @@ public class BoardService {
 
         BoardEntity boardEntity = new BoardEntity(dto);
 
-
-
-
         try{
             if(boardRepository.existsByBoardTitle(boardTitle)){
                 return ResponseDto.setFailed("Same Title already exist!");
@@ -76,7 +73,7 @@ public class BoardService {
     }
 
     public ResponseDto<List<BoardEntity>> getList(){
-        List<BoardEntity> boardList = new ArrayList<BoardEntity>();
+        List<BoardEntity> boardList = new ArrayList<>();
 
         try{
             boardList = boardRepository.findByOrderByBoardWriteDateDesc();
@@ -117,4 +114,28 @@ public class BoardService {
     }
 
 
+    public ResponseDto<?> deleteBoard(Integer boardNumber) {
+
+        try{
+            System.out.println("boardNumber = " + boardNumber);
+            boardRepository.deleteBoardEntityByBoardNumber(boardNumber);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDto.setFailed("DataBase Error!");
+        }
+        return ResponseDto.setSuccess("Success",null);
+    }
+
+    public ResponseDto<?> increaseView(Integer boardNumber, Integer increase) {
+        BoardEntity boardEntity = boardRepository.findByBoardNumber(boardNumber);
+        Integer boardClick = boardEntity.getBoardClickCount();
+        try{
+            boardEntity.setBoardClickCount(boardClick + increase);
+            boardRepository.save(boardEntity);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDto.setFailed("DataBase Error!");
+        }
+        return ResponseDto.setSuccess("Success",null);
+    }
 }

@@ -9,8 +9,8 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useUserStore } from "../../../stores";
-import { BoardRegisterApi } from "../../../apis";
 import { useCookies } from "react-cookie";
+import { BoardRegisterApi } from "../../../apis/boardApis";
 
 interface WriteBoardProps {
   onMainClick: () => void;

@@ -6,26 +6,31 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import PersonIcon from "@mui/icons-material/Person";
 import { useUserStore } from "../../stores";
 import { useCookies } from "react-cookie";
-
+import SearchIcon from "@mui/icons-material/Search";
+import HomeIcon from '@mui/icons-material/Home';
 
 interface NavigationProps {
   onMyPageClick: () => void;
   onHomeClick: () => void;
+  onSearchClick: () => void;
   currentPage: string;
 }
 
-export default function Navigation({onMyPageClick, onHomeClick, currentPage}: NavigationProps) {
+export default function Navigation({
+  onMyPageClick,
+  onHomeClick,
+  onSearchClick,
+  currentPage,
+}: NavigationProps) {
   const { user, removeUser } = useUserStore();
-  const [cookies,setCookies] = useCookies();
+  const [cookies, setCookies] = useCookies();
 
   const logOutHandler = () => {
-    setCookies('token',"");
+    setCookies("token", "");
     removeUser();
   };
-
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -49,24 +54,31 @@ export default function Navigation({onMyPageClick, onHomeClick, currentPage}: Na
           </Typography>
           {user ? (
             <>
-              <IconButton color="inherit" onClick={() => logOutHandler()}>
-                <PersonIcon />
+              <IconButton
+                color="inherit"
+                onClick={() => currentPage === "search" ? onHomeClick() : onSearchClick()} // 검색 아이콘 클릭에 따라 페이지 이동
+              >
+                {currentPage === "search" ? <HomeIcon /> : <SearchIcon />} 
               </IconButton>
               <Button
-            color="inherit"
-            onClick={() => (currentPage === 'boardMain' ? onMyPageClick() : onHomeClick())} // 버튼 클릭에 따라 해당 함수 호출
-            sx={{ color: 'white', backgroundColor: 'black', mr: 2 }}
-          >
-            {currentPage === 'boardMain' ? '마이페이지' : '홈으로'} {/* 버튼 텍스트 조건부 렌더링 */}
-          </Button>
+                href="#text-buttons"
+                color="inherit"
+                onClick={() => logOutHandler()}>
+                  로그아웃
+              </Button>
+              <Button
+                href="#text-buttons"
+                color="inherit"
+                onClick={() =>
+                  currentPage === "boardMain" ? onMyPageClick() : onHomeClick()
+                } // 버튼 클릭에 따라 해당 함수 호출
+              >
+                {currentPage === "boardMain" ? "마이페이지" : "홈으로"}{" "}
+              </Button>
             </>
           ) : (
-            <Button
-              color="inherit"
-              sx={{ color: "white", backgroundColor: "black", mr: 2 }}
-            >
-              Login
-            </Button>
+            <>
+            </>
           )}
         </Toolbar>
       </AppBar>

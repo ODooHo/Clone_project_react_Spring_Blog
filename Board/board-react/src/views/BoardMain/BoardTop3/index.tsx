@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Box, Button,Divider,  Typography } from "@mui/material";
 import { useCookies } from "react-cookie";
 import { useUserStore } from "../../../stores";
-import { BoardTop3Api } from "../../../apis";
 import { Board } from "../../../interfaces";
+import { BoardTop3Api } from "../../../apis/boardApis";
 
 // 인터페이스를 정의합니다.
 

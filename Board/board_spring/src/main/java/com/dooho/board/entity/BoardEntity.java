@@ -54,4 +54,7 @@ public class BoardEntity {
         this.boardCommentCount = boardCommentCount;
     }
 
+    public void setClickCount(Integer boardClickCount){
+        this.boardClickCount = boardClickCount;
+    }
 }

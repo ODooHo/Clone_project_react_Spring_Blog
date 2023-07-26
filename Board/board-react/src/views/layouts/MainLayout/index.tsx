@@ -1,39 +1,47 @@
-import { useState } from 'react'
-import Navigation from '../../Navigation'
-import Authentication from '../../Authentication'
-import BoardMain from '../../BoardMain'
-import { useUserStore } from '../../../stores'
-import { useCookies } from 'react-cookie'
-import MyPage from '../../MyPage'
-
+import { useState } from "react";
+import Navigation from "../../Navigation";
+import Authentication from "../../Authentication";
+import BoardMain from "../../BoardMain";
+import { useUserStore } from "../../../stores";
+import { useCookies } from "react-cookie";
+import MyPage from "../../MyPage";
+import Search from "../../Search";
 
 export default function MainLayout() {
-    const {user} = useUserStore();
-    const [currentPage, setCurrentPage] = useState('boardMain'); // 초기 페이지를 'boardMain'으로 설정합니다
+  const { user } = useUserStore();
+  const [currentPage, setCurrentPage] = useState("boardMain"); // 초기 페이지를 'boardMain'으로 설정합니다
 
-    const handleMyPageClick = () =>{
-      setCurrentPage('myPage');
-    }
+  const handleMyPageClick = () => {
+    setCurrentPage("myPage");
+  };
 
-    const handleHomeClick = () => {
-      setCurrentPage('boardMain');
-    }
-    return (
+  const handleHomeClick = () => {
+    setCurrentPage("boardMain");
+  };
+
+  const handleSearchClick = () => {
+    setCurrentPage("search");
+  };
+
+  return (
     <>
- <Navigation
+      <Navigation
         onMyPageClick={handleMyPageClick}
         onHomeClick={handleHomeClick}
+        onSearchClick={handleSearchClick}
         currentPage={currentPage} // 현재 페이지 상태를 Navigation 컴포넌트에 전달
       />
       {user ? (
-        currentPage === 'boardMain' ? (
+        currentPage === "boardMain" ? (
           <BoardMain />
-        ) : (
+        ) : currentPage === "myPage" ? (
           <MyPage />
+        ) : (
+          <Search />
         )
       ) : (
         <Authentication />
       )}
     </>
-  )
+  );
 }

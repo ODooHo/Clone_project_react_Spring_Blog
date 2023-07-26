@@ -22,8 +22,18 @@ export interface Board {
 
   export interface Comment{
     commentId : number;
+    boardNumber: number;
+    userEmail : string;
     commentUserProfile: string;
     commentUserNickname: string;
     commentWriteDate: string;
     commentContent: string;
+  }
+
+  export interface Liky{
+    likyId : number;
+    boardNumber : number;
+    userEmail : string;
+    likeUserProfile : string;
+    likeUserNickname : string;
   }

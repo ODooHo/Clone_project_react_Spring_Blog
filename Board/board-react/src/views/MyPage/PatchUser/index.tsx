@@ -1,7 +1,7 @@
 import { Box, Button, Card, CardContent, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useCookies } from "react-cookie";
-import { PatchUserApi } from "../../../apis";
+import { PatchUserApi } from "../../../apis/userApis";
 
 interface PatchUserProps {
   onMainClick: () => void;

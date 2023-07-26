@@ -8,8 +8,7 @@ import Card from "@mui/material/Card";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { useUserStore } from "../../../stores";
-import { signInApi } from "../../../apis";
-
+import { signInApi } from "../../../apis/authApis";
 interface Props {
   setAuthView: (authView: boolean) => void,
 }

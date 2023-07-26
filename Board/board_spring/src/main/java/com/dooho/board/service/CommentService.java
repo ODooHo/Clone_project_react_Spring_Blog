@@ -31,6 +31,7 @@ public class CommentService {
         try{
             commentRepository.save(commentEntity);
         }catch (Exception e){
+            e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error!");
         }
 
@@ -46,13 +47,14 @@ public class CommentService {
         Integer commentCount = 0;
 
         try{
-            commentList = commentRepository.findByBoardNumberOrderByCommentWriteDateDesc(boardNumber);
+            commentList = commentRepository.findByBoardNumberOrderByCommentWriteDate(boardNumber);
             commentCount = commentRepository.countByBoardNumber(boardNumber);
 
             boardEntity.setBoardCommentCount(commentCount);
             boardRepository.save(boardEntity);
 
         }catch (Exception e){
+            e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error!");
         }
 
@@ -62,5 +64,17 @@ public class CommentService {
     }
 
 
-
+    public ResponseDto<?> deleteComment(Integer boardNumber, Integer commentId) {
+        BoardEntity boardEntity = boardRepository.findById(boardNumber).orElse(null);
+        try{
+            commentRepository.deleteByCommentId(commentId);
+            Integer temp = boardEntity.getBoardCommentCount();
+            boardEntity.setBoardCommentCount(temp - 1);
+            boardRepository.save(boardEntity);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDto.setFailed("DataBase Error!");
+        }
+        return ResponseDto.setSuccess("Success",null);
+    }
 }

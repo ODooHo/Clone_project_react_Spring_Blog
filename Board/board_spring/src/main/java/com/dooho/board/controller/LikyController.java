@@ -2,9 +2,13 @@ package com.dooho.board.controller;
 
 import com.dooho.board.dto.LikyDto;
 import com.dooho.board.dto.ResponseDto;
+import com.dooho.board.entity.LikyEntity;
 import com.dooho.board.service.LikyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.nio.file.Path;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/board")
@@ -19,14 +23,26 @@ public class LikyController {
 
 
     @PostMapping("/{boardNumber}/liky/add")
-    public ResponseDto<?>addLike(@RequestBody LikyDto requestBody){
-        ResponseDto<?> result = likyService.addLike(requestBody);
+    public ResponseDto<?>addLiky(@RequestBody LikyDto requestBody){
+        ResponseDto<?> result = likyService.addLiky(requestBody);
         return result;
     }
 
     @GetMapping("/{boardNumber}/liky/get")
-    public ResponseDto<Integer> getLiky(@PathVariable Integer boardNumber){
-        ResponseDto<Integer> result =  likyService.getLiky(boardNumber);
+    public ResponseDto<List<LikyEntity>> getLiky(@PathVariable Integer boardNumber){
+        ResponseDto<List<LikyEntity>> result =  likyService.getLiky(boardNumber);
+        return result;
+    }
+
+    @GetMapping("/{boardNumber}/liky/get/count")
+    public ResponseDto<Integer> getLikyCount(@PathVariable Integer boardNumber){
+        ResponseDto<Integer> result =  likyService.getLikyCount(boardNumber);
+        return result;
+    }
+
+    @GetMapping("/{boardNumber}/liky")
+    public ResponseDto<?> deleteLiky(@PathVariable Integer boardNumber){
+        ResponseDto<?> result = likyService.deleteLiky(boardNumber);
         return result;
     }
 

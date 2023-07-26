@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
 import { Typography } from "@mui/material";
-import { signUpApi } from "../../../apis";
+import { signUpApi } from "../../../apis/authApis";
 
 
 interface Props{

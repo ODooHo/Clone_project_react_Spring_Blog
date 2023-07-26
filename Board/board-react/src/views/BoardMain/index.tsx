@@ -12,6 +12,8 @@ export default function BoardMain() {
   const handleMainClick = () => {
     setCurrentPage('Main')
   }
+  
+  
 
   const handleDetailClick = (boardId: number) => {
     setCurrentBoardId(boardId); // 선택한 게시물의 ID를 상태로 관리
