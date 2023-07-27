@@ -37,3 +37,8 @@ export interface Board {
     likeUserProfile : string;
     likeUserNickname : string;
   }
+
+  export interface PopularSearchList{
+    popularTerm : string;
+    popularSearchCount : number;
+  }

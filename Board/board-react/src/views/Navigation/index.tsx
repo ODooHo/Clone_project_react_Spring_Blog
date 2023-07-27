@@ -58,7 +58,7 @@ export default function Navigation({
                 color="inherit"
                 onClick={() => currentPage === "search" ? onHomeClick() : onSearchClick()} // 검색 아이콘 클릭에 따라 페이지 이동
               >
-                {currentPage === "search" ? <HomeIcon /> : <SearchIcon />} 
+                {currentPage === "search" ? <></> : <SearchIcon />} 
               </IconButton>
               <Button
                 href="#text-buttons"

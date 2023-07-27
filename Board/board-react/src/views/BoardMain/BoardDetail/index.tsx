@@ -16,7 +16,7 @@ import { useUserStore } from "../../../stores";
 import {
   BoardApi,
   BoardIncreaseApi,
-  deleteBoardApi,
+  BoardDeleteApi,
 } from "../../../apis/boardApis";
 import {
   LikyApi,
@@ -74,7 +74,7 @@ export default function BoardDetail({
 
   const handleDeleteClick = async () => {
     try {
-      const response = await deleteBoardApi(token, boardNumber);
+      const response = await BoardDeleteApi(token, boardNumber);
       console.log(response);
       if (response && response.result) {
         alert("게시물이 삭제되었습니다.");

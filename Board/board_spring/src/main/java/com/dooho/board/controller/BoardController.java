@@ -3,9 +3,7 @@ package com.dooho.board.controller;
 import com.dooho.board.dto.BoardDto;
 import com.dooho.board.dto.ResponseDto;
 import com.dooho.board.entity.BoardEntity;
-import com.dooho.board.entity.PopularSearchEntity;
 import com.dooho.board.service.BoardService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,16 +39,8 @@ public class BoardController {
         return result;
     }
 
-    @GetMapping("/popularsearchList")
-    public ResponseDto<List<PopularSearchEntity>> getPopularsearchList(){
-        ResponseDto<List<PopularSearchEntity>> result = boardService.getPopularsearchList();
-        return result;
-    }
 
-    @GetMapping("/search/{boardTitle}")
-    public ResponseDto<List<BoardEntity>> getSearchList(@PathVariable("boardTitle") String title){
-        return null;
-    }
+
 
     @GetMapping("/{boardNumber}")
     public ResponseDto<BoardEntity> getBoard(@PathVariable Integer boardNumber){
@@ -70,4 +60,6 @@ public class BoardController {
         ResponseDto<?> result = boardService.deleteBoard(boardNumber);
         return result;
     }
+
 }
+

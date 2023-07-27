@@ -96,7 +96,7 @@ export default function BoardList({
   return (
     <>
       <Card
-        sx={{ minWidth: 275, maxWidth: "40vw", padding: 5, marginTop: "100px" }}
+        sx={{ minWidth: 300, maxWidth: "40vw", padding: 5, marginTop: "100px" ,marginLeft:"30px" }}
       >
         <Box>
           <Typography variant="h5">최신 게시글</Typography>

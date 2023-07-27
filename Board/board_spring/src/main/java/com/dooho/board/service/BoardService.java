@@ -3,9 +3,7 @@ package com.dooho.board.service;
 import com.dooho.board.dto.BoardDto;
 import com.dooho.board.dto.ResponseDto;
 import com.dooho.board.entity.BoardEntity;
-import com.dooho.board.entity.PopularSearchEntity;
 import com.dooho.board.repository.BoardRepository;
-import com.dooho.board.repository.PopularSearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +16,10 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
-    private final PopularSearchRepository popularSearchRepository;
 
     @Autowired
-    public BoardService(BoardRepository boardRepository, PopularSearchRepository popularSearchRepository) {
+    public BoardService(BoardRepository boardRepository) {
         this.boardRepository = boardRepository;
-        this.popularSearchRepository = popularSearchRepository;
     }
 
 
@@ -83,34 +79,6 @@ public class BoardService {
         }
 
         return ResponseDto.setSuccess("Success", boardList);
-    }
-
-    public ResponseDto<List<PopularSearchEntity>> getPopularsearchList(){
-        List<PopularSearchEntity> popularSearchList = new ArrayList<PopularSearchEntity>();
-
-        try{
-            popularSearchList = popularSearchRepository.findTop10ByOrderByPopularSearchCountDesc();
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
-        }
-
-        return ResponseDto.setSuccess("Success",popularSearchList);
-    }
-
-    public ResponseDto<List<BoardEntity>> getSearchList(String boardTitle){
-
-        List<BoardEntity> boardList = new ArrayList<BoardEntity>();
-
-        try{
-            boardList = boardRepository.findByBoardTitleContains(boardTitle);
-
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
-        }
-
-        return ResponseDto.setSuccess("Success",boardList);
     }
 
 

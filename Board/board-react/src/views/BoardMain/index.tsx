@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import BoardTop3 from "./BoardTop3";
 import BoardList from "./BoardList";
 import BoardDetail from "./BoardDetail";
+import PopularSearch from "../Search/PolularSearch";
 
 export default function BoardMain() {
 
@@ -22,16 +23,19 @@ export default function BoardMain() {
   return (
     <>
     {currentPage === 'Main'?(
+    <Box display="flex" flexDirection="column">
       <Box>
-        <Box>
-        <BoardTop3  onDetailClick = {handleDetailClick}/>
-        </Box>
-        <Box>
-        <BoardList
-        onDetailClick = {handleDetailClick}
-        />
-        </Box>
-      </Box>
+      <BoardTop3 onDetailClick={handleDetailClick} />
+    </Box>
+    <Grid container spacing={2} padding={5}>
+      <Grid item xs={12} md={6} >
+        <BoardList onDetailClick={handleDetailClick} />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <PopularSearch />
+      </Grid>
+    </Grid>
+  </Box>
     ) :(
         <BoardDetail 
           onMainClick={handleMainClick}

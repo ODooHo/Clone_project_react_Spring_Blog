@@ -83,7 +83,7 @@ export const BoardRegisterApi = async (data: any, token: string | null) => {
     return result
 }
 
-export const deleteBoardApi = async (token: string | null, index: number) => {
+export const BoardDeleteApi = async (token: string | null, index: number) => {
     const url = `http://localhost:4000/api/board/${index}/delete`
     try {
         const response = await axios.get(url, {
