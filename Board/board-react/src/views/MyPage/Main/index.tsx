@@ -10,6 +10,7 @@ import { MyPageApi } from "../../../apis/userApis";
 interface MainProps {
   onWriteBoardClick: () => void;
   onPatchUserClick: () => void;
+  onProfileClick : () => void;
   onDetailClick: (boardId:number) => void;
   currentPage: string;
 }
@@ -18,6 +19,7 @@ interface MainProps {
 export default function Main({
   onWriteBoardClick,
   onPatchUserClick,
+  onProfileClick,
   onDetailClick,
   currentPage,
 }: MainProps) {
@@ -65,6 +67,16 @@ export default function Main({
             onClick={onPatchUserClick}
           >
             개인정보 수정
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              backgroundColor: "black",
+            }}
+            onClick={onProfileClick}
+          >
+            프로필 사진 변경
           </Button>
         </Box>
 

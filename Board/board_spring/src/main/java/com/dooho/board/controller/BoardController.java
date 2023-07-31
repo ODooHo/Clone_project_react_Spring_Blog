@@ -6,6 +6,7 @@ import com.dooho.board.entity.BoardEntity;
 import com.dooho.board.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,9 +22,19 @@ public class BoardController {
     }
 
     @PostMapping("/register")
-    public ResponseDto<?> register(@RequestBody BoardDto requestBody){
-        ResponseDto<?> result = boardService.register(requestBody);
-        System.out.println("requestBody = " + requestBody);
+    public ResponseDto<BoardEntity> register(
+            @RequestParam("boardTitle") String boardTitle,
+            @RequestParam("boardContent") String boardContent,
+            @RequestParam("boardWriterEmail") String boardWriterEmail,
+            @RequestParam("boardWriterProfile") String boardWriterProfile,
+            @RequestParam("boardWriterNickname") String boardWriterNickname,
+            @RequestParam("boardWriteDate") String boardWriteDate,
+            @RequestParam(value = "boardImage", required = false) MultipartFile boardImage,
+            @RequestParam(value = "boardVideo", required = false) MultipartFile boardVideo,
+            @RequestParam(value = "boardFile", required = false) MultipartFile boardFile){
+        ResponseDto<BoardEntity> result = boardService.register(
+                boardTitle, boardContent,boardWriterEmail,boardWriterProfile,boardWriterNickname,boardWriteDate,
+                boardImage,boardVideo,boardFile);
         return result;
     }
 

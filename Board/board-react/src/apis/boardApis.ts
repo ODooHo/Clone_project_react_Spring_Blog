@@ -73,6 +73,7 @@ export const BoardRegisterApi = async (data: any, token: string | null) => {
     const response = await axios.post("http://localhost:4000/api/board/register", data, {
         headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
         },
     }).catch((error) => null);
     if (!response) {

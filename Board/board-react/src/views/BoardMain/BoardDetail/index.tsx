@@ -24,6 +24,7 @@ import {
   deleteLikyApi,
   getLikyCountApi,
 } from "../../../apis/likyApis";
+import { getImageApi } from "../../../apis/fileApis";
 interface BoardDetailProps {
   onMainClick: () => void;
   currentPage: string;
@@ -39,6 +40,7 @@ export default function BoardDetail({
   const [cookies, setCookies] = useCookies();
   const [liked, setLiked] = useState<boolean>(false);
   const [liky, setLiky] = useState<Liky[]>([]);
+  const [imageURL, setImageURL] = useState<string | null>(null);
   const { user } = useUserStore();
   const token = cookies.token;
   const [refresh, setRefresh] = useState(1);
@@ -56,15 +58,30 @@ export default function BoardDetail({
         const countResponse = await getLikyCountApi(token, boardNumber);
         const countData = countResponse.data;
         setLiked(countData);
+        
+        //const imageData = await getImageApi(token,boardTitle);
+        //setImageURL(imageData);
       } catch (error) {
         console.error("게시글 가져오기 실패:", error);
         setBoardData(undefined);
         setLiky([]);
         setLiked(false);
+        //setImageURL(null);
       }
     }
     fetchData();
   }, [refresh]); // Run only once on component mount
+
+  const handleImage = async () => {
+    const response = await getImageApi(token,boardTitle);
+    const newFile = new File([response],imageUrl);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const previewImage = String(event.target?.result);
+      setImageURL(previewImage);
+    }
+    reader.readAsDataURL(newFile);
+  }
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
@@ -139,6 +156,8 @@ export default function BoardDetail({
     boardCommentCount,
   } = boardData;
 
+  const imageUrl = `http://localhost:4000/api/images/${boardTitle}.jpg`
+
   return (
     <>
       <Box marginTop="70px">
@@ -164,7 +183,6 @@ export default function BoardDetail({
                 <CardMedia
                   component="img"
                   height="auto"
-                  image={boardImage}
                   alt="게시물 이미지"
                 />
               )}

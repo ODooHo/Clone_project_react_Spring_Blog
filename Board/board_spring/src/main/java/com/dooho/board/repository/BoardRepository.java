@@ -28,6 +28,8 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
 
     void deleteBoardEntityByBoardNumber(Integer BoardNumber);
 
+    BoardEntity findByBoardTitle(String boardTitle);
+
 
 
 }

@@ -6,8 +6,12 @@ import com.dooho.board.entity.BoardEntity;
 import com.dooho.board.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,11 +19,13 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final FileService fileService;
 
 
     @Autowired
-    public BoardService(BoardRepository boardRepository) {
+    public BoardService(BoardRepository boardRepository, FileService fileService) {
         this.boardRepository = boardRepository;
+        this.fileService = fileService;
     }
 
 
@@ -35,23 +41,42 @@ public class BoardService {
         return ResponseDto.setSuccess("Success",board);
     }
 
-    public ResponseDto<?> register(BoardDto dto){
-        String boardTitle = dto.getBoardTitle();
+    public ResponseDto<BoardEntity> register(
+            String boardTitle,
+            String boardContent,
+            String boardWriterEmail,
+            String boardWriterProfile,
+            String boardWriterNickname,
+            String boardWriteDate,
+            MultipartFile boardImage,
+            MultipartFile boardVideo,
+            MultipartFile boardFile){
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(boardWriteDate, formatter.withZone(ZoneId.of("UTC")));
 
+        LocalDate localDate =  zonedDateTime.toLocalDate();
 
-        BoardEntity boardEntity = new BoardEntity(dto);
+        BoardEntity boardEntity = new BoardEntity();
+        boardEntity.setBoardTitle(boardTitle);
+        boardEntity.setBoardContent(boardContent);
+        boardEntity.setBoardWriterEmail(boardWriterEmail);
+        boardEntity.setBoardWriterProfile(boardWriterProfile);
+        boardEntity.setBoardWriterNickname(boardWriterNickname);
+        boardEntity.setBoardWriteDate(localDate);
+
 
         try{
             if(boardRepository.existsByBoardTitle(boardTitle)){
                 return ResponseDto.setFailed("Same Title already exist!");
             }
+            fileService.uploadFile(boardImage,boardVideo,boardFile,boardEntity);
             boardRepository.save(boardEntity);
         }catch (Exception e){
             return ResponseDto.setFailed("DataBase Error!");
 
         }
 
-        return ResponseDto.setSuccess("Register Success!",null);
+        return ResponseDto.setSuccess("Register Success!",boardEntity);
     }
 
     public ResponseDto<List<BoardEntity>> getTop3(){

@@ -23,4 +23,5 @@ public class BoardDto {
     private int boardClickCount;
     private int boardLikeCount;
     private int boardCommentCount;
+
 }

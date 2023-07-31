@@ -2,31 +2,31 @@ import { Box, Button, Card, CardContent, TextField, Typography } from "@mui/mate
 import React, { useState } from "react";
 import { useCookies } from "react-cookie";
 import { PatchUserApi } from "../../../apis/userApis";
+import {profileUploadApi } from "../../../apis/fileApis";
 
 interface PatchUserProps {
   onMainClick: () => void;
   currentPage: string;
 }
 
-export default function PatchUser({
+export default function ProfileChange({
   onMainClick,
   currentPage,
 }: PatchUserProps) {
-  const [userNickname, setUserNickname] = useState<string>("");
   const [userProfile, setUserProfile] = useState<File | null>(null);
   const [cookies] = useCookies();
 
-  const patchUserHandler = async () => {
-    const data = {
-      userNickname,
-      userProfile,
-    };
-
+  const ProfileChangeHandler = async () => {
+    const data = new FormData();
+    if(userProfile){
+        data.append("file",userProfile);
+    }
     
-    
-
     const token = cookies.token;
-    const patchUserResponse = await PatchUserApi(data, token);
+    const patchUserResponse = await profileUploadApi(data, token);
+    const result = patchUserResponse.data;
+
+    console.log(result)
     if (!patchUserResponse) {
       alert("프로필 수정에 실패했습니다.");
       return;
@@ -41,19 +41,26 @@ export default function PatchUser({
     onMainClick();
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    setUserProfile(file || null);
+    console.log(file)
+  };
+
   return (
     <>
       <Box marginTop={"50px"} padding={5}>
       <Typography variant="h5" marginBottom={"10px"}>프로필 변경</Typography>
         <Card>
           <CardContent>
-            <TextField
-              label="닉네임"
-              value={userNickname}
-              onChange={(e) => setUserNickname(e.target.value)}
-            />
-            <Box marginTop={"10px"}>
-            </Box>
+            <Button variant="contained" component="label">
+              사진 첨부
+              <input
+                type="file"
+                hidden
+                onChange={handleFileUpload}
+              />
+            </Button>
           </CardContent>
         </Card>
       </Box>
@@ -61,7 +68,7 @@ export default function PatchUser({
         variant="contained"
         color="inherit"
         sx={{ margin: "10px", backgroundColor: "#000000", color: "#ffffff" }}
-        onClick={patchUserHandler}
+        onClick={ProfileChangeHandler}
       >
         작성 완료
       </Button>

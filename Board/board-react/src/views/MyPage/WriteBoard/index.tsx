@@ -21,33 +21,41 @@ export default function WriteBoard({
 }: WriteBoardProps) {
   const [boardTitle, setBoardTitle] = useState<string>("");
   const [boardContent, setBoardContent] = useState<string>("");
-  const [boardImage, setBoardImage] = useState<string>("");
-  const [boardVideo, setBoardVideo] = useState<string>("");
-  const [boardFile, setBoardFile] = useState<string>("");
+  const [boardImage, setBoardImage] = useState<File | null>(null);
+  const [boardVideo, setBoardVideo] = useState<File | null>(null);
+  const [boardFile, setBoardFile] = useState<File | null>(null);
   const { user } = useUserStore();
   const [cookies] = useCookies();
 
   const registerHandler = async () => {
-    const data = {
-      boardTitle,
-      boardContent,
-      boardImage,
-      boardVideo,
-      boardFile,
-      boardWriterEmail: user.userEmail, // 사용자 이메일
-      boardWriterProfile: user.userProfile, // 사용자 프로필
-      boardWriterNickname: user.userNickname, // 사용자 닉네임
-      boardWriteDate: new Date().toISOString(), // 글을 쓴 날짜
-    };
-
+    const data = new FormData();
+    data.append("boardTitle", boardTitle);
+    data.append("boardContent", boardContent);
+    data.append("boardWriterEmail", user.userEmail);
+    data.append("boardWriterProfile", user.userProfile);
+    data.append("boardWriterNickname", user.userNickname);
+    data.append("boardWriteDate", new Date().toISOString());
     const token = cookies.token;
-    const registerResponse = await BoardRegisterApi(data, token);
-    if (!registerResponse) {
-      alert("게시글 작성에 실패했습니다.");
+
+    if (boardImage){
+      data.append("boardImage",boardImage);
+    }
+    if (boardVideo){
+      data.append("boardVideo",boardVideo);
+    }
+    if (boardFile){
+      data.append("boardFile",boardFile);
+    }
+    
+    const uploadReponse = await BoardRegisterApi(data,token);
+
+
+    if (!uploadReponse) {
+      alert("게시글 작성(파일)에 실패했습니다.");
       return;
     }
-    if (!registerResponse.result) {
-      alert("게시글 작성에 실패했습니다.");
+    if (!uploadReponse.result) {
+      alert("게시글 작성(파일)에 실패했습니다.");
       return;
     }
 
@@ -56,6 +64,25 @@ export default function WriteBoard({
     onMainClick();
     
   };
+
+  const handleImgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    setBoardImage(file || null);
+    console.log(file)
+  };
+
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    setBoardVideo(file || null);
+    console.log(file)
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    setBoardFile(file || null);
+    console.log(file)
+  };
+
 
   return (
     <>
@@ -85,7 +112,7 @@ export default function WriteBoard({
             <input
               type="file"
               hidden
-              onChange={(e) => setBoardImage(e.target.value)}
+              onChange={handleImgUpload}
             />
           </Button>
           <Button variant="contained" component="label">
@@ -93,7 +120,7 @@ export default function WriteBoard({
             <input
               type="file"
               hidden
-              onChange={(e) => setBoardVideo(e.target.value)}
+              onChange={handleVideoUpload}
             />
           </Button>
           <Button variant="contained" component="label">
@@ -101,7 +128,7 @@ export default function WriteBoard({
             <input
               type="file"
               hidden
-              onChange={(e) => setBoardFile(e.target.value)}
+              onChange={handleFileUpload}
             />
           </Button>
         </CardActions>
