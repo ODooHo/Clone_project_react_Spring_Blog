@@ -29,11 +29,23 @@ public class FileController {
         return result;
     }
 
-
     @GetMapping("/images/{imageName}")
     public byte[] getImage(@PathVariable String imageName)throws IOException{
         Path imagePath = Paths.get("src/main/resources/static/img/" + imageName);
         return Files.readAllBytes(imagePath);
+
+    }
+    @GetMapping("/videos/{videoName}")
+    public byte[] getVideo(@PathVariable String videoName)throws IOException{
+        Path videoPath = Paths.get("src/main/resources/static/img/" + videoName);
+        return Files.readAllBytes(videoPath);
+
+    }
+
+    @GetMapping("/files/{fileName}")
+    public byte[] getFile(@PathVariable String fileName)throws IOException{
+        Path filePath = Paths.get("src/main/resources/static/img/" + fileName);
+        return Files.readAllBytes(filePath);
 
     }
 

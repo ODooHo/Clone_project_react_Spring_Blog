@@ -1,6 +1,6 @@
 package com.dooho.board.controller;
 
-import com.dooho.board.dto.CommentDto;
+import com.dooho.board.dto.board.CommentDto;
 import com.dooho.board.dto.ResponseDto;
 import com.dooho.board.entity.CommentEntity;
 import com.dooho.board.service.CommentService;

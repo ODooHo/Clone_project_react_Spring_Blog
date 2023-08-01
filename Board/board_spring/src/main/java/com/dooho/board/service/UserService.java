@@ -1,16 +1,17 @@
 package com.dooho.board.service;
 
-import com.dooho.board.dto.MyPageDto;
-import com.dooho.board.dto.PatchUserDto;
-import com.dooho.board.dto.PatchUserResponseDto;
+import com.dooho.board.dto.user.MyPageDto;
+import com.dooho.board.dto.user.PatchUserDto;
+import com.dooho.board.dto.user.PatchUserResponseDto;
 import com.dooho.board.dto.ResponseDto;
 import com.dooho.board.entity.BoardEntity;
+import com.dooho.board.entity.CommentEntity;
 import com.dooho.board.entity.UserEntity;
 import com.dooho.board.repository.BoardRepository;
+import com.dooho.board.repository.CommentRepository;
 import com.dooho.board.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +21,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, BoardRepository boardRepository) {
+    public UserService(UserRepository userRepository, BoardRepository boardRepository, CommentRepository commentRepository) {
         this.userRepository = userRepository;
         this.boardRepository = boardRepository;
+        this.commentRepository = commentRepository;
     }
 
 
@@ -41,8 +44,11 @@ public class UserService {
         }
 
         MyPageDto dto = new MyPageDto();
+        dto.setUserEmail(userEmail);
         dto.setUserNickname(user.getUserNickname());
+        dto.setUserProfile(user.getUserProfile());
         dto.setUserBoard(board);
+
 
 
         return ResponseDto.setSuccess("Success",dto);
@@ -53,29 +59,32 @@ public class UserService {
 
         UserEntity userEntity = null;
         List<BoardEntity> boardEntity = new ArrayList<>();
+        List<CommentEntity> commentEntity = new ArrayList<>();
 
         String userNickname = requestBody.getUserNickname();
-        String userProfile = requestBody.getUserProfile();
-
 
 
         try{
             userEntity = userRepository.findByUserEmail(userEmail);
+            commentEntity = commentRepository.findByUserEmail(userEmail);
+            boardEntity = boardRepository.findByBoardWriterEmail(userEmail);
             if (userEntity == null){
                 return ResponseDto.setFailed("Does Not Exist User");
             }
             userEntity.setUserNickname(userNickname);
-            userEntity.setUserProfile(userProfile);
 
             userRepository.save(userEntity);
 
-            boardEntity = boardRepository.findByBoardWriterEmail(userEmail);
 
             for (BoardEntity board : boardEntity){
                 board.setBoardWriterNickname(userNickname);
                 boardRepository.save(board);
             }
 
+            for (CommentEntity comment : commentEntity){
+                comment.setCommentUserNickname(userNickname);
+                commentRepository.save(comment);
+            }
 
         }catch (Exception e){
             e.printStackTrace();

@@ -1,6 +1,9 @@
 package com.dooho.board.controller;
 
 import com.dooho.board.dto.*;
+import com.dooho.board.dto.user.MyPageDto;
+import com.dooho.board.dto.user.PatchUserDto;
+import com.dooho.board.dto.user.PatchUserResponseDto;
 import com.dooho.board.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -1,6 +1,6 @@
 package com.dooho.board.entity;
 
-import com.dooho.board.dto.SignUpDto;
+import com.dooho.board.dto.auth.SignUpDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;

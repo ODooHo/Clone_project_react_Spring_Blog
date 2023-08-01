@@ -1,7 +1,8 @@
 package com.dooho.board.controller;
 
-import com.dooho.board.dto.BoardDto;
 import com.dooho.board.dto.ResponseDto;
+import com.dooho.board.dto.board.PatchBoardDto;
+import com.dooho.board.dto.board.PatchBoardResponseDto;
 import com.dooho.board.entity.BoardEntity;
 import com.dooho.board.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ public class BoardController {
         return result;
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/list")
     public ResponseDto<List<BoardEntity>> getList(){
         ResponseDto<List<BoardEntity>> result = boardService.getList();
@@ -51,8 +53,7 @@ public class BoardController {
     }
 
 
-
-
+    @CrossOrigin(origins = "*")
     @GetMapping("/{boardNumber}")
     public ResponseDto<BoardEntity> getBoard(@PathVariable Integer boardNumber){
         ResponseDto<BoardEntity> result = boardService.getBoard(boardNumber);
@@ -72,5 +73,14 @@ public class BoardController {
         return result;
     }
 
+    @CrossOrigin(origins = "*")
+    @PatchMapping("{boardNumber}/edit")
+    public ResponseDto<PatchBoardResponseDto> editBoard(
+            @PathVariable Integer boardNumber,
+            @RequestBody PatchBoardDto requestBody){
+        ResponseDto<PatchBoardResponseDto> result = boardService.editBoard(boardNumber,requestBody);
+
+        return result;
+    }
 }
 

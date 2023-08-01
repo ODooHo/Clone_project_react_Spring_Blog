@@ -1,9 +1,9 @@
 package com.dooho.board.controller;
 
 import com.dooho.board.dto.ResponseDto;
-import com.dooho.board.dto.SignInDto;
-import com.dooho.board.dto.SignInResponseDto;
-import com.dooho.board.dto.SignUpDto;
+import com.dooho.board.dto.auth.SignInDto;
+import com.dooho.board.dto.auth.SignInResponseDto;
+import com.dooho.board.dto.auth.SignUpDto;
 import com.dooho.board.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

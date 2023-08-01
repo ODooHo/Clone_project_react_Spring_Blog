@@ -1,6 +1,6 @@
 package com.dooho.board.service;
 
-import com.dooho.board.dto.LikyDto;
+import com.dooho.board.dto.board.LikyDto;
 import com.dooho.board.dto.ResponseDto;
 import com.dooho.board.entity.BoardEntity;
 import com.dooho.board.entity.LikyEntity;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LikyService {

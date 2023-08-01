@@ -1,7 +1,9 @@
 package com.dooho.board.service;
 
-import com.dooho.board.dto.BoardDto;
 import com.dooho.board.dto.ResponseDto;
+import com.dooho.board.dto.board.PatchBoardDto;
+import com.dooho.board.dto.board.PatchBoardResponseDto;
+import com.dooho.board.dto.user.PatchUserDto;
 import com.dooho.board.entity.BoardEntity;
 import com.dooho.board.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +58,10 @@ public class BoardService {
 
         LocalDate localDate =  zonedDateTime.toLocalDate();
 
+        if(boardRepository.existsByBoardTitle(boardTitle)){
+            return ResponseDto.setFailed("Same Title already exist!");
+        }
+
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setBoardTitle(boardTitle);
         boardEntity.setBoardContent(boardContent);
@@ -63,12 +69,10 @@ public class BoardService {
         boardEntity.setBoardWriterProfile(boardWriterProfile);
         boardEntity.setBoardWriterNickname(boardWriterNickname);
         boardEntity.setBoardWriteDate(localDate);
+        boardRepository.save(boardEntity);
 
 
         try{
-            if(boardRepository.existsByBoardTitle(boardTitle)){
-                return ResponseDto.setFailed("Same Title already exist!");
-            }
             fileService.uploadFile(boardImage,boardVideo,boardFile,boardEntity);
             boardRepository.save(boardEntity);
         }catch (Exception e){
@@ -130,5 +134,28 @@ public class BoardService {
             return ResponseDto.setFailed("DataBase Error!");
         }
         return ResponseDto.setSuccess("Success",null);
+    }
+
+    public ResponseDto<PatchBoardResponseDto> editBoard(Integer boardNumber, PatchBoardDto dto) {
+        BoardEntity board = null;
+        String boardTitle = dto.getBoardTitle();
+        String boardContent = dto.getBoardContent();
+        LocalDate boardWriteDate = dto.getBoardWriteDate();
+        try{
+            board = boardRepository.findByBoardNumber(boardNumber);
+            board.setBoardTitle(boardTitle);
+            board.setBoardContent(boardContent);
+            board.setBoardWriteDate(boardWriteDate);
+
+            boardRepository.save(board);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDto.setFailed("DataBase Error!");
+        }
+
+        PatchBoardResponseDto patchBoardResponseDto = new PatchBoardResponseDto(board);
+
+        return ResponseDto.setSuccess("Success!",patchBoardResponseDto);
     }
 }

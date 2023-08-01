@@ -1,4 +1,4 @@
-package com.dooho.board.dto;
+package com.dooho.board.dto.user;
 
 import com.dooho.board.entity.BoardEntity;
 import lombok.AllArgsConstructor;
@@ -13,6 +13,8 @@ import java.util.List;
 public class MyPageDto {
     private String userEmail;
     private String userNickname;
+    private String userProfile;
     private List<BoardEntity> userBoard;
+
 
 }

@@ -1,13 +1,12 @@
 package com.dooho.board.controller;
 
-import com.dooho.board.dto.LikyDto;
+import com.dooho.board.dto.board.LikyDto;
 import com.dooho.board.dto.ResponseDto;
 import com.dooho.board.entity.LikyEntity;
 import com.dooho.board.service.LikyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Path;
 import java.util.List;
 
 @RestController

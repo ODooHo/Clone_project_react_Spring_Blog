@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, Hidden, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Comment } from "/Users/oduho/Desktop/Clone_SpringBoot-react-aws_Blog/Board/board-react/src/interfaces";
 import { useCookies } from "react-cookie";
@@ -86,14 +86,35 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
 
   return (
     <>
+    <Box sx={{marginTop : "20px"}}>
+
+    </Box>
       {comments.map((comment) => (
         <Box
           key={comment.commentId}
           mt={2}
           p={2}
           border="1px solid #ddd"
-          borderRadius={4}
+          borderRadius={3}
+          display="flex"
+          flexDirection="column" // 닉네임과 날짜, 내용을 세로 방향으로 배치
+          alignItems="flex-start" // 왼쪽으로 정렬
+          sx={{ maxWidth: 1100, width: "100%", margin: "0 auto",marginTop : "20px" ,marginBottom : "5px"}}
         >
+          <Box
+           width={28}
+           height={28}
+           borderRadius="50%"
+           overflow="hidden"
+           mr={1}
+          >
+            <img
+            src={`http://localhost:4000/api/images/${comment.commentUserProfile}`}
+            width="100%"
+            height="100%"      
+            />
+
+          </Box>
           <Typography variant="subtitle1">
             {comment.commentUserNickname} | {comment.commentWriteDate}
           </Typography>
@@ -116,7 +137,10 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
           </Box>
         </Box>
       ))}
-      <Box marginTop="20px">
+      <Box
+       sx={{ maxWidth: 1100, width: "100%", margin: "0 auto" ,marginTop:"20px" }}
+       
+      >
         <TextField
           id="comment"
           label="댓글 작성"

@@ -1,4 +1,4 @@
-package com.dooho.board.dto;
+package com.dooho.board.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

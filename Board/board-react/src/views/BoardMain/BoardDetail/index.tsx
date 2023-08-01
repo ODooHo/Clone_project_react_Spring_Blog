@@ -11,12 +11,12 @@ import {
   Typography,
 } from "@mui/material";
 import CommentMain from "../../Comment";
-import { Cookie } from "@mui/icons-material";
 import { useUserStore } from "../../../stores";
 import {
   BoardApi,
   BoardIncreaseApi,
   BoardDeleteApi,
+  boardEditApi,
 } from "../../../apis/boardApis";
 import {
   LikyApi,
@@ -24,15 +24,16 @@ import {
   deleteLikyApi,
   getLikyCountApi,
 } from "../../../apis/likyApis";
-import { getImageApi } from "../../../apis/fileApis";
 interface BoardDetailProps {
   onMainClick: () => void;
+  onEditClick: (boardId: number) => void;
   currentPage: string;
   boardNumber: number; // 게시물 ID를 받아오도록 추가
 }
 
 export default function BoardDetail({
   onMainClick,
+  onEditClick,
   currentPage,
   boardNumber,
 }: BoardDetailProps) {
@@ -48,7 +49,7 @@ export default function BoardDetail({
   useEffect(() => {
     async function fetchData() {
       try {
-        //const viewIncrease = await BoardIncreaseApi(token,boardNumber);
+        const viewIncrease = await BoardIncreaseApi(token, boardNumber);
         const response = await BoardApi(token, boardNumber);
         const data = response.data;
         setBoardData(data);
@@ -58,30 +59,15 @@ export default function BoardDetail({
         const countResponse = await getLikyCountApi(token, boardNumber);
         const countData = countResponse.data;
         setLiked(countData);
-        
-        //const imageData = await getImageApi(token,boardTitle);
-        //setImageURL(imageData);
       } catch (error) {
         console.error("게시글 가져오기 실패:", error);
         setBoardData(undefined);
         setLiky([]);
         setLiked(false);
-        //setImageURL(null);
       }
     }
     fetchData();
   }, [refresh]); // Run only once on component mount
-
-  const handleImage = async () => {
-    const response = await getImageApi(token,boardTitle);
-    const newFile = new File([response],imageUrl);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const previewImage = String(event.target?.result);
-      setImageURL(previewImage);
-    }
-    reader.readAsDataURL(newFile);
-  }
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
@@ -137,6 +123,10 @@ export default function BoardDetail({
       console.error("좋아요 취소 실패:", error);
     }
   };
+  const handleEditClick = () => {
+    // boardData.boardNumber를 전달하여 게시글 수정 페이지로 이동
+    onEditClick(boardNumber);
+  };
 
   if (!boardData) {
     return <div>로딩 중...</div>;
@@ -156,94 +146,110 @@ export default function BoardDetail({
     boardCommentCount,
   } = boardData;
 
-  const imageUrl = `http://localhost:4000/api/images/${boardTitle}.jpg`
+  const imageUrl = `http://localhost:4000/api/images/${boardData.boardNumber}.jpg`;
 
   return (
     <>
-      <Box marginTop="70px">
-        <Card>
-          <CardContent>
-            <Typography variant="h5" gutterBottom>
-              {boardTitle}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              {boardWriterNickname} | {boardWriteDate}
-            </Typography>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              gutterBottom
-              sx={{ fontSize: "1.2rem", lineHeight: "1.8rem" }}
-            >
-              {boardContent}
-            </Typography>
-            <Box my={2}>
-              {/* 게시물 이미지를 보여줄 경우 */}
-              {boardImage && (
-                <CardMedia
-                  component="img"
-                  height="auto"
-                  alt="게시물 이미지"
-                />
-              )}
-              {/* 게시물 동영상을 보여줄 경우 */}
-              {boardVideo && (
-                <iframe
-                  title="게시물 동영상"
-                  width="100%"
-                  height="315"
-                  src={boardVideo}
-                  allowFullScreen
-                ></iframe>
-              )}
-              {/* 게시물 파일을 다운로드 링크로 보여줄 경우 */}
-              {boardFile && (
-                <a href={boardFile} download>
-                  게시물 파일 다운로드
-                </a>
-              )}
-            </Box>
-            <Typography variant="body2" gutterBottom>
-              조회수: {boardClickCount} | 좋아요: {boardLikeCount} | 댓글 수:{" "}
-              {boardCommentCount}
-            </Typography>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              {liked ? (
-                // 사용자가 좋아요를 눌렀을 경우, 좋아요 취소 버튼 표시
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleUnlikeClick}
-                >
-                  좋아요 취소
-                </Button>
-              ) : (
-                // 사용자가 좋아요를 누르지 않았을 경우, 좋아요 버튼 표시
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleLikeClick}
-                >
-                  좋아요
-                </Button>
-              )}
-              {isCurrentUserPost && (
-                <Typography
-                  variant="body2"
-                  color="primary"
-                  sx={{ cursor: "pointer", color: "red" }}
-                  onClick={handleDeleteClick}
-                >
-                  게시물 삭제
-                </Typography>
-              )}
-            </Box>
-          </CardContent>
-        </Card>
+      <Box display="flex" justifyContent="center" marginTop="70px">
+        <Box sx={{ maxWidth: 1100, width: "100%" }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h5" gutterBottom>
+                {boardTitle}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                {boardWriterNickname} | {boardWriteDate}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                gutterBottom
+                sx={{ fontSize: "1.2rem", lineHeight: "1.8rem" }}
+              >
+                {boardContent}
+              </Typography>
+              <Box my={2}>
+                {/* 게시물 이미지를 보여줄 경우 */}
+                {boardImage && (
+                  <CardMedia
+                    component="img"
+                    height="auto"
+                    image={imageUrl}
+                    alt="게시물 이미지"
+                    sx={{ maxWidth: "60%", height: "auto" }}
+                  />
+                )}
+                {/* 게시물 동영상을 보여줄 경우 */}
+                {boardVideo && (
+                  <iframe
+                    title="게시물 동영상"
+                    width="100%"
+                    height="315"
+                    src={boardVideo}
+                    allowFullScreen
+                  ></iframe>
+                )}
+                {/* 게시물 파일을 다운로드 링크로 보여줄 경우 */}
+                {boardFile && (
+                  <a href={boardFile} download>
+                    게시물 파일 다운로드
+                  </a>
+                )}
+              </Box>
+              <Typography variant="body2" gutterBottom>
+                조회수: {boardClickCount} | 좋아요: {boardLikeCount} | 댓글 수:{" "}
+                {boardCommentCount}
+              </Typography>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                {liked ? (
+                  // 사용자가 좋아요를 눌렀을 경우, 좋아요 취소 버튼 표시
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleUnlikeClick}
+                  >
+                    좋아요 취소
+                  </Button>
+                ) : (
+                  // 사용자가 좋아요를 누르지 않았을 경우, 좋아요 버튼 표시
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleLikeClick}
+                  >
+                    좋아요
+                  </Button>
+                )}
+                {isCurrentUserPost && (
+                  <>
+                    <Box display="flex" alignItems="center">
+                      <Typography
+                        variant="body2"
+                        color="primary"
+                        sx={{ cursor: "pointer", color: "blue",marginRight : "20px" }}
+                        onClick={handleEditClick}
+                      >
+                        게시물 수정
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="primary"
+                        sx={{ cursor: "pointer", color: "red" }}
+                        onClick={handleDeleteClick}
+                      >
+                        게시물 삭제
+                      </Typography>
+                    </Box>
+                  </>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
       </Box>
       <CommentMain boardNumber={boardNumber} />
 

@@ -100,3 +100,18 @@ export const BoardDeleteApi = async (token: string | null, index: number) => {
         return null;
     }
 };
+
+export const boardEditApi = async (data: any, token: string | null , boardNumber : number) => {
+    const response = await axios.patch(`http://localhost:4000/api/board/${boardNumber}/edit`, data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    }).catch((error) => null);
+    if (!response) {
+        return null;
+    }
+
+    const result = response.data;
+    return result
+}
+

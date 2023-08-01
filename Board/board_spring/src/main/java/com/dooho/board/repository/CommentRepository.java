@@ -15,4 +15,6 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Integer>
     Integer countByBoardNumber(Integer boardNumber);
 
     void deleteByCommentId(Integer commentId);
+
+    List<CommentEntity> findByUserEmail(String userEmail);
 }

@@ -12,6 +12,11 @@ export default function Search() {
     setCurrentPage("SearchMain");
   };
 
+  const handleEditClick = (boardId : number) => {
+    setCurrentPage('Edit')
+    setCurrentBoardId(boardId);
+  }
+
   const handleDetailClick = (boardId: number) => {
     setCurrentBoardId(boardId); // 선택한 게시물의 ID를 상태로 관리
     setCurrentPage("Detail"); // 페이지 전환을 Detail 페이지로 설정
@@ -31,6 +36,7 @@ export default function Search() {
       ) : (
         <BoardDetail
           onMainClick={handleMainClick}
+          onEditClick={handleEditClick}
           currentPage={currentPage}
           boardNumber={currentBoardId}
         />

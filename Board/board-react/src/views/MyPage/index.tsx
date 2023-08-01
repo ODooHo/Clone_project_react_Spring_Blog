@@ -3,8 +3,8 @@ import Main from "./Main";
 import WriteBoard from "./WriteBoard";
 import PatchUser from "./PatchUser";
 import BoardDetail from "../BoardMain/BoardDetail";
-import { useCookies } from "react-cookie";
 import ProfileChange from "./ProfileChange";
+import BoardEdit from "../BoardMain/BoardEdit";
 
 export default function MyPage() {
   const [currentPage, setCurrentPage] = useState("Main"); // 초기 페이지를 'boardMain'으로 설정합니다
@@ -16,6 +16,11 @@ export default function MyPage() {
   const handlePatchUserClick = () => {
     setCurrentPage("PathUser");
   };
+
+  const handleEditClick = (boardId : number) => {
+    setCurrentPage('Edit')
+    setCurrentBoardId(boardId);
+  }
 
   const handleProfileClick = () => {
     setCurrentPage("Profile");
@@ -45,10 +50,18 @@ export default function MyPage() {
       ) : currentPage === "Detail" ? (
         <BoardDetail
           onMainClick={handleMainClick}
+          onEditClick={handleEditClick}
           currentPage={currentPage}
           boardNumber={currentBoardId}
         />
-      ) : currentPage === "Profile" ? (
+      ) : currentPage === "Edit"? (
+        <BoardEdit
+          onMainClick={handleMainClick}
+          onDetailClick={handleDetailClick}
+          currentPage={currentPage}
+          boardNumber={currentBoardId}
+        />
+      ): currentPage === "Profile" ? (
         <ProfileChange onMainClick={handleMainClick} currentPage={currentPage} />
       ) : (
         <PatchUser onMainClick={handleMainClick} currentPage={currentPage} />

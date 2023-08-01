@@ -1,6 +1,6 @@
 package com.dooho.board.entity;
 
-import com.dooho.board.dto.LikyDto;
+import com.dooho.board.dto.board.LikyDto;
 import jakarta.persistence.*;
 import lombok.*;
 

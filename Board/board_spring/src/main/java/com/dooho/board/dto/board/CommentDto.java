@@ -1,4 +1,4 @@
-package com.dooho.board.dto;
+package com.dooho.board.dto.board;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

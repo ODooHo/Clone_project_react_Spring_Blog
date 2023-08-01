@@ -7,24 +7,17 @@ import { BoardListApi } from "../../../apis/boardApis";
 
 // 인터페이스를 정의합니다.
 
-
-interface BoardListProps{
-  onDetailClick: (boardId:number) => void;
+interface BoardListProps {
+  onDetailClick: (boardId: number) => void;
 }
 
-export default function BoardList({
-  onDetailClick
-}: BoardListProps) {
+export default function BoardList({ onDetailClick }: BoardListProps) {
   // authView : true - signUp / false - signIn
   const [boardData, setBoardData] = useState<Board[]>([]); // 인터페이스를 적용하여 배열의 요소를 정확히 타입화합니다.
 
   const [cookies] = useCookies();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 5; // 한 페이지에 보여줄 게시글 수
-
-
-
-  
 
   const BoardHandler = async () => {
     const token = cookies.token;
@@ -49,15 +42,14 @@ export default function BoardList({
     BoardHandler();
   }, []);
 
-
   const getPageNumbers = (totalPages: number) => {
     const pageNumbers = [];
     const maxPageToShow = 5; // 최대 5개의 페이지 번호만 표시
-      const getPageData = () => {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return boardData.slice(startIndex, endIndex);
-  };
+    const getPageData = () => {
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      return boardData.slice(startIndex, endIndex);
+    };
 
     if (currentPage <= maxPageToShow) {
       // 현재 페이지가 maxPageToShow 이하이면, 1부터 현재 페이지까지 표시
@@ -84,7 +76,7 @@ export default function BoardList({
 
   const totalPages = Math.ceil(boardData.length / pageSize);
   const pageNumbers = getPageNumbers(totalPages);
-  
+
   const getPageData = () => {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
@@ -96,7 +88,13 @@ export default function BoardList({
   return (
     <>
       <Card
-        sx={{ minWidth: 300, maxWidth: "40vw", padding: 5, marginTop: "100px" ,marginLeft:"30px" }}
+        sx={{
+          minWidth: 300,
+          maxWidth: "40vw",
+          padding: 5,
+          marginTop: "100px",
+          marginLeft: "30px",
+        }}
       >
         <Box>
           <Typography variant="h5">최신 게시글</Typography>
@@ -105,18 +103,34 @@ export default function BoardList({
           <Box flex="1" overflow="auto">
             {pageData.map((board) => (
               <div key={board.boardNumber}>
-              <Button
-                fullWidth
-                variant="outlined"
-                sx={{ my: 2 }}
-                onClick={() => onDetailClick(board.boardNumber)}
-              >
-                <Box textAlign="center">
-                  <h3>{board.boardTitle}</h3>
-                  <p>{board.boardWriterNickname}</p>
-                </Box>
-              </Button>
-            </div>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  sx={{ my: 2 }}
+                  onClick={() => onDetailClick(board.boardNumber)}
+                >
+                  <Box textAlign="center">
+                  
+                  <Box display="flex" alignItems="center" justifyContent="center" mt={2}>
+                    <Box
+                      width={32}
+                      height={32}
+                      borderRadius="50%"
+                      overflow="hidden"
+                      mx={1} // 수정: 이미지 좌우 여백을 위해 mx를 사용합니다.
+                    >
+                      <img
+                        src={`http://localhost:4000/api/images/${board.boardWriterProfile}`}
+                        width="100%"
+                        height="100%"
+                      />
+                    </Box>
+                    <Typography>{board.boardWriterNickname}</Typography>
+                  </Box>
+                  <Typography variant="h6">{board.boardTitle}</Typography>
+                  </Box>
+                </Button>
+              </div>
             ))}
           </Box>
           {/* 페이징 처리 버튼 */}
