@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button,Divider,  Typography } from "@mui/material";
+import { Box, Button, Divider, Typography } from "@mui/material";
 import { useCookies } from "react-cookie";
 import { useUserStore } from "../../../stores";
 import { Board } from "../../../interfaces";
@@ -7,19 +7,15 @@ import { BoardTop3Api } from "../../../apis/boardApis";
 
 // 인터페이스를 정의합니다.
 
-interface BoardTop3Props{
-  onDetailClick:(boardId:number) => void;
+interface BoardTop3Props {
+  onDetailClick: (boardId: number) => void;
 }
 
-export default function BoardTop3({
-  onDetailClick
-}: BoardTop3Props) {
+export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
   // authView : true - signUp / false - signIn
   const [boardData, setBoardData] = useState<Board[]>([]); // 인터페이스를 적용하여 배열의 요소를 정확히 타입화합니다.
-  const [cookies,setCookies] = useCookies();
+  const [cookies, setCookies] = useCookies();
 
-
-  
   useEffect(() => {
     async function fetchData() {
       try {
@@ -63,31 +59,43 @@ export default function BoardTop3({
               variant="outlined" // 배경색은 투명하고 테두리만 보이도록 변경
               color="inherit" // 글자색을 검정색으로 변경
               sx={{
-                width: "200px",
-                height: "200px",
+                width: "300px",
+                height: "300px",
                 margin: "10px",
               }}
               onClick={() => onDetailClick(board.boardNumber)}
             >
-                  <Box textAlign="center">
-                  <Typography variant="h6">{board.boardTitle}</Typography>
-                  <Box display="flex" alignItems="center" justifyContent="center" mt={2}>
-                    <Box
-                      width={32}
-                      height={32}
-                      borderRadius="50%"
-                      overflow="hidden"
-                      mx={1} // 수정: 이미지 좌우 여백을 위해 mx를 사용합니다.
+              <Box textAlign="center">
+                <Typography variant="h6">{board.boardTitle}</Typography>
+                <Box display="flex" alignItems="center">
+                  <Box
+                    width={32}
+                    height={32}
+                    borderRadius="50%"
+                    overflow="hidden"
+                    mr={0} // 이미지와 닉네임 사이의 간격을 설정합니다.
+                  >
+                    <img
+                      src={`http://localhost:4000/api/images/${board.boardWriterProfile}`}
+                      width="100%"
+                      height="100%"
+                    />
+                  </Box>
+                  <Box>
+                    <Typography
+                      variant="body1"
+                      gutterBottom
+                      marginTop={"20px"}
+                      marginBottom="2px"
                     >
-                      <img
-                        src={`http://localhost:4000/api/images/${board.boardWriterProfile}`}
-                        width="100%"
-                        height="100%"
-                      />
-                    </Box>
-                    <Typography>{board.boardWriterNickname}</Typography>
+                      {board.boardWriterNickname}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {board.boardWriteDate}
+                    </Typography>
                   </Box>
-                  </Box>
+                </Box>
+              </Box>
             </Button>
           ))}
         </Box>

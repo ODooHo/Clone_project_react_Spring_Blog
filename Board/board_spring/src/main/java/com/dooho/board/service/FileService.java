@@ -52,7 +52,7 @@ public class FileService {
                 String fileName = setFileName(boardVideo, board);
                 String videoPath = uploadDir + File.separator + "video" + File.separator + fileName;
                 uploadFile(boardVideo, videoPath);
-                board.setBoardVideo(videoPath);
+                board.setBoardVideo(fileName);
             }else{
                 board.setBoardVideo(null);
             }
@@ -61,7 +61,7 @@ public class FileService {
                 String fileName = setFileName(boardFile, board);
                 String filePath = uploadDir + File.separator + "file" + File.separator + fileName;
                 uploadFile(boardFile, filePath);
-                board.setBoardFile(filePath);
+                board.setBoardFile(fileName);
             }else{
                 board.setBoardFile(null);
             }

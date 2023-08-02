@@ -1,6 +1,6 @@
 package com.dooho.board.entity;
 
-import com.dooho.board.dto.board.CommentDto;
+import com.dooho.board.dto.comment.CommentDto;
 import jakarta.persistence.*;
 import lombok.*;
 

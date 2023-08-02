@@ -1,7 +1,10 @@
 package com.dooho.board.service;
 
-import com.dooho.board.dto.board.CommentDto;
+import com.dooho.board.dto.board.PatchBoardResponseDto;
+import com.dooho.board.dto.comment.CommentDto;
 import com.dooho.board.dto.ResponseDto;
+import com.dooho.board.dto.comment.PatchCommentDto;
+import com.dooho.board.dto.comment.PatchCommentResponseDto;
 import com.dooho.board.entity.BoardEntity;
 import com.dooho.board.entity.CommentEntity;
 import com.dooho.board.repository.BoardRepository;
@@ -9,6 +12,7 @@ import com.dooho.board.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +27,7 @@ public class CommentService {
         this.commentRepository = commentRepository;
         this.boardRepository = boardRepository;
     }
+
 
     public ResponseDto<?> register(CommentDto dto){
 
@@ -63,6 +68,28 @@ public class CommentService {
 
     }
 
+    public ResponseDto<PatchCommentResponseDto> editComment(Integer boardNumber, Integer commentId, PatchCommentDto dto) {
+        CommentEntity comment = null;
+        String commentContent = dto.getCommentContent();
+        LocalDate commentWriteDate = dto.getCommentWriteDate();
+
+        try{
+            comment = commentRepository.findById(commentId).orElse(null);
+            comment.setCommentContent(commentContent);
+            comment.setCommentWriteDate(commentWriteDate);
+
+            commentRepository.save(comment);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDto.setFailed("DataBase Error!");
+        }
+
+        PatchCommentResponseDto patchCommentResponseDto = new PatchCommentResponseDto(comment);
+
+        return ResponseDto.setSuccess("Success!",patchCommentResponseDto);
+    }
+
+
 
     public ResponseDto<?> deleteComment(Integer boardNumber, Integer commentId) {
         BoardEntity boardEntity = boardRepository.findById(boardNumber).orElse(null);
@@ -77,4 +104,7 @@ public class CommentService {
         }
         return ResponseDto.setSuccess("Success",null);
     }
+
+
+
 }

@@ -81,7 +81,7 @@ export default function Main({
             variant="contained"
             color="primary"
             sx={{
-              backgroundColor: "black",
+              backgroundColor: "black", marginRight : "20px"
             }}
             onClick={onPatchUserClick}
           >
@@ -138,18 +138,13 @@ export default function Main({
                   >
                     <Box textAlign="center">
                       <Typography variant="h6">{board.boardTitle}</Typography>
-                      <Box
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        mt={2}
-                      >
+                      <Box display="flex" alignItems="center">
                         <Box
-                          width={28}
-                          height={28}
+                          width={32}
+                          height={32}
                           borderRadius="50%"
                           overflow="hidden"
-                          mx={1} // 수정: 이미지 좌우 여백을 위해 mx를 사용합니다.
+                          mr={0} // 이미지와 닉네임 사이의 간격을 설정합니다.
                         >
                           <img
                             src={`http://localhost:4000/api/images/${board.boardWriterProfile}`}
@@ -157,7 +152,19 @@ export default function Main({
                             height="100%"
                           />
                         </Box>
-                        <Typography>{board.boardWriterNickname}</Typography>
+                        <Box>
+                          <Typography
+                            variant="body1"
+                            gutterBottom
+                            marginTop={"20px"}
+                            marginBottom="2px"
+                          >
+                            {board.boardWriterNickname}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {board.boardWriteDate}
+                          </Typography>
+                        </Box>
                       </Box>
                     </Box>
                   </Button>

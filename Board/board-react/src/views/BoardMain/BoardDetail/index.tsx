@@ -147,27 +147,59 @@ export default function BoardDetail({
   } = boardData;
 
   const imageUrl = `http://localhost:4000/api/images/${boardData.boardNumber}.jpg`;
+  const videoUrl = `http://localhost:4000/api/videos/${boardData.boardNumber}.mp4`;
 
   return (
     <>
+    <Card>
       <Box display="flex" justifyContent="center" marginTop="70px">
-        <Box sx={{ maxWidth: 1100, width: "100%" }}>
+        <Box sx={{ maxWidth: 900, width: "100%" }}>
           <Card>
             <CardContent>
-              <Typography variant="h5" gutterBottom>
-                {boardTitle}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                {boardWriterNickname} | {boardWriteDate}
-              </Typography>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                gutterBottom
-                sx={{ fontSize: "1.2rem", lineHeight: "1.8rem" }}
-              >
-                {boardContent}
-              </Typography>
+              <Box textAlign="center">
+                <Typography variant="h4" gutterBottom>
+                  {boardTitle}
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <Box
+                  width={32}
+                  height={32}
+                  borderRadius="50%"
+                  overflow="hidden"
+                  mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
+                >
+                  <img
+                    src={`http://localhost:4000/api/images/${boardWriterProfile}`}
+                    width="100%"
+                    height="100%"
+                  />
+                </Box>
+                <Box>
+                  <Typography
+                    variant="body1"
+                    gutterBottom
+                    marginTop={"20px"}
+                    marginBottom="2px"
+                  >
+                    {boardWriterNickname}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {boardWriteDate}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box textAlign="center">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                  marginTop={"20px"}
+                  sx={{ fontSize: "1.2rem", lineHeight: "1.8rem" }}
+                >
+                  {boardContent}
+                </Typography>
+              </Box>
               <Box my={2}>
                 {/* 게시물 이미지를 보여줄 경우 */}
                 {boardImage && (
@@ -176,24 +208,42 @@ export default function BoardDetail({
                     height="auto"
                     image={imageUrl}
                     alt="게시물 이미지"
-                    sx={{ maxWidth: "60%", height: "auto" }}
+                    sx={{
+                      display: "block", // Center align the image
+                      margin: "0 auto", // Center align the image
+                      maxWidth: "60%",
+                      height: "auto",
+                    }}
                   />
                 )}
                 {/* 게시물 동영상을 보여줄 경우 */}
                 {boardVideo && (
-                  <iframe
-                    title="게시물 동영상"
-                    width="100%"
-                    height="315"
-                    src={boardVideo}
-                    allowFullScreen
-                  ></iframe>
+                  <video
+                    width="60%"
+                    controls
+                    style={{
+                      display: "block", // Center align the video
+                      margin: "0 auto", // Center align the video
+                    }}
+                  >
+                    <source src={videoUrl} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
                 )}
                 {/* 게시물 파일을 다운로드 링크로 보여줄 경우 */}
                 {boardFile && (
-                  <a href={boardFile} download>
-                    게시물 파일 다운로드
-                  </a>
+                  <div style={{ textAlign: "center" }}>
+                    <a
+                      href={boardFile}
+                      download
+                      style={{
+                        display: "block", // Center align the link
+                        margin: "0 auto", // Center align the link
+                      }}
+                    >
+                      게시물 파일 다운로드
+                    </a>
+                  </div>
                 )}
               </Box>
               <Typography variant="body2" gutterBottom>
@@ -230,7 +280,14 @@ export default function BoardDetail({
                       <Typography
                         variant="body2"
                         color="primary"
-                        sx={{ cursor: "pointer", color: "blue",marginRight : "20px" }}
+                        sx={{
+                          cursor: "pointer",
+                          color: "black",
+                          marginRight: "20px",
+                          "&:hover": {
+                            textDecoration: "underline", // Add underline effect on hover
+                          },
+                        }}
                         onClick={handleEditClick}
                       >
                         게시물 수정
@@ -238,7 +295,13 @@ export default function BoardDetail({
                       <Typography
                         variant="body2"
                         color="primary"
-                        sx={{ cursor: "pointer", color: "red" }}
+                        sx={{
+                          cursor: "pointer",
+                          color: "black",
+                          "&:hover": {
+                            textDecoration: "underline", // Add underline effect on hover
+                          },
+                        }}
                         onClick={handleDeleteClick}
                       >
                         게시물 삭제
@@ -250,17 +313,28 @@ export default function BoardDetail({
             </CardContent>
           </Card>
         </Box>
+        
       </Box>
       <CommentMain boardNumber={boardNumber} />
-
-      <Button
-        variant="contained"
-        color="inherit"
-        sx={{ margin: "10px", backgroundColor: "#ffffff", color: "#000000" }}
-        onClick={onMainClick}
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        sx={{
+          maxWidth: 900,
+          width: "100%",
+          margin: "10px auto", 
+        }}
       >
-        이전
-      </Button>
+        <Button
+          variant="contained"
+          color="inherit"
+          sx={{ backgroundColor: "#ffffff", color: "#000000" }}
+          onClick={onMainClick}
+        >
+          이전
+        </Button>
+      </Box>
+      </Card>
     </>
   );
 }

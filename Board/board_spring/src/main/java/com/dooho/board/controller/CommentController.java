@@ -1,7 +1,11 @@
 package com.dooho.board.controller;
 
-import com.dooho.board.dto.board.CommentDto;
+import com.dooho.board.dto.board.PatchBoardDto;
+import com.dooho.board.dto.board.PatchBoardResponseDto;
+import com.dooho.board.dto.comment.CommentDto;
 import com.dooho.board.dto.ResponseDto;
+import com.dooho.board.dto.comment.PatchCommentDto;
+import com.dooho.board.dto.comment.PatchCommentResponseDto;
 import com.dooho.board.entity.CommentEntity;
 import com.dooho.board.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +25,31 @@ public class CommentController {
 
     @PostMapping("/{boardNumber}/comment/register")
     public ResponseDto<?> register(@RequestBody CommentDto requestBody){
-        return commentService.register(requestBody);
+        ResponseDto<?> result = commentService.register(requestBody);
+        return result;
     }
 
 
     @GetMapping("/{boardNumber}/comment/list")
     public ResponseDto<List<CommentEntity>> getComment(@PathVariable Integer boardNumber){
-        return commentService.getComment(boardNumber);
+        ResponseDto<List<CommentEntity>> result = commentService.getComment(boardNumber);
+        return result;
     }
 
     @GetMapping("/{boardNumber}/comment/{commentId}/delete")
     public ResponseDto<?> deleteComment(@PathVariable Integer boardNumber, @PathVariable Integer commentId){
-        return commentService.deleteComment(boardNumber,commentId);
+        ResponseDto<?> result = commentService.deleteComment(boardNumber, commentId);
+        return result;
+    }
+
+    @CrossOrigin(origins = "*")
+    @PatchMapping("{boardNumber}/comment/{commentId}/edit")
+    public ResponseDto<PatchCommentResponseDto> editComment(
+            @PathVariable Integer boardNumber,
+            @PathVariable Integer commentId,
+            @RequestBody PatchCommentDto requestBody){
+        ResponseDto<PatchCommentResponseDto> result = commentService.editComment(boardNumber,commentId,requestBody);
+        return result;
     }
 
 

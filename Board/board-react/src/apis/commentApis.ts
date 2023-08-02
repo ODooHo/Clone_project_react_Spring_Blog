@@ -48,3 +48,17 @@ export const deleteCommentApi = async (token: string | null, boardNumber: number
         return null;
     }
 };
+
+export const editCommentApi = async (data: any, token: string | null , boardNumber : number , commentId : number) => {
+    const response = await axios.patch(`http://localhost:4000/api/board/${boardNumber}/comment/${commentId}/edit`, data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    }).catch((error) => null);
+    if (!response) {
+        return null;
+    }
+
+    const result = response.data;
+    return result
+}

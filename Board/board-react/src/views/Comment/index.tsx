@@ -7,6 +7,7 @@ import {
   CommentListApi,
   CommentRegisterApi,
   deleteCommentApi,
+  editCommentApi,
 } from "../../apis/commentApis";
 
 interface CommentMainProps {
@@ -19,12 +20,11 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
   const [cookies, setCookies] = useCookies();
   const { user } = useUserStore();
   const [refresh, setRefresh] = useState(1);
-
+  const [editStates, setEditStates] = useState<{ [key: number]: boolean }>({});
 
   // 페이지가 변경될 때마다 API를 호출하도록 useEffect 사용
-  useEffect(
-    () => {
-      async function fetchData(){
+  useEffect(() => {
+    async function fetchData() {
       try {
         const token = cookies.token;
         const response = await CommentListApi(token, boardNumber);
@@ -38,6 +38,10 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
     fetchData();
   }, [refresh]);
 
+  const handleRefresh = () => {
+    setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
+  };
+
   const CommentRegisterHandler = async () => {
     const token = cookies.token;
     const registerData = {
@@ -49,9 +53,6 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
       commentWriteDate: new Date().toISOString(),
     };
 
-    const handleRefresh = () => {
-      setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
-    };
     const response = await CommentRegisterApi(registerData, token, boardNumber);
     if (!response) {
       alert("댓글 작성에 실패했습니다.");
@@ -64,6 +65,13 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
     alert("댓글 작성에 성공했습니다!");
 
     handleRefresh();
+  };
+
+  const handleEditClick = (commentId: number) => {
+    setEditStates((prevEditStates) => ({
+      ...prevEditStates,
+      [commentId]: true,
+    }));
   };
 
   const handleDeleteClick = async (commentId: number) => {
@@ -84,11 +92,75 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
     }
   };
 
+  const handleEditHandler = async (
+    commentId: number,
+    editedContent: string
+  ) => {
+    try {
+      const token = cookies.token;
+      const data = {
+        commentContent: editedContent,
+        commentWriteDate: new Date().toISOString(),
+      };
+      const response = await editCommentApi(
+        data,
+        token,
+        boardNumber,
+        commentId
+      );
+      if (response && response.result) {
+        alert("댓글이 수정되었습니다.");
+        setEditStates((prevEditStates) => ({
+          ...prevEditStates,
+          [commentId]: false,
+        }));
+        handleRefresh();
+      } else {
+        alert("댓글 수정에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("댓글 수정 실패:", error);
+    }
+  };
+
   return (
     <>
-    <Box sx={{marginTop : "20px"}}>
+      <Box sx={{ marginTop: "20px" }}></Box>
+      <Box
+        sx={{
+          maxWidth: 900,
+          width: "100%",
+          margin: "0 auto",
+          marginTop: "20px",
+        }}
+      >
+        <TextField
+          id="comment"
+          label="댓글 작성"
+          variant="outlined"
+          fullWidth
+          onChange={(e) => setCommentContent(e.target.value)}
+        />
 
-    </Box>
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+          sx={{
+            maxWidth: 900,
+            width: "100%",
+            margin: "10px auto",
+          }}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ marginBottom: "50px" }}
+            onClick={CommentRegisterHandler}
+          >
+            댓글 작성
+          </Button>
+        </Box>
+      </Box>
       {comments.map((comment) => (
         <Box
           key={comment.commentId}
@@ -99,64 +171,115 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
           display="flex"
           flexDirection="column" // 닉네임과 날짜, 내용을 세로 방향으로 배치
           alignItems="flex-start" // 왼쪽으로 정렬
-          sx={{ maxWidth: 1100, width: "100%", margin: "0 auto",marginTop : "20px" ,marginBottom : "5px"}}
+          sx={{
+            maxWidth: 900,
+            width: "100%",
+            margin: "0 auto",
+            marginTop: "20px",
+            marginBottom: "5px",
+          }}
         >
-          <Box
-           width={28}
-           height={28}
-           borderRadius="50%"
-           overflow="hidden"
-           mr={1}
-          >
-            <img
-            src={`http://localhost:4000/api/images/${comment.commentUserProfile}`}
-            width="100%"
-            height="100%"      
-            />
-
-          </Box>
-          <Typography variant="subtitle1">
-            {comment.commentUserNickname} | {comment.commentWriteDate}
-          </Typography>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography variant="body1">{comment.commentContent}</Typography>
-            {comment.userEmail === user?.userEmail && ( // Only show delete button if the logged-in user wrote the comment
-              <Typography
-                variant="body2"
-                color="primary"
-                sx={{ cursor: "pointer", color: "red" }}
-                onClick={() => handleDeleteClick(comment.commentId)}
+          <Box display="flex" alignItems="center" width="100%">
+            <Box
+              width={32}
+              height={32}
+              borderRadius="50%"
+              overflow="hidden"
+              mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
+            >
+              <img
+                src={`http://localhost:4000/api/images/${comment.commentUserProfile}`}
+                width="100%"
+                height="100%"
+              />
+            </Box>
+            <Box width="100%">
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
               >
-                댓글 삭제
+                <Typography
+                  variant="body1"
+                  gutterBottom
+                  marginTop={"20px"}
+                  marginBottom="2px"
+                >
+                  {comment.commentUserNickname}
+                </Typography>
+                {comment.userEmail === user?.userEmail && ( // Only show delete button if the logged-in user wrote the comment
+                  <>
+                    <Box display="flex" alignItems="center">
+                      <Typography
+                        variant="body2"
+                        color="primary"
+                        sx={{
+                          cursor: "pointer",
+                          color: "black",
+                          marginRight: "20px",
+                          "&:hover": {
+                            textDecoration: "underline", // Add underline effect on hover
+                          },
+                        }}
+                        onClick={() => handleEditClick(comment.commentId)}
+                      >
+                        수정
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="primary"
+                        sx={{
+                          cursor: "pointer",
+                          color: "black",
+                          "&:hover": {
+                            textDecoration: "underline", // Add underline effect on hover
+                          },
+                        }}
+                        onClick={() => handleDeleteClick(comment.commentId)}
+                      >
+                        삭제
+                      </Typography>
+                    </Box>
+                  </>
+                )}
+              </Box>
+              <Typography variant="body2" color="text.secondary">
+                {comment.commentWriteDate}
               </Typography>
-            )}
+            </Box>
           </Box>
+          <Typography variant="body1" marginTop={"10px"}>
+            {editStates[comment.commentId] ? (
+              <>
+                <TextField
+                  id={`comment-${comment.commentId}`}
+                  label="댓글 수정"
+                  variant="outlined"
+                  fullWidth
+                  defaultValue={comment.commentContent}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ marginTop: "10px" }}
+                  onClick={() => {
+                    const editedContent = (
+                      document.getElementById(
+                        `comment-${comment.commentId}`
+                      ) as HTMLInputElement
+                    )?.value;
+                    handleEditHandler(comment.commentId, editedContent);
+                  }}
+                >
+                  수정 완료
+                </Button>
+              </>
+            ) : (
+              comment.commentContent
+            )}
+          </Typography>
         </Box>
       ))}
-      <Box
-       sx={{ maxWidth: 1100, width: "100%", margin: "0 auto" ,marginTop:"20px" }}
-       
-      >
-        <TextField
-          id="comment"
-          label="댓글 작성"
-          variant="outlined"
-          fullWidth
-          onChange={(e) => setCommentContent(e.target.value)}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ marginTop: "10px" }}
-          onClick={CommentRegisterHandler}
-        >
-          댓글 작성
-        </Button>
-      </Box>
     </>
   );
 }
