@@ -31,7 +31,6 @@ export default function Search() {
             currentPage={currentPage}
             boardNumber={currentBoardId}
           />
-          <PopularSearch />
         </Box>
       ) : (
         <BoardDetail

@@ -1,16 +1,11 @@
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import Card from "@mui/material/Card";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { useUserStore } from "../../../stores";
 import { signInApi } from "../../../apis/authApis";
 interface Props {
-  setAuthView: (authView: boolean) => void,
+  setAuthView: (authView: boolean) => void;
 }
 
 export default function SignIn(props: Props) {
@@ -19,6 +14,7 @@ export default function SignIn(props: Props) {
   const [emailError, setEmailError] = useState<boolean>(false);
   const [passwordError, setPasswordError] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<boolean>(false);
+  const [refreshToken, setRefreshToken] = useState<string>("");
 
   const [cookies, setCookies] = useCookies();
   const { user, setUser } = useUserStore();
@@ -53,9 +49,8 @@ export default function SignIn(props: Props) {
     const expires = new Date();
     expires.setMilliseconds(expires.getMilliseconds() + exprTime);
 
-    setCookies('token',token,{expires})
-    
-    
+    setCookies("token", token, { expires });
+
     setUser(user);
   };
 
@@ -71,9 +66,7 @@ export default function SignIn(props: Props) {
           type="email"
           variant="standard"
           error={emailError || loginError}
-          helperText={
-            loginError ? "" : ""
-          }
+          helperText={loginError ? "" : ""}
           onChange={(e) => {
             setUserEmail(e.target.value);
             setEmailError(false);
@@ -97,9 +90,13 @@ export default function SignIn(props: Props) {
         />
       </Box>
       <Box component="div">
-        <Button color = "inherit"
-        sx={{color:"white", backgroundColor:"black"}}
-        fullWidth onClick={() => signInHandler()} variant="contained">
+        <Button
+          color="inherit"
+          sx={{ color: "white", backgroundColor: "black" }}
+          fullWidth
+          onClick={() => signInHandler()}
+          variant="contained"
+        >
           로그인
         </Button>
       </Box>
@@ -109,6 +106,12 @@ export default function SignIn(props: Props) {
           fontWeight={800}
           ml={1}
           onClick={() => setAuthView(true)}
+          sx={{
+            cursor: "pointer",
+            "&:hover": {
+              textDecoration: "underline", // Add underline effect on hover
+            },
+          }}
         >
           회원가입
         </Typography>

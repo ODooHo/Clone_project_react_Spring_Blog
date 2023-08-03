@@ -86,7 +86,7 @@ public class AuthService {
         }
         userEntity.setUserPassword("");
 
-        String token = tokenProvider.create(userEmail);
+        String token = tokenProvider.createAccessToken(userEmail);
         Integer exprTime = 36000000;
 
         SignInResponseDto signInResponseDto = new SignInResponseDto(token,exprTime,userEntity);

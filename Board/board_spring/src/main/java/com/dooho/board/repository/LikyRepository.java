@@ -16,7 +16,9 @@ public interface LikyRepository extends JpaRepository<LikyEntity,Integer> {
 
     List<LikyEntity> findByBoardNumber(Integer boardNumber);
 
-    void deleteByBoardNumber(Integer boardNumber);
+    void deleteByLikeUserNickname(String likeUserNickname);
 
-    void deleteByLikeId(Integer likyId);
+    void deleteByLikeId(Integer likeId);
+
+    void deleteByBoardNumberAndLikeUserNickname(Integer boardNumber, String likeUserNickname);
 }

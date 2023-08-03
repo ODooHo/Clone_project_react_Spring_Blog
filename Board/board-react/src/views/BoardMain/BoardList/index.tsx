@@ -106,39 +106,55 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
                 <Button
                   fullWidth
                   variant="outlined"
-                  sx={{ my: 2 }}
+                  color="inherit"
+                  sx={{
+                    my: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "column",
+                    textAlign: "center", // 가운데 정렬을 위해 textAlign 속성 추가
+
+                  }}
                   onClick={() => onDetailClick(board.boardNumber)}
                 >
-                  <Box textAlign="center">
-                    <Box display="flex" alignItems="center">
-                      <Box
-                        width={32}
-                        height={32}
-                        borderRadius="50%"
-                        overflow="hidden"
-                        mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
-                      >
-                        <img
-                          src={`http://localhost:4000/api/images/${board.boardWriterProfile}`}
-                          width="100%"
-                          height="100%"
-                        />
-                      </Box>
-                      <Box>
-                        <Typography
-                          variant="body1"
-                          gutterBottom
-                          marginTop={"10px"}
-                          marginBottom="2px"
+                    <Typography variant="h5">{board.boardTitle}</Typography>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      mt={2}
+                      width="100%"
+                      justifyContent="center" 
+                    >
+                      <Box display="flex" alignItems="center">
+                        <Box
+                          width={32}
+                          height={32}
+                          borderRadius="50%"
+                          overflow="hidden"
+                          mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
+                          marginTop="20px"
                         >
-                          {board.boardWriterNickname}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {board.boardWriteDate}
-                        </Typography>
+                          <img
+                            src={`http://localhost:4000/api/images/${board.boardWriterProfile}`}
+                            width="100%"
+                            height="100%"
+                          />
+                        </Box>
+                        <Box>
+                          <Typography
+                            variant="body1"
+                            gutterBottom
+                            marginTop={"10px"}
+                            marginBottom="2px"
+                          >
+                            {board.boardWriterNickname}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {board.boardWriteDate}
+                          </Typography>
+                        </Box>
                       </Box>
                     </Box>
-                  </Box>
                 </Button>
               </div>
             ))}

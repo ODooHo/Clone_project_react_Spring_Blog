@@ -62,6 +62,10 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
                 width: "300px",
                 height: "300px",
                 margin: "10px",
+
+                alignItems: "center",
+                flexDirection: "column",
+                textAlign: "center", // 가운데 정렬을 위해 textAlign 속성 추가
               }}
               onClick={() => onDetailClick(board.boardNumber)}
             >

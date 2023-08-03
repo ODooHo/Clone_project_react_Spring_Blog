@@ -20,6 +20,9 @@ export default function BoardMain() {
     setCurrentBoardId(boardId);
   }
 
+  const handleSearchClick = (searchTerm : string) => {
+  }
+
 
 
   const handleDetailClick = (boardId: number) => {
@@ -33,12 +36,12 @@ export default function BoardMain() {
       <Box>
       <BoardTop3 onDetailClick={handleDetailClick} />
     </Box>
-    <Grid container spacing={2} padding={5}>
-      <Grid item xs={12} md={6} >
+    <Grid container spacing={2} padding={10}>
+      <Grid item xs={9} >
         <BoardList onDetailClick={handleDetailClick} />
       </Grid>
-      <Grid item xs={12} md={6}>
-        <PopularSearch />
+      <Grid item xs={3} >
+        <PopularSearch onSearchClick={handleSearchClick}/>
       </Grid>
     </Grid>
   </Box>

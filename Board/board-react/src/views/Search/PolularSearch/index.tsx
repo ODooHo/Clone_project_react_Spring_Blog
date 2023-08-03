@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, Typography, Box, Grid } from "@mui/material";
-import {PopularSearchList } from "../../../interfaces";
+import { PopularSearchList } from "../../../interfaces";
 import { useCookies } from "react-cookie";
-import { PopularSearchApi } from "../../../apis/searchApis";
+import { PopularSearchApi, SearchBoardApi } from "../../../apis/searchApis";
 
-export default function PopularSearch() {
-  // 무작위로 인기 검색어 리스트를 만듭니다. (임시 데이터)
-  const [popularSearches, setPopularSearches] = useState<PopularSearchList[]>([]);
+interface PopularSearchProps{
+  onSearchClick: (searchTerm : string) => void;
+}
+
+export default function PopularSearch({ onSearchClick }: PopularSearchProps) {
+  const [popularSearches, setPopularSearches] = useState<PopularSearchList[]>(
+    []
+  );
   const [cookies] = useCookies();
 
   useEffect(() => {
-    async function fetchData(){
+    async function fetchData() {
       const token = cookies.token;
-      try{
+      try {
         const response = await PopularSearchApi(token);
         const data = response.data;
         setPopularSearches(data);
-      }catch(error){
+      } catch (error) {
         console.error("게시글 가져오기 실패:", error);
         setPopularSearches([]);
       }
@@ -24,11 +29,12 @@ export default function PopularSearch() {
     fetchData();
   }, []);
 
-
+  
 
   return (
-    <Card 
-    sx={{ minWidth: 275, maxWidth: "20vw", padding: 2, marginTop: "100px" }}>
+    <Card
+      sx={{ minWidth: 275, maxWidth: "20vw", padding: 2, marginTop: "100px" }}
+    >
       <CardContent>
         <Typography variant="h5" component="div" gutterBottom>
           인기 검색어
@@ -44,7 +50,18 @@ export default function PopularSearch() {
                 bgcolor="#f0f0f0"
                 borderRadius={5}
               >
-                <Typography variant="body1" align="center">
+                <Typography
+                  variant="body1"
+                  align="center"
+                  sx={{
+                    cursor: "pointer",
+                    color: "black",
+                    "&:hover": {
+                      textDecoration: "underline", // Add underline effect on hover
+                    },
+                  }}
+                  onClick={() => onSearchClick(search.popularTerm)}
+                >
                   {search.popularTerm}
                 </Typography>
               </Box>

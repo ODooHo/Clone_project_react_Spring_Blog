@@ -54,8 +54,8 @@ export const LikyRegisterApi = async (data: any, token: string | null, index: nu
     }
 }
 
-export const deleteLikyApi = async (token: string | null, boardNumber: number) => {
-    const url = `http://localhost:4000/api/board/${boardNumber}/liky`
+export const deleteLikyApi = async (token: string | null, boardNumber: number , likeUserNickname : string) => {
+    const url = `http://localhost:4000/api/board/${boardNumber}/liky/delete/${likeUserNickname}`
     try {
         const response = await axios.get(url, {
             headers: {

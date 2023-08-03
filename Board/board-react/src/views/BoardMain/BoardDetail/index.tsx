@@ -7,8 +7,10 @@ import {
   Card,
   CardContent,
   CardMedia,
+  IconButton,
   TextField,
   Typography,
+  colors,
 } from "@mui/material";
 import CommentMain from "../../Comment";
 import { useUserStore } from "../../../stores";
@@ -24,6 +26,10 @@ import {
   deleteLikyApi,
   getLikyCountApi,
 } from "../../../apis/likyApis";
+
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+
 interface BoardDetailProps {
   onMainClick: () => void;
   onEditClick: (boardId: number) => void;
@@ -45,20 +51,22 @@ export default function BoardDetail({
   const { user } = useUserStore();
   const token = cookies.token;
   const [refresh, setRefresh] = useState(1);
+  const [isInitialMount, setIsInitialMount] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const viewIncrease = await BoardIncreaseApi(token, boardNumber);
+        if (isInitialMount) {
+          await BoardIncreaseApi(token, boardNumber);
+          setIsInitialMount(false); // 최초 마운트 이후에는 다시 실행되지 않도록 상태 변경
+        }
         const response = await BoardApi(token, boardNumber);
         const data = response.data;
         setBoardData(data);
+        setLiked(data.boardLikeCount)
         const likyResponse = await LikyApi(token, boardNumber);
         const likyData = likyResponse.data;
         setLiky(likyData);
-        const countResponse = await getLikyCountApi(token, boardNumber);
-        const countData = countResponse.data;
-        setLiked(countData);
       } catch (error) {
         console.error("게시글 가져오기 실패:", error);
         setBoardData(undefined);
@@ -91,36 +99,43 @@ export default function BoardDetail({
   };
 
   const handleLikeClick = async () => {
-    const likeUserdata = {
-      boardNumber,
-      userEmail: user.userEmail,
-      likeUserProfile: user.userProfile,
-      likeUserNickname: user.userNickname,
-    };
-    // 좋아요 버튼을 누를 때 호출되는 함수
-    try {
-      const response = await LikyRegisterApi(likeUserdata, token, boardNumber);
-      if (response) {
-        setLiked(response); // 서버에서 좋아요 여부를 다시 받아와서 업데이트
-        handleRefresh();
-      }
-    } catch (error) {
-      console.error("좋아요 가져오기 실패:", error);
-      setLiked(false);
-    }
-  };
-
-  const handleUnlikeClick = async () => {
-    try {
-      const response = await deleteLikyApi(token, boardNumber);
-      if (response && response.result) {
+    // 사용자의 닉네임을 가져옵니다.
+    const userNickname = user?.userNickname;
+    
+    // 좋아요가 눌렸는지 여부를 판단합니다.
+    const isLiked = liky.some((like) => like.likeUserNickname === userNickname);
+    
+    if (!isLiked) {
+      // 사용자가 좋아요를 누르지 않은 경우, 좋아요 등록 API를 호출합니다.
+      const likeUserdata = {
+        boardNumber,
+        userEmail: user.userEmail,
+        likeUserProfile: user.userProfile,
+        likeUserNickname: user.userNickname,
+      };
+      try {
+        const response = await LikyRegisterApi(likeUserdata, token, boardNumber);
+        if (response) {
+          setLiked(true); // 좋아요 상태를 업데이트합니다.
+          handleRefresh();
+        }
+      } catch (error) {
+        console.error("좋아요 가져오기 실패:", error);
         setLiked(false);
-        handleRefresh();
-      } else {
-        alert("좋아요 취소 실패");
       }
-    } catch (error) {
-      console.error("좋아요 취소 실패:", error);
+    } else {
+      // 사용자가 이미 좋아요를 누른 경우, 좋아요 취소 API를 호출합니다.
+      try {
+        const response = await deleteLikyApi(token, boardNumber,userNickname);
+        if (response && response.result) {
+          setLiked(false); // 좋아요 상태를 업데이트합니다.
+          handleRefresh();
+        } else {
+          alert("좋아요 취소 실패");
+        }
+      } catch (error) {
+        console.error("좋아요 취소 실패:", error);
+      }
     }
   };
   const handleEditClick = () => {
@@ -255,24 +270,22 @@ export default function BoardDetail({
                 justifyContent="space-between"
                 alignItems="center"
               >
-                {liked ? (
+                {liked? (
                   // 사용자가 좋아요를 눌렀을 경우, 좋아요 취소 버튼 표시
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleUnlikeClick}
-                  >
-                    좋아요 취소
-                  </Button>
-                ) : (
-                  // 사용자가 좋아요를 누르지 않았을 경우, 좋아요 버튼 표시
-                  <Button
-                    variant="contained"
+                  <IconButton
                     color="primary"
                     onClick={handleLikeClick}
                   >
-                    좋아요
-                  </Button>
+                    <ThumbUpAltIcon/>
+                  </IconButton>
+                ) : (
+                  // 사용자가 좋아요를 누르지 않았을 경우, 좋아요 버튼 표시
+                  <IconButton
+                  color="primary"
+                    onClick={handleLikeClick}
+                  >
+                    <ThumbUpOffAltIcon/>
+                    </IconButton>
                 )}
                 {isCurrentUserPost && (
                   <>

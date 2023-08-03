@@ -23,7 +23,6 @@ export const getImageApi = async (token: string | null, imageName: string) => {
         const response = await axios.get(url, {
             headers: {
                 Authorization: `Bearer ${token}`,
-                responseType: "blob",
             },
         });
 
@@ -34,3 +33,18 @@ export const getImageApi = async (token: string | null, imageName: string) => {
         return null;
     }
 };
+
+export const fileDownloadApi = async (token: string | null, fileName : string) => {
+    const response = await axios.get(`http://localhost:4000/api/files/${fileName}`,  {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+        },
+    }).catch((error) => null);
+    if (!response) {
+        return null;
+    }
+
+    const result = response.data;
+    return result
+}
