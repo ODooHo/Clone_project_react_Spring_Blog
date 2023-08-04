@@ -4,6 +4,7 @@ import { useCookies } from "react-cookie";
 import { useUserStore } from "../../../stores";
 import { Board, BoardItemProps } from "../../../interfaces";
 import { BoardListApi } from "../../../apis/boardApis";
+import { getImageApi } from "../../../apis/fileApis";
 
 // 인터페이스를 정의합니다.
 
@@ -18,6 +19,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
   const [cookies] = useCookies();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 5; // 한 페이지에 보여줄 게시글 수
+  const [profileImages, setProfileImages] = useState<{ [key: number]: string | null }>({});
 
   const BoardHandler = async () => {
     const token = cookies.token;
@@ -41,6 +43,35 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
   useEffect(() => {
     BoardHandler();
   }, []);
+
+
+  useEffect(() => {
+    async function fetchImages() {
+      try {
+        const token = cookies.token;
+
+        // Fetch profile images for all boards
+        const imagePromises = boardData.map(async (board) => {
+          const imageUrl = await getImageApi(token, board.boardWriterEmail);
+          return { [board.boardNumber]: imageUrl };
+        });
+
+        // Wait for all image promises to resolve
+        const imageResults = await Promise.all(imagePromises);
+
+        // Combine all image URLs into a single object
+        const images = imageResults.reduce((acc, image) => {
+          return { ...acc, ...image };
+        }, {});
+
+        setProfileImages(images);
+      } catch (error) {
+        console.error("Error fetching profile images:", error);
+      }
+    }
+
+    fetchImages();
+  }, [boardData, cookies.token]);
 
   const getPageNumbers = (totalPages: number) => {
     const pageNumbers = [];
@@ -135,7 +166,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
                           marginTop="20px"
                         >
                           <img
-                            src={`http://localhost:4000/api/images/${board.boardWriterProfile}`}
+                            src={profileImages[board.boardNumber] || "default-image-url.jpg"}
                             width="100%"
                             height="100%"
                           />

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,31 +38,26 @@ public class FileController {
 
     @GetMapping("/images/{imageName}")
     public byte[] getImage(@PathVariable String imageName)throws IOException{
-        Path imagePath = Paths.get("src/main/resources/static/img/" + imageName);
-        return Files.readAllBytes(imagePath);
+        byte[] result = fileService.getImage(imageName);
 
+        return result;
     }
+
+
+
     @GetMapping("/videos/{videoName}")
     public ResponseEntity<Resource> getVideo(@PathVariable String videoName) throws IOException {
-        Path videoPath = Paths.get("src/main/resources/static/video/" + videoName);
-        Resource videoResource = new UrlResource(videoPath.toUri());
+        ResponseEntity<Resource> result = fileService.getVideo(videoName);
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.valueOf("video/mp4")) // 비디오 타입에 맞게 설정
-                .body(videoResource);
+        return result;
     }
+
+
 
     @GetMapping("/files/{fileName}")
     public ResponseEntity<byte[]> getFile(@PathVariable String fileName) throws IOException {
-        Path filePath = Paths.get("src/main/resources/static/file/" + fileName);
-        byte[] fileData = Files.readAllBytes(filePath);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", fileName);
-        headers.setContentLength(fileData.length);
-
-        return new ResponseEntity<>(fileData, headers, HttpStatus.OK);
+        ResponseEntity<byte[]> result = fileService.getFile(fileName);
+        return result;
     }
 
 }

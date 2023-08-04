@@ -3,6 +3,7 @@ import { Box, Button, Card, Divider, Grid, Typography } from "@mui/material";
 import { Board } from "../../../interfaces";
 import { useCookies } from "react-cookie";
 import { MyPageApi } from "../../../apis/userApis";
+import { getImageApi } from "../../../apis/fileApis";
 // 인터페이스를 정의합니다.
 
 interface MainProps {
@@ -24,33 +25,45 @@ export default function Main({
   const [boardData, setBoardData] = useState<Board[]>([]); // 인터페이스를 적용하여 배열의 요소를 정확히 타입화합니다.
   const [userNickname, setUserNickname] = useState<string>("");
   const [userProfile, setUserProfile] = useState<string>("");
+  const [userEmail, setUserEmail] = useState<string>("");
   const [cookies, setCookies] = useCookies();
+  const [profileImages, setProfileImages] = useState<{ [key: number]: string | null }>({});
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const token = cookies.token;
-        const response = await MyPageApi(token);
-        const Nickname = response.data.userNickname;
-        const Profile = response.data.userProfile;
-        const data = response.data.userBoard;
-        if (data) {
-          setBoardData(data);
-          setUserNickname(Nickname);
-          setUserProfile(Profile);
-        } else {
+
+
+    useEffect(() => {
+      async function fetchData() {
+        try {
+          const token = cookies.token;
+          const response = await MyPageApi(token);
+          const Nickname = response.data.userNickname;
+          const Profile = response.data.userProfile;
+          const data = response.data.userBoard;
+          const Email = response.data.userEmail;
+          if (data) {
+            setUserEmail(userEmail);
+            setBoardData(data);
+            setUserNickname(Nickname);
+            setUserProfile(Profile);
+  
+            // 프로필 이미지를 가져와서 상태에 저장합니다.
+            const profileImageUrl = await getImageApi(token, Email);
+            setProfileImageUrl(profileImageUrl);
+          } else {
+            setUserEmail("");
+            setBoardData([]);
+            setUserNickname("");
+            setUserProfile("");
+          }
+        } catch (error) {
+          console.error("게시글 가져오기 실패:", error);
           setBoardData([]);
-          setUserNickname("");
-          setUserProfile("");
         }
-      } catch (error) {
-        console.error("게시글 가져오기 실패:", error);
-        setBoardData([]);
       }
-    }
-    fetchData();
-  }, []); // Run only once on component mount
-
+      fetchData();
+    }, [cookies.token]);
+  
   return (
     <>
       <Box display="flex" flexDirection="column" alignItems="center">
@@ -70,7 +83,7 @@ export default function Main({
               mx={1} // 수정: 이미지 좌우 여백을 위해 mx를 사용합니다.
             >
               <img
-                src={`http://localhost:4000/api/images/${userProfile}`}
+                src={profileImageUrl || "default-image-url.jpg"}
                 width="100%"
                 height="100%"
               />
@@ -163,7 +176,7 @@ export default function Main({
                           marginTop="20px"
                         >
                           <img
-                            src={`http://localhost:4000/api/images/${board.boardWriterProfile}`}
+                            src={profileImageUrl || "default-image-url.jpg"}
                             width="100%"
                             height="100%"
                           />

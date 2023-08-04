@@ -27,8 +27,14 @@ import {
   getLikyCountApi,
 } from "../../../apis/likyApis";
 
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
+import {
+  fileDownloadApi,
+  getImageApi,
+  getVideoApi,
+} from "../../../apis/fileApis";
+import { saveAs as fileSaverSaveAs } from "file-saver";
 
 interface BoardDetailProps {
   onMainClick: () => void;
@@ -47,11 +53,18 @@ export default function BoardDetail({
   const [cookies, setCookies] = useCookies();
   const [liked, setLiked] = useState<boolean>(false);
   const [liky, setLiky] = useState<Liky[]>([]);
-  const [imageURL, setImageURL] = useState<string | null>(null);
+  const [profileImages, setProfileImages] = useState<{
+    [key: number]: string | null;
+  }>({});
+  const [boardImages, setBoardImages] = useState<{
+    [key: number]: string | null;
+  }>({});
   const { user } = useUserStore();
   const token = cookies.token;
   const [refresh, setRefresh] = useState(1);
   const [isInitialMount, setIsInitialMount] = useState(true);
+  const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
+  const [isVideoUrlLoaded, setIsVideoUrlLoaded] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -63,7 +76,7 @@ export default function BoardDetail({
         const response = await BoardApi(token, boardNumber);
         const data = response.data;
         setBoardData(data);
-        setLiked(data.boardLikeCount)
+        setLiked(data.boardLikeCount);
         const likyResponse = await LikyApi(token, boardNumber);
         const likyData = likyResponse.data;
         setLiky(likyData);
@@ -76,6 +89,69 @@ export default function BoardDetail({
     }
     fetchData();
   }, [refresh]); // Run only once on component mount
+
+  useEffect(() => {
+    async function fetchProfileImage() {
+      try {
+        if (!boardData) return; // Return early if boardData is not available yet
+        const token = cookies.token;
+        const profileUrl = await getImageApi(token, boardData.boardWriterEmail);
+        setProfileImages({ [boardData.boardNumber]: profileUrl });
+
+        const imageUrl = await getImageApi(
+          token,
+          boardData.boardNumber.toString()
+        );
+        setBoardImages({ [boardData.boardNumber]: imageUrl });
+
+        const videoName = boardData.boardNumber.toString();
+        const videoBlobUrl = await getVideoApi(token, videoName);
+        
+        setVideoUrl(videoBlobUrl || undefined);
+      } catch (error) {
+        console.error("Error fetching profile image:", error);
+        setVideoUrl(undefined);
+      }
+    }
+
+    fetchProfileImage();
+
+    return () => {
+      // Clean up Blob URL when the component unmounts
+      if (videoUrl) {
+        URL.revokeObjectURL(videoUrl);
+      }
+
+      console.log(videoUrl);
+    };
+  }, [boardData,cookies.token]);
+
+  // useEffect(() => {
+  //   // ...
+
+  //   // Video Fetching Logic
+  //   const fetchVideo = async () => {
+  //     if (!boardData) return;
+  //     try {
+  //       const videoName = boardData.boardNumber.toString();
+  //       const videoBlobUrl = await getVideoApi(token, videoName);
+  //       console.log(videoBlobUrl)
+  //       setVideoUrl(videoBlobUrl || undefined);
+  //     } catch (error) {
+  //       console.error("Error fetching video:", error);
+  //       setVideoUrl(undefined);
+  //     }
+  //   };
+
+  //   fetchVideo();
+
+  //   return () => {
+  //     // Clean up Blob URL when the component unmounts
+  //     if (videoUrl) {
+  //       URL.revokeObjectURL(videoUrl);
+  //     }
+  //   };
+  // }, [videoUrl]);
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
@@ -101,10 +177,10 @@ export default function BoardDetail({
   const handleLikeClick = async () => {
     // 사용자의 닉네임을 가져옵니다.
     const userNickname = user?.userNickname;
-    
+
     // 좋아요가 눌렸는지 여부를 판단합니다.
     const isLiked = liky.some((like) => like.likeUserNickname === userNickname);
-    
+
     if (!isLiked) {
       // 사용자가 좋아요를 누르지 않은 경우, 좋아요 등록 API를 호출합니다.
       const likeUserdata = {
@@ -114,7 +190,11 @@ export default function BoardDetail({
         likeUserNickname: user.userNickname,
       };
       try {
-        const response = await LikyRegisterApi(likeUserdata, token, boardNumber);
+        const response = await LikyRegisterApi(
+          likeUserdata,
+          token,
+          boardNumber
+        );
         if (response) {
           setLiked(true); // 좋아요 상태를 업데이트합니다.
           handleRefresh();
@@ -126,7 +206,7 @@ export default function BoardDetail({
     } else {
       // 사용자가 이미 좋아요를 누른 경우, 좋아요 취소 API를 호출합니다.
       try {
-        const response = await deleteLikyApi(token, boardNumber,userNickname);
+        const response = await deleteLikyApi(token, boardNumber, userNickname);
         if (response && response.result) {
           setLiked(false); // 좋아요 상태를 업데이트합니다.
           handleRefresh();
@@ -138,6 +218,35 @@ export default function BoardDetail({
       }
     }
   };
+
+  const handleDownloadClick = async (fileName: number) => {
+    try {
+      const response = await fileDownloadApi(token, fileName);
+      console.log(response);
+
+      // Get the content type from the Blob
+      const contentType = response.type;
+      console.log(contentType);
+
+      // Create a temporary URL for the Blob
+      const fileUrl = URL.createObjectURL(response);
+
+      // Create a link element to trigger the download
+      const link = document.createElement("a");
+      link.href = fileUrl;
+
+      // Append the link to the document and click it to trigger the download
+      document.body.appendChild(link);
+      link.click();
+
+      // Remove the link from the document after the download is completed
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("File download failed:", error);
+      // Handle any errors that occur during the download process
+    }
+  };
+
   const handleEditClick = () => {
     // boardData.boardNumber를 전달하여 게시글 수정 페이지로 이동
     onEditClick(boardNumber);
@@ -161,192 +270,192 @@ export default function BoardDetail({
     boardCommentCount,
   } = boardData;
 
-  const imageUrl = `http://localhost:4000/api/images/${boardData.boardNumber}.jpg`;
-  const videoUrl = `http://localhost:4000/api/videos/${boardData.boardNumber}.mp4`;
-
   return (
     <>
-    <Card>
-      <Box display="flex" justifyContent="center" marginTop="70px">
-        <Box sx={{ maxWidth: 900, width: "100%" }}>
-          <Card>
-            <CardContent>
-              <Box textAlign="center">
-                <Typography variant="h4" gutterBottom>
-                  {boardTitle}
-                </Typography>
-              </Box>
-              <Box display="flex" alignItems="center">
-                <Box
-                  width={32}
-                  height={32}
-                  borderRadius="50%"
-                  overflow="hidden"
-                  mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
-                >
-                  <img
-                    src={`http://localhost:4000/api/images/${boardWriterProfile}`}
-                    width="100%"
-                    height="100%"
-                  />
+      <Card>
+        <Box display="flex" justifyContent="center" marginTop="70px">
+          <Box sx={{ maxWidth: 900, width: "100%" }}>
+            <Card>
+              <CardContent>
+                <Box textAlign="center">
+                  <Typography variant="h4" gutterBottom>
+                    {boardTitle}
+                  </Typography>
                 </Box>
-                <Box>
+                <Box display="flex" alignItems="center">
+                  <Box
+                    width={32}
+                    height={32}
+                    borderRadius="50%"
+                    overflow="hidden"
+                    mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
+                  >
+                    <img
+                      src={
+                        profileImages[boardData.boardNumber] ||
+                        "default-image-url.jpg"
+                      }
+                      width="100%"
+                      height="100%"
+                    />
+                  </Box>
+                  <Box>
+                    <Typography
+                      variant="body1"
+                      gutterBottom
+                      marginTop={"20px"}
+                      marginBottom="2px"
+                    >
+                      {boardWriterNickname}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {boardWriteDate}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box textAlign="center">
                   <Typography
-                    variant="body1"
+                    variant="body2"
+                    color="text.secondary"
                     gutterBottom
                     marginTop={"20px"}
-                    marginBottom="2px"
+                    sx={{ fontSize: "1.2rem", lineHeight: "1.8rem" }}
                   >
-                    {boardWriterNickname}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {boardWriteDate}
+                    {boardContent}
                   </Typography>
                 </Box>
-              </Box>
-              <Box textAlign="center">
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  gutterBottom
-                  marginTop={"20px"}
-                  sx={{ fontSize: "1.2rem", lineHeight: "1.8rem" }}
-                >
-                  {boardContent}
-                </Typography>
-              </Box>
-              <Box my={2}>
-                {/* 게시물 이미지를 보여줄 경우 */}
-                {boardImage && (
-                  <CardMedia
-                    component="img"
-                    height="auto"
-                    image={imageUrl}
-                    alt="게시물 이미지"
-                    sx={{
-                      display: "block", // Center align the image
-                      margin: "0 auto", // Center align the image
-                      maxWidth: "60%",
-                      height: "auto",
-                    }}
-                  />
-                )}
-                {/* 게시물 동영상을 보여줄 경우 */}
-                {boardVideo && (
-                  <video
-                    width="60%"
-                    controls
-                    style={{
-                      display: "block", // Center align the video
-                      margin: "0 auto", // Center align the video
-                    }}
-                  >
-                    <source src={videoUrl} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                )}
-                {/* 게시물 파일을 다운로드 링크로 보여줄 경우 */}
-                {boardFile && (
-                  <div style={{ textAlign: "center" }}>
-                    <a
-                      href={boardFile}
-                      download
-                      style={{
-                        display: "block", // Center align the link
-                        margin: "0 auto", // Center align the link
+                <Box my={2}>
+                  {/* 게시물 이미지를 보여줄 경우 */}
+                  {boardImage && (
+                    <CardMedia
+                      component="img"
+                      height="auto"
+                      image={
+                        boardImages[boardData.boardNumber] ||
+                        "default-image-url.jpg"
+                      }
+                      alt="게시물 이미지"
+                      sx={{
+                        display: "block", // Center align the image
+                        margin: "0 auto", // Center align the image
+                        maxWidth: "60%",
+                        height: "auto",
                       }}
+                    />
+                  )}
+                  {/* 게시물 동영상을 보여줄 경우 */}
+                  {boardVideo && (
+                    <div>
+                      <video
+                        width="60%"
+                        controls
+                        style={{
+                          display: "block", // Center align the video
+                          margin: "0 auto", // Center align the video
+                        }}
+                      >
+                        <source src={videoUrl || "default.mp4"} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                      <p>videoUrl: {videoUrl}</p>
+                    </div>
+                  )}
+                  {/* 게시물 파일을 다운로드 링크로 보여줄 경우 */}
+                  {boardFile && (
+                    <Typography
+                      variant="body1"
+                      color="primary"
+                      sx={{
+                        cursor: "pointer",
+                        "&:hover": {
+                          textDecoration: "underline", // Add underline effect on hover
+                        },
+                      }}
+                      onClick={() => handleDownloadClick(boardNumber)}
                     >
                       게시물 파일 다운로드
-                    </a>
-                  </div>
-                )}
-              </Box>
-              <Typography variant="body2" gutterBottom>
-                조회수: {boardClickCount} | 좋아요: {boardLikeCount} | 댓글 수:{" "}
-                {boardCommentCount}
-              </Typography>
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                {liked? (
-                  // 사용자가 좋아요를 눌렀을 경우, 좋아요 취소 버튼 표시
-                  <IconButton
-                    color="primary"
-                    onClick={handleLikeClick}
-                  >
-                    <ThumbUpAltIcon/>
-                  </IconButton>
-                ) : (
-                  // 사용자가 좋아요를 누르지 않았을 경우, 좋아요 버튼 표시
-                  <IconButton
-                  color="primary"
-                    onClick={handleLikeClick}
-                  >
-                    <ThumbUpOffAltIcon/>
+                    </Typography>
+                  )}
+                </Box>
+                <Typography variant="body2" gutterBottom>
+                  조회수: {boardClickCount} | 좋아요: {boardLikeCount} | 댓글
+                  수: {boardCommentCount}
+                </Typography>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  {liked ? (
+                    // 사용자가 좋아요를 눌렀을 경우, 좋아요 취소 버튼 표시
+                    <IconButton color="primary" onClick={handleLikeClick}>
+                      <ThumbUpAltIcon />
                     </IconButton>
-                )}
-                {isCurrentUserPost && (
-                  <>
-                    <Box display="flex" alignItems="center">
-                      <Typography
-                        variant="body2"
-                        color="primary"
-                        sx={{
-                          cursor: "pointer",
-                          color: "black",
-                          marginRight: "20px",
-                          "&:hover": {
-                            textDecoration: "underline", // Add underline effect on hover
-                          },
-                        }}
-                        onClick={handleEditClick}
-                      >
-                        게시물 수정
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="primary"
-                        sx={{
-                          cursor: "pointer",
-                          color: "black",
-                          "&:hover": {
-                            textDecoration: "underline", // Add underline effect on hover
-                          },
-                        }}
-                        onClick={handleDeleteClick}
-                      >
-                        게시물 삭제
-                      </Typography>
-                    </Box>
-                  </>
-                )}
-              </Box>
-            </CardContent>
-          </Card>
+                  ) : (
+                    // 사용자가 좋아요를 누르지 않았을 경우, 좋아요 버튼 표시
+                    <IconButton color="primary" onClick={handleLikeClick}>
+                      <ThumbUpOffAltIcon />
+                    </IconButton>
+                  )}
+                  {isCurrentUserPost && (
+                    <>
+                      <Box display="flex" alignItems="center">
+                        <Typography
+                          variant="body2"
+                          color="primary"
+                          sx={{
+                            cursor: "pointer",
+                            color: "black",
+                            marginRight: "20px",
+                            "&:hover": {
+                              textDecoration: "underline", // Add underline effect on hover
+                            },
+                          }}
+                          onClick={handleEditClick}
+                        >
+                          게시물 수정
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="primary"
+                          sx={{
+                            cursor: "pointer",
+                            color: "black",
+                            "&:hover": {
+                              textDecoration: "underline", // Add underline effect on hover
+                            },
+                          }}
+                          onClick={handleDeleteClick}
+                        >
+                          게시물 삭제
+                        </Typography>
+                      </Box>
+                    </>
+                  )}
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
         </Box>
-        
-      </Box>
-      <CommentMain boardNumber={boardNumber} />
-      <Box
-        display="flex"
-        justifyContent="flex-end"
-        sx={{
-          maxWidth: 900,
-          width: "100%",
-          margin: "10px auto", 
-        }}
-      >
-        <Button
-          variant="contained"
-          color="inherit"
-          sx={{ backgroundColor: "#ffffff", color: "#000000" }}
-          onClick={onMainClick}
+        <CommentMain boardNumber={boardNumber} />
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+          sx={{
+            maxWidth: 900,
+            width: "100%",
+            margin: "10px auto",
+          }}
         >
-          이전
-        </Button>
-      </Box>
+          <Button
+            variant="contained"
+            color="inherit"
+            sx={{ backgroundColor: "#ffffff", color: "#000000" }}
+            onClick={onMainClick}
+          >
+            이전
+          </Button>
+        </Box>
       </Card>
     </>
   );

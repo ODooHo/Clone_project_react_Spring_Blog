@@ -17,29 +17,54 @@ export const profileUploadApi = async (data: any, token: string | null) => {
 
 
 
-export const getImageApi = async (token: string | null, imageName: string) => {
-    const url = `http://localhost:4000/api/images/${imageName}.jpg`;
+export const getImageApi = async (token: string | null, imageName: string | number) => {
+    const url = `http://localhost:4000/api/images/${imageName}`;
     try {
         const response = await axios.get(url, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
+
+            responseType : 'blob'
         });
 
-        const result = response.data;
-        return result;
+        const imageUrl = URL.createObjectURL(response.data);
+        return imageUrl;
     } catch (error) {
         console.error("Error fetching board data:", error);
         return null;
     }
 };
 
-export const fileDownloadApi = async (token: string | null, fileName : string) => {
+export const getVideoApi = async (token: string | null, videoName: string | number) => {
+    const url = `http://localhost:4000/api/videos/${videoName}`;
+    try {
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+
+            responseType : "blob",
+        });
+
+        console.log(response.data)
+
+        const videoUrl = URL.createObjectURL(response.data);
+        console.log(videoUrl)
+        return videoUrl;
+    } catch (error) {
+        console.error("Error fetching board data:", error);
+        return null;
+    }
+};
+
+export const fileDownloadApi = async (token: string | null, fileName : number) => {
     const response = await axios.get(`http://localhost:4000/api/files/${fileName}`,  {
         headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
         },
+
+        responseType : 'blob'
     }).catch((error) => null);
     if (!response) {
         return null;
