@@ -64,7 +64,7 @@ export default function BoardDetail({
   const [refresh, setRefresh] = useState(1);
   const [isInitialMount, setIsInitialMount] = useState(true);
   const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
-  const [isVideoUrlLoaded, setIsVideoUrlLoaded] = useState(false);
+  const [videoflag, setVideoFlag] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -79,12 +79,32 @@ export default function BoardDetail({
         setLiked(data.boardLikeCount);
         const likyResponse = await LikyApi(token, boardNumber);
         const likyData = likyResponse.data;
-        setLiky(likyData);
+        setLiky(likyData);     
+        if (!boardData) return; // Return early if boardData is not available yet
+        const profileUrl = await getImageApi(token, boardData.boardWriterEmail);
+        setProfileImages({ [boardData.boardNumber]: profileUrl });
+
+        const imageUrl = await getImageApi(
+          token,
+          boardData.boardNumber.toString()
+        );
+        setBoardImages({ [boardData.boardNumber]: imageUrl });
+        console.log("ㅎㅇ")
+        
+        if (videoflag){
+          const videoName = boardData.boardNumber.toString();
+          const videoBlobUrl = await getVideoApi(token, videoName);
+          setVideoUrl(videoBlobUrl || undefined);
+          setVideoFlag(false);
+        }
       } catch (error) {
         console.error("게시글 가져오기 실패:", error);
         setBoardData(undefined);
         setLiky([]);
         setLiked(false);
+        setProfileImages([null]);
+        setBoardImages([null])
+        setVideoUrl(undefined);
       }
     }
     fetchData();
@@ -103,55 +123,28 @@ export default function BoardDetail({
           boardData.boardNumber.toString()
         );
         setBoardImages({ [boardData.boardNumber]: imageUrl });
-
-        const videoName = boardData.boardNumber.toString();
-        const videoBlobUrl = await getVideoApi(token, videoName);
+        console.log("ㅎㅇ")
         
-        setVideoUrl(videoBlobUrl || undefined);
+        if (videoflag){
+          const videoName = boardData.boardNumber.toString();
+          const videoBlobUrl = await getVideoApi(token, videoName);
+          setVideoUrl(videoBlobUrl || undefined);
+          setVideoFlag(false);
+        }
+
       } catch (error) {
         console.error("Error fetching profile image:", error);
-        setVideoUrl(undefined);
+        //setVideoUrl(undefined);
       }
     }
 
     fetchProfileImage();
 
-    return () => {
-      // Clean up Blob URL when the component unmounts
-      if (videoUrl) {
-        URL.revokeObjectURL(videoUrl);
-      }
 
-      console.log(videoUrl);
-    };
-  }, [boardData,cookies.token]);
 
-  // useEffect(() => {
-  //   // ...
+  }, [boardData, cookies.token]);
 
-  //   // Video Fetching Logic
-  //   const fetchVideo = async () => {
-  //     if (!boardData) return;
-  //     try {
-  //       const videoName = boardData.boardNumber.toString();
-  //       const videoBlobUrl = await getVideoApi(token, videoName);
-  //       console.log(videoBlobUrl)
-  //       setVideoUrl(videoBlobUrl || undefined);
-  //     } catch (error) {
-  //       console.error("Error fetching video:", error);
-  //       setVideoUrl(undefined);
-  //     }
-  //   };
 
-  //   fetchVideo();
-
-  //   return () => {
-  //     // Clean up Blob URL when the component unmounts
-  //     if (videoUrl) {
-  //       URL.revokeObjectURL(videoUrl);
-  //     }
-  //   };
-  // }, [videoUrl]);
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
@@ -345,7 +338,6 @@ export default function BoardDetail({
                   )}
                   {/* 게시물 동영상을 보여줄 경우 */}
                   {boardVideo && (
-                    <div>
                       <video
                         width="60%"
                         controls
@@ -353,12 +345,9 @@ export default function BoardDetail({
                           display: "block", // Center align the video
                           margin: "0 auto", // Center align the video
                         }}
+                        src={videoUrl || "default.mp4"}
                       >
-                        <source src={videoUrl || "default.mp4"} type="video/mp4" />
-                        Your browser does not support the video tag.
                       </video>
-                      <p>videoUrl: {videoUrl}</p>
-                    </div>
                   )}
                   {/* 게시물 파일을 다운로드 링크로 보여줄 경우 */}
                   {boardFile && (

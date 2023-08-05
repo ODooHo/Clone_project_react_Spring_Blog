@@ -9,6 +9,7 @@ import {
   deleteCommentApi,
   editCommentApi,
 } from "../../apis/commentApis";
+import { getImageApi } from "../../apis/fileApis";
 
 interface CommentMainProps {
   boardNumber: number;
@@ -21,6 +22,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
   const { user } = useUserStore();
   const [refresh, setRefresh] = useState(1);
   const [editStates, setEditStates] = useState<{ [key: number]: boolean }>({});
+  const [profileImages, setProfileImages] = useState<{ [key: string]: string | null }>({});
 
   // 페이지가 변경될 때마다 API를 호출하도록 useEffect 사용
   useEffect(() => {
@@ -37,6 +39,35 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
     }
     fetchData();
   }, [refresh]);
+
+  useEffect(() => {
+    async function fetchCommentImages() {
+      try {
+        const token = cookies.token;
+
+        // Fetch profile images for all comments
+        const imagePromises = comments.map(async (comment) => {
+          const imageUrl = await getImageApi(token, comment.userEmail);
+          return { [comment.commentId]: imageUrl };
+        });
+
+        // Wait for all image promises to resolve
+        const imageResults = await Promise.all(imagePromises);
+
+        // Combine all image URLs into a single object
+        const images = imageResults.reduce((acc, image) => {
+          return { ...acc, ...image };
+        }, {});
+
+        setProfileImages(images);
+      } catch (error) {
+        console.error("Error fetching profile images for comments:", error);
+      }
+    }
+
+    fetchCommentImages();
+  }, [comments, cookies.token]);
+
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
@@ -188,7 +219,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
               mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
             >
               <img
-                src={`http://localhost:4000/api/images/${comment.commentUserProfile}`}
+                src={profileImages[comment.commentId] || "default-image-url.jpg"}
                 width="100%"
                 height="100%"
               />

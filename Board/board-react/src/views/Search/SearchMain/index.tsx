@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -10,6 +10,7 @@ import { useCookies } from "react-cookie";
 import { SearchBoardApi } from "../../../apis/searchApis";
 import PopularSearch from "../PolularSearch";
 import { Grid } from "@mui/material";
+import { getImageApi } from "../../../apis/fileApis";
 
 interface SearchMainProps {
   onDetailClick: (boardId: number) => void;
@@ -25,10 +26,35 @@ export default function SearchMain({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Board[]>([]);
   const [cookies] = useCookies();
+  const [profileImages, setProfileImages] = useState<{ [key: number]: string | null }>({});
 
-  const handleSearchChange = () => {
-    //setSearchQuery(event.target.value);
-  };
+  useEffect(() => {
+    async function fetchImages() {
+      try {
+        const token = cookies.token;
+
+        // Fetch profile images for all boards
+        const imagePromises = searchResults.map(async (board) => {
+          const imageUrl = await getImageApi(token, board.boardWriterEmail);
+          return { [board.boardNumber]: imageUrl };
+        });
+
+        // Wait for all image promises to resolve
+        const imageResults = await Promise.all(imagePromises);
+
+        // Combine all image URLs into a single object
+        const images = imageResults.reduce((acc, image) => {
+          return { ...acc, ...image };
+        }, {});
+
+        setProfileImages(images);
+      } catch (error) {
+        console.error("Error fetching profile images:", error);
+      }
+    }
+
+    fetchImages();
+  }, [searchResults, cookies.token]);
 
   const handleSearch = async () => {
     const token = cookies.token;
@@ -142,7 +168,7 @@ export default function SearchMain({
                                   marginTop="20px"
                                 >
                                   <img
-                                    src={`http://localhost:4000/api/images/${board.boardWriterProfile}`}
+                                    src={profileImages[board.boardNumber] || "default-image-url.jpg"}
                                     width="100%"
                                     height="100%"
                                   />
