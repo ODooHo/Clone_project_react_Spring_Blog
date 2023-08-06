@@ -1,5 +1,12 @@
-import { Box, Button, Card, CardContent, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { PatchUserApi } from "../../../apis/userApis";
 
@@ -13,7 +20,7 @@ export default function PatchUser({
   currentPage,
 }: PatchUserProps) {
   const [userNickname, setUserNickname] = useState<string>("");
-  const [userProfile, setUserProfile] = useState<File | null>(null);
+  const [userProfile] = useState<File | null>(null);
   const [cookies] = useCookies();
 
   const patchUserHandler = async () => {
@@ -21,9 +28,6 @@ export default function PatchUser({
       userNickname,
       userProfile,
     };
-
-    
-    
 
     const token = cookies.token;
     const patchUserResponse = await PatchUserApi(data, token);
@@ -44,7 +48,9 @@ export default function PatchUser({
   return (
     <>
       <Box marginTop={"50px"} padding={5}>
-      <Typography variant="h5" marginBottom={"10px"}>프로필 변경</Typography>
+        <Typography variant="h5" marginBottom={"10px"}>
+          닉네임 변경
+        </Typography>
         <Card>
           <CardContent>
             <TextField
@@ -52,8 +58,7 @@ export default function PatchUser({
               value={userNickname}
               onChange={(e) => setUserNickname(e.target.value)}
             />
-            <Box marginTop={"10px"}>
-            </Box>
+            <Box marginTop={"10px"}></Box>
           </CardContent>
         </Card>
       </Box>

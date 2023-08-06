@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Divider, Typography } from "@mui/material";
 import { useCookies } from "react-cookie";
-import { useUserStore } from "../../../stores";
 import { Board } from "../../../interfaces";
 import { BoardTop3Api } from "../../../apis/boardApis";
 import { getImageApi } from "../../../apis/fileApis";
@@ -15,7 +14,7 @@ interface BoardTop3Props {
 export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
   // authView : true - signUp / false - signIn
   const [boardData, setBoardData] = useState<Board[]>([]); // 인터페이스를 적용하여 배열의 요소를 정확히 타입화합니다.
-  const [cookies, setCookies] = useCookies();
+  const [cookies] = useCookies();
   const [profileImages, setProfileImages] = useState<{ [key: number]: string | null }>({});
 
   useEffect(() => {

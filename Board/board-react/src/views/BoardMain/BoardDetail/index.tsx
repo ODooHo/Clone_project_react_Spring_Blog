@@ -8,9 +8,7 @@ import {
   CardContent,
   CardMedia,
   IconButton,
-  TextField,
   Typography,
-  colors,
 } from "@mui/material";
 import CommentMain from "../../Comment";
 import { useUserStore } from "../../../stores";
@@ -18,13 +16,11 @@ import {
   BoardApi,
   BoardIncreaseApi,
   BoardDeleteApi,
-  boardEditApi,
 } from "../../../apis/boardApis";
 import {
   LikyApi,
   LikyRegisterApi,
   deleteLikyApi,
-  getLikyCountApi,
 } from "../../../apis/likyApis";
 
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
@@ -34,7 +30,6 @@ import {
   getImageApi,
   getVideoApi,
 } from "../../../apis/fileApis";
-import { saveAs as fileSaverSaveAs } from "file-saver";
 
 interface BoardDetailProps {
   onMainClick: () => void;
@@ -89,7 +84,6 @@ export default function BoardDetail({
           boardData.boardNumber.toString()
         );
         setBoardImages({ [boardData.boardNumber]: imageUrl });
-        console.log("ㅎㅇ")
         
         if (videoflag){
           const videoName = boardData.boardNumber.toString();
@@ -123,7 +117,6 @@ export default function BoardDetail({
           boardData.boardNumber.toString()
         );
         setBoardImages({ [boardData.boardNumber]: imageUrl });
-        console.log("ㅎㅇ")
         
         if (videoflag){
           const videoName = boardData.boardNumber.toString();
@@ -215,28 +208,25 @@ export default function BoardDetail({
   const handleDownloadClick = async (fileName: number) => {
     try {
       const response = await fileDownloadApi(token, fileName);
-      console.log(response);
 
-      // Get the content type from the Blob
       const contentType = response.type;
-      console.log(contentType);
 
-      // Create a temporary URL for the Blob
       const fileUrl = URL.createObjectURL(response);
 
-      // Create a link element to trigger the download
       const link = document.createElement("a");
-      link.href = fileUrl;
+      link.setAttribute('href', fileUrl);
+      
+      link.setAttribute('download', fileName.toString());
+      
 
-      // Append the link to the document and click it to trigger the download
+
+
       document.body.appendChild(link);
       link.click();
 
-      // Remove the link from the document after the download is completed
       document.body.removeChild(link);
     } catch (error) {
       console.error("File download failed:", error);
-      // Handle any errors that occur during the download process
     }
   };
 
@@ -311,7 +301,8 @@ export default function BoardDetail({
                     variant="body2"
                     color="text.secondary"
                     gutterBottom
-                    marginTop={"20px"}
+                    marginTop="20px"
+                    marginBottom="50px"
                     sx={{ fontSize: "1.2rem", lineHeight: "1.8rem" }}
                   >
                     {boardContent}
@@ -333,6 +324,7 @@ export default function BoardDetail({
                         margin: "0 auto", // Center align the image
                         maxWidth: "60%",
                         height: "auto",
+                        marginBottom : "20px"
                       }}
                     />
                   )}

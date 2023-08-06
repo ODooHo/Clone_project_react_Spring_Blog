@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, Typography, Box, Grid } from "@mui/material";
 import { PopularSearchList } from "../../../interfaces";
 import { useCookies } from "react-cookie";
-import { PopularSearchApi, SearchBoardApi } from "../../../apis/searchApis";
+import { PopularSearchApi } from "../../../apis/searchApis";
 
-interface PopularSearchProps{
-  onSearchClick: (searchTerm : string) => void;
+interface PopularSearchProps {
+  onSearchClick: (searchTerm: string) => void;
 }
 
 export default function PopularSearch({ onSearchClick }: PopularSearchProps) {
@@ -28,8 +28,6 @@ export default function PopularSearch({ onSearchClick }: PopularSearchProps) {
     }
     fetchData();
   }, []);
-
-  
 
   return (
     <Card

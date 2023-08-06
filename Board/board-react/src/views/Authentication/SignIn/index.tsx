@@ -14,7 +14,7 @@ export default function SignIn(props: Props) {
   const [emailError, setEmailError] = useState<boolean>(false);
   const [passwordError, setPasswordError] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<boolean>(false);
-  const [refreshToken, setRefreshToken] = useState<string>("");
+  //const [refreshToken, setRefreshToken] = useState<string>("");
 
   const [cookies, setCookies] = useCookies();
   const { user, setUser } = useUserStore();

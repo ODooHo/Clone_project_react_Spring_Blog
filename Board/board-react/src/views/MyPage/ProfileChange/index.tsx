@@ -1,8 +1,14 @@
-import { Box, Button, Card, CardContent, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useState } from "react";
 import { useCookies } from "react-cookie";
-import { PatchUserApi } from "../../../apis/userApis";
-import {profileUploadApi } from "../../../apis/fileApis";
+import { profileUploadApi } from "../../../apis/fileApis";
 
 interface PatchUserProps {
   onMainClick: () => void;
@@ -18,15 +24,15 @@ export default function ProfileChange({
 
   const ProfileChangeHandler = async () => {
     const data = new FormData();
-    if(userProfile){
-        data.append("file",userProfile);
+    if (userProfile) {
+      data.append("file", userProfile);
     }
-    
+
     const token = cookies.token;
     const patchUserResponse = await profileUploadApi(data, token);
     const result = patchUserResponse.data;
 
-    console.log(result)
+    console.log(result);
     if (!patchUserResponse) {
       alert("프로필 수정에 실패했습니다.");
       return;
@@ -44,22 +50,20 @@ export default function ProfileChange({
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     setUserProfile(file || null);
-    console.log(file)
+    console.log(file);
   };
 
   return (
     <>
       <Box marginTop={"50px"} padding={5}>
-      <Typography variant="h5" marginBottom={"10px"}>프로필 변경</Typography>
+        <Typography variant="h5" marginBottom={"10px"}>
+          프로필 변경
+        </Typography>
         <Card>
           <CardContent>
             <Button variant="contained" component="label">
               사진 첨부
-              <input
-                type="file"
-                hidden
-                onChange={handleFileUpload}
-              />
+              <input type="file" hidden onChange={handleFileUpload} />
             </Button>
           </CardContent>
         </Card>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -26,7 +26,9 @@ export default function SearchMain({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Board[]>([]);
   const [cookies] = useCookies();
-  const [profileImages, setProfileImages] = useState<{ [key: number]: string | null }>({});
+  const [profileImages, setProfileImages] = useState<{
+    [key: number]: string | null;
+  }>({});
 
   useEffect(() => {
     async function fetchImages() {
@@ -120,97 +122,126 @@ export default function SearchMain({
             </Button>
             {searchResults.length > 0 ? (
               <>
-              <Grid container spacing={2}>
-              <Grid item xs={9}>
-                <Card
-                  sx={{
-                    minWidth: 300,
-                    maxWidth: "40vw",
-                    padding: 5,
-                    marginTop: "100px",
-                    marginLeft: "30px",
-                  }}
-                >
-                  <Box height={"50vh"} display="flex" flexDirection="column">
-                    <Box flex="1" overflow="auto">
-                      {searchResults.map((board) => (
-                        <div key={board.boardNumber}>
-                          <Button
-                            fullWidth
-                            variant="outlined"
-                            color="inherit"
-                            sx={{
-                              my: 2,
-                              display: "flex",
-                              alignItems: "center",
-                              flexDirection: "column",
-                              textAlign: "center", // 가운데 정렬을 위해 textAlign 속성 추가
-                            }}
-                            onClick={() => onDetailClick(board.boardNumber)}
-                          >
-                            <Typography variant="h5">
-                              {board.boardTitle}
-                            </Typography>
-                            <Box
-                              display="flex"
-                              alignItems="center"
-                              mt={2}
-                              width="100%"
-                              justifyContent="center"
-                            >
-                              <Box display="flex" alignItems="center">
+                <Grid container spacing={2}>
+                  <Grid item xs={9}>
+                    <Card
+                      sx={{
+                        minWidth: 300,
+                        maxWidth: "40vw",
+                        padding: 5,
+                        marginTop: "100px",
+                        marginLeft: "30px",
+                      }}
+                    >
+                      <Box
+                        height={"50vh"}
+                        display="flex"
+                        flexDirection="column"
+                      >
+                        <Box flex="1" overflow="auto">
+                          {searchResults.map((board) => (
+                            <div key={board.boardNumber}>
+                              <Button
+                                fullWidth
+                                variant="outlined"
+                                color="inherit"
+                                sx={{
+                                  my: 2,
+                                  display: "flex",
+                                  alignItems: "flex-start",
+                                  flexDirection: "column",
+                                  padding: 2,
+                                }}
+                                onClick={() => onDetailClick(board.boardNumber)}
+                              >
                                 <Box
-                                  width={32}
-                                  height={32}
-                                  borderRadius="50%"
-                                  overflow="hidden"
-                                  mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
-                                  marginTop="20px"
+                                  display="flex"
+                                  width="100%"
+                                  justifyContent="flex-start"
                                 >
-                                  <img
-                                    src={profileImages[board.boardNumber] || "default-image-url.jpg"}
-                                    width="100%"
-                                    height="100%"
-                                  />
+                                  <Box display="flex" alignItems="flex-start">
+                                    <Box
+                                      width={35}
+                                      height={35}
+                                      borderRadius="50%"
+                                      overflow="hidden"
+                                      mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
+                                    >
+                                      <img
+                                        src={
+                                          profileImages[board.boardNumber] ||
+                                          "default-image-url.jpg"
+                                        }
+                                        width="100%"
+                                        height="100%"
+                                      />
+                                    </Box>
+                                    <Box
+                                      display="flex"
+                                      flexDirection="column"
+                                      alignItems="flex-start"
+                                    >
+                                      <Typography
+                                        variant="body1"
+                                        gutterBottom
+                                        marginBottom="3px"
+                                      >
+                                        {board.boardWriterNickname}
+                                      </Typography>
+                                      <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                        marginBottom="3px"
+                                      >
+                                        {board.boardWriteDate}
+                                      </Typography>
+                                    </Box>
+                                  </Box>
                                 </Box>
-                                <Box>
-                                  <Typography
-                                    variant="body1"
-                                    gutterBottom
-                                    marginTop={"10px"}
-                                    marginBottom="2px"
-                                  >
-                                    {board.boardWriterNickname}
-                                  </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                  >
-                                    {board.boardWriteDate}
-                                  </Typography>
-                                </Box>
-                              </Box>
-                            </Box>
-                          </Button>
-                        </div>
-                      ))}
-                    </Box>
-                  </Box>
-                </Card>
-                </Grid>
-                <Grid item xs={3}>
-                <PopularSearch onSearchClick = {handleSearchClick} />
-                </Grid>
+                                <Typography
+                                  sx={{
+                                    fontWeight: "bold",
+                                    fontSize: "1.2rem", // 원하는 글꼴 크기 설정 (예: 1.2rem)
+                                  }}
+                                >
+                                  {board.boardTitle}
+                                </Typography>
+                                <Typography
+                                  variant="body1"
+                                  color="text.secondary"
+                                  sx={{ mt: 1 }}
+                                >
+                                  {board.boardContent.substr(0, 80)}
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                  sx={{ mt: 1 }}
+                                >
+                                  조회수: {board.boardClickCount} 좋아요:{" "}
+                                  {board.boardLikeCount} 댓글:{" "}
+                                  {board.boardCommentCount}
+                                </Typography>
+                              </Button>
+                            </div>
+                          ))}
+                        </Box>
+                      </Box>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <PopularSearch onSearchClick={handleSearchClick} />
+                  </Grid>
                 </Grid>
               </>
-            ): (
+            ) : (
               <>
-              <Box display= "flex" justifyContent={"space-between"}>
-              <Typography variant="body1" sx={{ mt: 2 }}>
-                검색 결과가 없습니다.
-              </Typography>
-              <PopularSearch  onSearchClick = {handleSearchClick}/>
-              </Box>
+                <Box display="flex" justifyContent={"space-between"}>
+                  <Typography variant="body1" sx={{ mt: 2 }}>
+                    검색 결과가 없습니다.
+                  </Typography>
+                  <PopularSearch onSearchClick={handleSearchClick} />
+                </Box>
               </>
             )}
           </CardContent>

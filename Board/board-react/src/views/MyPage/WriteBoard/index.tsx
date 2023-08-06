@@ -4,6 +4,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  IconButton,
   TextField,
   Typography,
 } from "@mui/material";
@@ -11,14 +12,15 @@ import React, { useState } from "react";
 import { useUserStore } from "../../../stores";
 import { useCookies } from "react-cookie";
 import { BoardRegisterApi } from "../../../apis/boardApis";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import VideoCallIcon from "@mui/icons-material/VideoCall";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 interface WriteBoardProps {
   onMainClick: () => void;
   currentPage: string;
 }
-export default function WriteBoard({
-  onMainClick,
-}: WriteBoardProps) {
+export default function WriteBoard({ onMainClick }: WriteBoardProps) {
   const [boardTitle, setBoardTitle] = useState<string>("");
   const [boardContent, setBoardContent] = useState<string>("");
   const [boardImage, setBoardImage] = useState<File | null>(null);
@@ -37,18 +39,17 @@ export default function WriteBoard({
     data.append("boardWriteDate", new Date().toISOString());
     const token = cookies.token;
 
-    if (boardImage){
-      data.append("boardImage",boardImage);
+    if (boardImage) {
+      data.append("boardImage", boardImage);
     }
-    if (boardVideo){
-      data.append("boardVideo",boardVideo);
+    if (boardVideo) {
+      data.append("boardVideo", boardVideo);
     }
-    if (boardFile){
-      data.append("boardFile",boardFile);
+    if (boardFile) {
+      data.append("boardFile", boardFile);
     }
-    
-    const uploadReponse = await BoardRegisterApi(data,token);
 
+    const uploadReponse = await BoardRegisterApi(data, token);
 
     if (!uploadReponse) {
       alert("게시글 작성(파일)에 실패했습니다.");
@@ -62,33 +63,33 @@ export default function WriteBoard({
     alert("게시글 작성에 성공했습니다!");
 
     onMainClick();
-    
   };
 
   const handleImgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     setBoardImage(file || null);
-    console.log(file)
+    console.log(file);
   };
 
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     setBoardVideo(file || null);
-    console.log(file)
+    console.log(file);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     setBoardFile(file || null);
-    console.log(file)
+    console.log(file);
   };
-
 
   return (
     <>
       <Card sx={{ padding: 5, marginTop: "50px" }}>
         <CardContent>
-          <Typography variant="h5" marginBottom={"10px"}>게시글 작성</Typography>
+          <Typography variant="h5" marginBottom={"10px"}>
+            게시글 작성
+          </Typography>
           <TextField
             label="제목"
             fullWidth
@@ -96,41 +97,50 @@ export default function WriteBoard({
             onChange={(e) => setBoardTitle(e.target.value)}
           />
           <Box marginTop="10px">
-          <TextField
-            label="내용"
-            fullWidth
-            multiline
-            rows={6}
-            value={boardContent}
-            onChange={(e) => setBoardContent(e.target.value)}
-          />
+            <TextField
+              label="내용"
+              fullWidth
+              multiline
+              rows={6}
+              value={boardContent}
+              onChange={(e) => setBoardContent(e.target.value)}
+            />
           </Box>
         </CardContent>
         <CardActions>
-          <Button variant="contained" component="label">
-            사진 첨부
+          <IconButton color="inherit">
+            <label htmlFor="img-upload">
+              <AddPhotoAlternateIcon />
+            </label>
             <input
               type="file"
+              id="img-upload"
               hidden
               onChange={handleImgUpload}
             />
-          </Button>
-          <Button variant="contained" component="label">
-            비디오 첨부
+          </IconButton>
+          <IconButton color="inherit">
+            <label htmlFor="video-upload">
+              <VideoCallIcon />
+            </label>
             <input
               type="file"
+              id="video-upload"
               hidden
               onChange={handleVideoUpload}
             />
-          </Button>
-          <Button variant="contained" component="label">
-            파일 첨부
+          </IconButton>
+          <IconButton color="inherit">
+            <label htmlFor="file-upload">
+              <AttachFileIcon />
+            </label>
             <input
               type="file"
+              id="file-upload"
               hidden
               onChange={handleFileUpload}
             />
-          </Button>
+          </IconButton>
         </CardActions>
       </Card>
       <Button

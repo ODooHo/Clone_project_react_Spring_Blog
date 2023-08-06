@@ -70,6 +70,8 @@ export const fileDownloadApi = async (token: string | null, fileName : number) =
         return null;
     }
 
+
     const result = response.data;
+    console.log(response.headers)
     return result
 }

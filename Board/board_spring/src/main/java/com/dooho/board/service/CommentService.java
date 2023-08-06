@@ -1,6 +1,5 @@
 package com.dooho.board.service;
 
-import com.dooho.board.dto.board.PatchBoardResponseDto;
 import com.dooho.board.dto.comment.CommentDto;
 import com.dooho.board.dto.ResponseDto;
 import com.dooho.board.dto.comment.PatchCommentDto;

@@ -3,7 +3,6 @@ package com.dooho.board.service;
 import com.dooho.board.dto.ResponseDto;
 import com.dooho.board.dto.board.PatchBoardDto;
 import com.dooho.board.dto.board.PatchBoardResponseDto;
-import com.dooho.board.dto.user.PatchUserDto;
 import com.dooho.board.entity.BoardEntity;
 import com.dooho.board.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;

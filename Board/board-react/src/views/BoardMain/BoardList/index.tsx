@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Card, Grid, Typography } from "@mui/material";
 import { useCookies } from "react-cookie";
-import { useUserStore } from "../../../stores";
-import { Board, BoardItemProps } from "../../../interfaces";
+import { Board} from "../../../interfaces";
 import { BoardListApi } from "../../../apis/boardApis";
 import { getImageApi } from "../../../apis/fileApis";
 
@@ -19,7 +18,9 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
   const [cookies] = useCookies();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 5; // 한 페이지에 보여줄 게시글 수
-  const [profileImages, setProfileImages] = useState<{ [key: number]: string | null }>({});
+  const [profileImages, setProfileImages] = useState<{
+    [key: number]: string | null;
+  }>({});
 
   const BoardHandler = async () => {
     const token = cookies.token;
@@ -43,7 +44,6 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
   useEffect(() => {
     BoardHandler();
   }, []);
-
 
   useEffect(() => {
     async function fetchImages() {
@@ -130,7 +130,12 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
         <Box>
           <Typography variant="h5">최신 게시글</Typography>
         </Box>
-        <Box height={"50vh"} display="flex" flexDirection="column">
+        <Box
+          height={"50vh"}
+          display="flex"
+          flexDirection="column"
+          justifyContent="flex-start"
+        >
           <Box flex="1" overflow="auto">
             {pageData.map((board) => (
               <div key={board.boardNumber}>
@@ -141,51 +146,75 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
                   sx={{
                     my: 2,
                     display: "flex",
-                    alignItems: "center",
+                    alignItems: "flex-start",
                     flexDirection: "column",
-                    textAlign: "center", // 가운데 정렬을 위해 textAlign 속성 추가
-
+                    padding: 2,
                   }}
                   onClick={() => onDetailClick(board.boardNumber)}
                 >
-                    <Typography variant="h5">{board.boardTitle}</Typography>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      mt={2}
-                      width="100%"
-                      justifyContent="center" 
-                    >
-                      <Box display="flex" alignItems="center">
-                        <Box
-                          width={32}
-                          height={32}
-                          borderRadius="50%"
-                          overflow="hidden"
-                          mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
-                          marginTop="20px"
+                  <Box display="flex" width="100%" justifyContent="flex-start">
+                    <Box display="flex" alignItems="flex-start">
+                      <Box
+                        width={35}
+                        height={35}
+                        borderRadius="50%"
+                        overflow="hidden"
+                        mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
+                      >
+                        <img
+                          src={
+                            profileImages[board.boardNumber] ||
+                            "default-image-url.jpg"
+                          }
+                          width="100%"
+                          height="100%"
+                        />
+                      </Box>
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="flex-start"
+                      >
+                        <Typography
+                          variant="body1"
+                          gutterBottom
+                          marginBottom="3px"
                         >
-                          <img
-                            src={profileImages[board.boardNumber] || "default-image-url.jpg"}
-                            width="100%"
-                            height="100%"
-                          />
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="body1"
-                            gutterBottom
-                            marginTop={"10px"}
-                            marginBottom="2px"
-                          >
-                            {board.boardWriterNickname}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {board.boardWriteDate}
-                          </Typography>
-                        </Box>
+                          {board.boardWriterNickname}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          marginBottom="3px"
+                        >
+                          {board.boardWriteDate}
+                        </Typography>
                       </Box>
                     </Box>
+                  </Box>
+                  <Typography
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: "1.2rem", // 원하는 글꼴 크기 설정 (예: 1.2rem)
+                    }}
+                  >
+                    {board.boardTitle}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{ mt: 1 }}
+                  >
+                    {board.boardContent.substr(0, 80)}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1 }}
+                  >
+                    조회수: {board.boardClickCount} 좋아요:{" "}
+                    {board.boardLikeCount} 댓글: {board.boardCommentCount}
+                  </Typography>
                 </Button>
               </div>
             ))}

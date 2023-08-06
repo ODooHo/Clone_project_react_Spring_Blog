@@ -7,6 +7,7 @@ import com.dooho.board.entity.UserEntity;
 import com.dooho.board.repository.BoardRepository;
 import com.dooho.board.repository.CommentRepository;
 import com.dooho.board.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -21,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class FileService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
@@ -99,7 +100,7 @@ public class FileService {
 
         String originalFileName = file.getOriginalFilename();
         String extension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
-        String fileName = user.getUserEmail() + "." + "jpg";
+        String fileName = user.getUserEmail() + "." + extension;
 
         uploadDir = uploadDir + "/img";
         String filePath = uploadDir + File.separator + fileName;
@@ -149,9 +150,6 @@ public class FileService {
 
         Path videoPath = Paths.get(fileDirectory + fileName);
         Resource videoResource = new UrlResource(videoPath.toUri());
-        System.out.println("videoResource = " + videoResource);
-        String videoUrl = "http://localhost:4000/videos/" + fileName;
-        System.out.println("videoUrl = " + videoUrl);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf("video/mp4")) // 비디오 타입에 맞게 설정

@@ -2,15 +2,14 @@ import {
     Box,
     Button,
     Card,
-    CardActions,
     CardContent,
     TextField,
     Typography,
   } from "@mui/material";
-  import React, { useState } from "react";
+  import  { useEffect, useState } from "react";
   import { useUserStore } from "../../../stores";
   import { useCookies } from "react-cookie";
-  import { BoardRegisterApi, boardEditApi } from "../../../apis/boardApis";
+  import { BoardApi, boardEditApi } from "../../../apis/boardApis";
 import { Board } from "../../../interfaces";
   
   interface BoardEditProps {
@@ -25,7 +24,7 @@ import { Board } from "../../../interfaces";
     currentPage,
     boardNumber
   }: BoardEditProps) {
-    const [boardData, setBoardData] = useState<Board>();
+    const [boardData, setBoardData] = useState<Board | undefined>(undefined);
     const [boardTitle, setBoardTitle] = useState<string>("");
     const [boardContent, setBoardContent] = useState<string>("");
 
@@ -33,6 +32,21 @@ import { Board } from "../../../interfaces";
     const [cookies] = useCookies();
 
     
+
+    useEffect(() => {
+      async function fetchBoardData() {
+        try {
+          const response = await BoardApi(cookies.token, boardNumber);
+          const data = response.data;
+          setBoardData(data);
+          setBoardTitle(data.boardTitle);
+          setBoardContent(data.boardContent);
+        } catch (error) {
+          console.error("게시글 가져오기 실패:", error);
+        }
+      }
+      fetchBoardData();
+    }, [boardNumber, cookies.token]);
   
     const registerHandler = async () => {
         const token = cookies.token;

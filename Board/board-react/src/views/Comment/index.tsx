@@ -1,5 +1,5 @@
-import { Box, Button, Hidden, TextField, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import { Comment } from "/Users/oduho/Desktop/Clone_SpringBoot-react-aws_Blog/Board/board-react/src/interfaces";
 import { useCookies } from "react-cookie";
 import { useUserStore } from "../../stores";
@@ -22,7 +22,9 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
   const { user } = useUserStore();
   const [refresh, setRefresh] = useState(1);
   const [editStates, setEditStates] = useState<{ [key: number]: boolean }>({});
-  const [profileImages, setProfileImages] = useState<{ [key: string]: string | null }>({});
+  const [profileImages, setProfileImages] = useState<{
+    [key: string]: string | null;
+  }>({});
 
   // 페이지가 변경될 때마다 API를 호출하도록 useEffect 사용
   useEffect(() => {
@@ -67,7 +69,6 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
 
     fetchCommentImages();
   }, [comments, cookies.token]);
-
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
@@ -219,7 +220,9 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
               mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
             >
               <img
-                src={profileImages[comment.commentId] || "default-image-url.jpg"}
+                src={
+                  profileImages[comment.commentId] || "default-image-url.jpg"
+                }
                 width="100%"
                 height="100%"
               />

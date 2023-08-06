@@ -1,4 +1,3 @@
-import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -9,7 +8,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useUserStore } from "../../stores";
 import { useCookies } from "react-cookie";
 import SearchIcon from "@mui/icons-material/Search";
-import HomeIcon from '@mui/icons-material/Home';
 
 interface NavigationProps {
   onMyPageClick: () => void;
@@ -56,15 +54,18 @@ export default function Navigation({
             <>
               <IconButton
                 color="inherit"
-                onClick={() => currentPage === "search" ? onHomeClick() : onSearchClick()} // 검색 아이콘 클릭에 따라 페이지 이동
+                onClick={() =>
+                  currentPage === "search" ? onHomeClick() : onSearchClick()
+                } // 검색 아이콘 클릭에 따라 페이지 이동
               >
-                {currentPage === "search" ? <></> : <SearchIcon />} 
+                {currentPage === "search" ? <></> : <SearchIcon />}
               </IconButton>
               <Button
                 href="#text-buttons"
                 color="inherit"
-                onClick={() => logOutHandler()}>
-                  로그아웃
+                onClick={() => logOutHandler()}
+              >
+                로그아웃
               </Button>
               <Button
                 href="#text-buttons"
@@ -77,8 +78,7 @@ export default function Navigation({
               </Button>
             </>
           ) : (
-            <>
-            </>
+            <></>
           )}
         </Toolbar>
       </AppBar>

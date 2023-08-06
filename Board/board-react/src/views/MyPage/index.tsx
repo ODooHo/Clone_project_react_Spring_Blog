@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Main from "./Main";
 import WriteBoard from "./WriteBoard";
 import PatchUser from "./PatchUser";
@@ -17,10 +17,10 @@ export default function MyPage() {
     setCurrentPage("PathUser");
   };
 
-  const handleEditClick = (boardId : number) => {
-    setCurrentPage('Edit')
+  const handleEditClick = (boardId: number) => {
+    setCurrentPage("Edit");
     setCurrentBoardId(boardId);
-  }
+  };
 
   const handleProfileClick = () => {
     setCurrentPage("Profile");
@@ -54,15 +54,18 @@ export default function MyPage() {
           currentPage={currentPage}
           boardNumber={currentBoardId}
         />
-      ) : currentPage === "Edit"? (
+      ) : currentPage === "Edit" ? (
         <BoardEdit
           onMainClick={handleMainClick}
           onDetailClick={handleDetailClick}
           currentPage={currentPage}
           boardNumber={currentBoardId}
         />
-      ): currentPage === "Profile" ? (
-        <ProfileChange onMainClick={handleMainClick} currentPage={currentPage} />
+      ) : currentPage === "Profile" ? (
+        <ProfileChange
+          onMainClick={handleMainClick}
+          currentPage={currentPage}
+        />
       ) : (
         <PatchUser onMainClick={handleMainClick} currentPage={currentPage} />
       )}

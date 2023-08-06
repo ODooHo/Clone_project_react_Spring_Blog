@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
-import React, { useState } from "react";
-import PopularSearch from "./PolularSearch";
+import { useState } from "react";
 import SearchMain from "./SearchMain";
 import BoardDetail from "../BoardMain/BoardDetail";
 
@@ -12,10 +11,10 @@ export default function Search() {
     setCurrentPage("SearchMain");
   };
 
-  const handleEditClick = (boardId : number) => {
-    setCurrentPage('Edit')
+  const handleEditClick = (boardId: number) => {
+    setCurrentPage("Edit");
     setCurrentBoardId(boardId);
-  }
+  };
 
   const handleDetailClick = (boardId: number) => {
     setCurrentBoardId(boardId); // 선택한 게시물의 ID를 상태로 관리

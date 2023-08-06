@@ -3,12 +3,8 @@ import Navigation from "../../Navigation";
 import Authentication from "../../Authentication";
 import BoardMain from "../../BoardMain";
 import { useUserStore } from "../../../stores";
-import { useCookies } from "react-cookie";
 import MyPage from "../../MyPage";
 import Search from "../../Search";
-import { ThemeProvider } from "@emotion/react";
-import { darkTheme } from "../../../utils";
-
 export default function MainLayout() {
   const { user } = useUserStore();
   const [currentPage, setCurrentPage] = useState("boardMain"); // 초기 페이지를 'boardMain'으로 설정합니다
