@@ -30,13 +30,13 @@ import { Board } from "../../../interfaces";
 
     const { user } = useUserStore();
     const [cookies] = useCookies();
-
-    
+    const token = cookies.token;
+    const refreshToken = cookies.refreshToken;    
 
     useEffect(() => {
       async function fetchBoardData() {
         try {
-          const response = await BoardApi(cookies.token, boardNumber);
+          const response =await BoardApi(token, refreshToken,boardNumber);
           const data = response.data;
           setBoardData(data);
           setBoardTitle(data.boardTitle);
@@ -56,7 +56,7 @@ import { Board } from "../../../interfaces";
             boardWriteDate : new Date().toISOString(),
         }
       
-      const response = await boardEditApi(data,token,boardNumber);
+      const response = await boardEditApi(token, refreshToken, boardNumber,data);
   
   
       if (!response) {

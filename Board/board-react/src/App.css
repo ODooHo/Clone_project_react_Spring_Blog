@@ -36,3 +36,8 @@
     transform: rotate(360deg);
   }
 }
+
+.scrollable-container {
+  overflow-x: auto; /* 수평 스크롤이 필요한 경우에만 표시 */
+  overflow-y: hidden; /* 수직 스크롤 비활성화 */
+}

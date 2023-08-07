@@ -26,12 +26,15 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
     [key: string]: string | null;
   }>({});
 
+  const token = cookies.token;
+  const refreshToken = cookies.refreshToken;
+
   // 페이지가 변경될 때마다 API를 호출하도록 useEffect 사용
   useEffect(() => {
     async function fetchData() {
       try {
         const token = cookies.token;
-        const response = await CommentListApi(token, boardNumber);
+        const response = await CommentListApi(token, refreshToken, boardNumber);
         const data = response.data;
         setComments(data);
       } catch (error) {
@@ -49,7 +52,11 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
 
         // Fetch profile images for all comments
         const imagePromises = comments.map(async (comment) => {
-          const imageUrl = await getImageApi(token, comment.userEmail);
+          const imageUrl = await getImageApi(
+            token,
+            refreshToken,
+            comment.userEmail
+          );
           return { [comment.commentId]: imageUrl };
         });
 
@@ -85,7 +92,12 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
       commentWriteDate: new Date().toISOString(),
     };
 
-    const response = await CommentRegisterApi(registerData, token, boardNumber);
+    const response = await CommentRegisterApi(
+      token,
+      refreshToken,
+      boardNumber,
+      registerData
+    );
     if (!response) {
       alert("댓글 작성에 실패했습니다.");
       return;
@@ -109,7 +121,12 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
   const handleDeleteClick = async (commentId: number) => {
     try {
       const token = cookies.token;
-      const response = await deleteCommentApi(token, boardNumber, commentId);
+      const response = await deleteCommentApi(
+        token,
+        refreshToken,
+        boardNumber,
+        commentId
+      );
       console.log(response);
       if (response && response.result) {
         alert("댓글이 삭제되었습니다.");
@@ -135,10 +152,11 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
         commentWriteDate: new Date().toISOString(),
       };
       const response = await editCommentApi(
-        data,
         token,
+        refreshToken,
         boardNumber,
-        commentId
+        commentId,
+        data
       );
       if (response && response.result) {
         alert("댓글이 수정되었습니다.");

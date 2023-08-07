@@ -21,6 +21,8 @@ export default function ProfileChange({
 }: PatchUserProps) {
   const [userProfile, setUserProfile] = useState<File | null>(null);
   const [cookies] = useCookies();
+  const token = cookies.token;
+  const refreshToken = cookies.refreshToken;
 
   const ProfileChangeHandler = async () => {
     const data = new FormData();
@@ -28,8 +30,8 @@ export default function ProfileChange({
       data.append("file", userProfile);
     }
 
-    const token = cookies.token;
-    const patchUserResponse = await profileUploadApi(data, token);
+
+    const patchUserResponse = await profileUploadApi(token, refreshToken, data);
     const result = patchUserResponse.data;
 
     console.log(result);

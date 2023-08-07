@@ -1,6 +1,7 @@
 package com.dooho.board.service;
 
 import com.dooho.board.dto.ResponseDto;
+import com.dooho.board.dto.auth.RefreshResponseDto;
 import com.dooho.board.dto.auth.SignInDto;
 import com.dooho.board.dto.auth.SignInResponseDto;
 import com.dooho.board.dto.auth.SignUpDto;
@@ -87,9 +88,27 @@ public class AuthService {
         userEntity.setUserPassword("");
 
         String token = tokenProvider.createAccessToken(userEmail);
-        Integer exprTime = 36000000;
+        Integer exprTime = 1800000;
 
-        SignInResponseDto signInResponseDto = new SignInResponseDto(token,exprTime,userEntity);
+        String refreshToken = tokenProvider.createRefreshToken(userEmail);
+        Integer refreshExprTime = 360000000;
+
+        SignInResponseDto signInResponseDto = new SignInResponseDto(token,exprTime,refreshToken,refreshExprTime,userEntity);
         return ResponseDto.setSuccess("Sign in Success",signInResponseDto);
+    }
+
+    public ResponseDto<RefreshResponseDto> getAccess(String refreshToken) {
+        try {
+            String accessToken = tokenProvider.createAccessTokenFromRefreshToken(refreshToken);
+
+            Integer exprTime = 1800000;
+
+            RefreshResponseDto refreshResponseDto = new RefreshResponseDto(accessToken, exprTime);
+
+            return ResponseDto.setSuccess("Success", refreshResponseDto);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDto.setFailed("DataBase Error!");
+        }
     }
 }

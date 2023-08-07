@@ -22,6 +22,8 @@ export default function PatchUser({
   const [userNickname, setUserNickname] = useState<string>("");
   const [userProfile] = useState<File | null>(null);
   const [cookies] = useCookies();
+  const token = cookies.token;
+  const refreshToken = cookies.refreshToken;
 
   const patchUserHandler = async () => {
     const data = {
@@ -29,8 +31,8 @@ export default function PatchUser({
       userProfile,
     };
 
-    const token = cookies.token;
-    const patchUserResponse = await PatchUserApi(data, token);
+
+    const patchUserResponse = await PatchUserApi(token,refreshToken,data);
     if (!patchUserResponse) {
       alert("프로필 수정에 실패했습니다.");
       return;

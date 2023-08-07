@@ -45,11 +45,18 @@ export default function SignIn(props: Props) {
       return;
     }
 
-    const { token, exprTime, user } = signInResponse.data;
-    const expires = new Date();
-    expires.setMilliseconds(expires.getMilliseconds() + exprTime);
+    const { token, tokenExprTime, refreshToken,refreshExprTime ,user} = signInResponse.data;
+    const tokenExpires = new Date();
+    tokenExpires.setMilliseconds(tokenExpires.getMilliseconds() + tokenExprTime);
 
-    setCookies("token", token, { expires });
+    const refreshExpires = new Date();
+    refreshExpires.setMilliseconds(refreshExpires.getMilliseconds() + refreshExprTime);
+
+    setCookies("token", token, { expires:tokenExpires});
+    setCookies("refreshToken", refreshToken, {expires :refreshExpires});
+
+    console.log(token)
+    console.log(refreshToken)
 
     setUser(user);
   };

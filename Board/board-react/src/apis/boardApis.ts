@@ -1,6 +1,8 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { getAccessTokenApi } from "./authApis";
 
-export const BoardApi = async (token: string | null, index: number) => {
+
+export const BoardApi = async (token: string | null, refreshToken: string | null, index: number) => {
     const url = `http://localhost:4000/api/board/${index}`
     try {
         const response = await axios.get(url, {
@@ -12,34 +14,98 @@ export const BoardApi = async (token: string | null, index: number) => {
         const result = response.data;
         return result;
     } catch (error) {
-        console.error("Error fetching board data:", error);
+        const axiosError = error as AxiosError;
+        if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
+            try {
+                // 액세스 토큰 만료로 인한 에러 발생 시, refreshToken을 사용하여 새로운 액세스 토큰 발급
+                const refreshResponse = await getAccessTokenApi(refreshToken)
+
+                if (refreshResponse.data) {
+                    const token = refreshResponse.data.token;
+                    // 새로 발급된 액세스 토큰으로 다시 요청 보내기
+                    const newResponse = await axios.get(url, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    const result = newResponse.data;
+                    
+                    return result;
+                } else {
+                    // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
+                    console.error("Refresh token is expired or invalid");
+                    return null;
+                }
+            } catch (refreshError) {
+                console.error("Error refreshing access token:", refreshError);
+                return null;
+            }
+
+        }
+        console.error("Error refreshing access token:", axiosError);
         return null;
     }
+
 };
 
-export const BoardIncreaseApi = async (token: string | null, index: number) => {
+export const BoardIncreaseApi = async (token: string | null, refreshToken: string | null, index: number) => {
     const url = `http://localhost:4000/api/board/${index}`
 
     const data = 1;
-    const response = await axios.post(url, data, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        },
-    }).catch((error) => null);
-    if (!response) {
+    try {
+        const response = await axios.post(url, data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
+
+        const result = response.data;
+        return result
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
+            try {
+                // 액세스 토큰 만료로 인한 에러 발생 시, refreshToken을 사용하여 새로운 액세스 토큰 발급
+                const refreshResponse = await getAccessTokenApi(refreshToken)
+
+                if (refreshResponse.data) {
+                    const token = refreshResponse.data.token;
+                    // 새로 발급된 액세스 토큰으로 다시 요청 보내기
+                    const newResponse = await axios.post(url,data, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    const result = newResponse.data;
+                    
+                    return result;
+                } else {
+                    // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
+                    console.error("Refresh token is expired or invalid");
+                    return null;
+                }
+            } catch (refreshError) {
+                console.error("Error refreshing access token:", refreshError);
+                return null;
+            }
+
+        }
+        console.error("Error refreshing access token:", axiosError);
         return null;
     }
 
-    const result = response.data;
-    return result
+
 };
 
 
 
-export const BoardTop3Api = async (token: string | null) => {
+export const BoardTop3Api = async (token: string | null, refreshToken: string | null) => {
+    const url = "http://localhost:4000/api/board/top3"
     try {
-        const response = await axios.get("http://localhost:4000/api/board/top3", {
+        const response = await axios.get(url, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -48,14 +114,44 @@ export const BoardTop3Api = async (token: string | null) => {
         const result = response.data;
         return result;
     } catch (error) {
-        console.error("Error fetching board data:", error);
+        const axiosError = error as AxiosError;
+        if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
+            try {
+                // 액세스 토큰 만료로 인한 에러 발생 시, refreshToken을 사용하여 새로운 액세스 토큰 발급
+                const refreshResponse = await getAccessTokenApi(refreshToken)
+
+                if (refreshResponse.data) {
+                    const token = refreshResponse.data.token;
+                    // 새로 발급된 액세스 토큰으로 다시 요청 보내기
+                    const newResponse = await axios.get(url, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    const result = newResponse.data;
+                    
+                    return result;
+                } else {
+                    // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
+                    console.error("Refresh token is expired or invalid");
+                    return null;
+                }
+            } catch (refreshError) {
+                console.error("Error refreshing access token:", refreshError);
+                return null;
+            }
+
+        }
+        console.error("Error refreshing access token:", axiosError);
         return null;
     }
 };
 
-export const BoardListApi = async (token: string | null) => {
+export const BoardListApi = async (token: string | null, refreshToken: string | null) => {
+    const url = "http://localhost:4000/api/board/list"
     try {
-        const response = await axios.get("http://localhost:4000/api/board/list", {
+        const response = await axios.get(url, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -64,27 +160,89 @@ export const BoardListApi = async (token: string | null) => {
         const result = response.data;
         return result;
     } catch (error) {
-        console.error("Error fetching board data:", error);
+        const axiosError = error as AxiosError;
+        if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
+            try {
+                // 액세스 토큰 만료로 인한 에러 발생 시, refreshToken을 사용하여 새로운 액세스 토큰 발급
+                const refreshResponse = await getAccessTokenApi(refreshToken)
+
+                if (refreshResponse.data) {
+                    const token = refreshResponse.data.token;
+                    // 새로 발급된 액세스 토큰으로 다시 요청 보내기
+                    const newResponse = await axios.get(url, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    const result = newResponse.data;
+                    
+                    return result;
+                } else {
+                    // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
+                    console.error("Refresh token is expired or invalid");
+                    return null;
+                }
+            } catch (refreshError) {
+                console.error("Error refreshing access token:", refreshError);
+                return null;
+            }
+
+        }
+        console.error("Error refreshing access token:", axiosError);
         return null;
     }
 };
 
-export const BoardRegisterApi = async (data: any, token: string | null) => {
-    const response = await axios.post("http://localhost:4000/api/board/register", data, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-        },
-    }).catch((error) => null);
-    if (!response) {
+export const BoardRegisterApi = async (token: string | null, refreshToken: string | null, data: any,) => {
+    const url = "http://localhost:4000/api/board/register";
+    try {
+        const response = await axios.post(url, data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
+            },
+        })
+        const result = response.data;
+        return result
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
+            try {
+                // 액세스 토큰 만료로 인한 에러 발생 시, refreshToken을 사용하여 새로운 액세스 토큰 발급
+                const refreshResponse = await getAccessTokenApi(refreshToken)
+
+                if (refreshResponse.data) {
+                    const token = refreshResponse.data.token;
+                    // 새로 발급된 액세스 토큰으로 다시 요청 보내기
+                    const newResponse = await axios.get(url, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    const result = newResponse.data;
+                    
+                    return result;
+                } else {
+                    // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
+                    console.error("Refresh token is expired or invalid");
+                    return null;
+                }
+            } catch (refreshError) {
+                console.error("Error refreshing access token:", refreshError);
+                return null;
+            }
+
+        }
+        console.error("Error refreshing access token:", axiosError);
         return null;
     }
 
-    const result = response.data;
-    return result
+
 }
 
-export const BoardDeleteApi = async (token: string | null, index: number) => {
+export const BoardDeleteApi = async (token: string | null, refreshToken: string | null, index: number) => {
     const url = `http://localhost:4000/api/board/${index}/delete`
     try {
         const response = await axios.get(url, {
@@ -96,22 +254,82 @@ export const BoardDeleteApi = async (token: string | null, index: number) => {
         const result = response.data;
         return result;
     } catch (error) {
-        console.error("Error fetching board data:", error);
+        const axiosError = error as AxiosError;
+        if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
+            try {
+                // 액세스 토큰 만료로 인한 에러 발생 시, refreshToken을 사용하여 새로운 액세스 토큰 발급
+                const refreshResponse = await getAccessTokenApi(refreshToken)
+
+                if (refreshResponse.data) {
+                    const token = refreshResponse.data.token;
+                    // 새로 발급된 액세스 토큰으로 다시 요청 보내기
+                    const newResponse = await axios.get(url, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    const result = newResponse.data;
+                    
+                    return result;
+                } else {
+                    // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
+                    console.error("Refresh token is expired or invalid");
+                    return null;
+                }
+            } catch (refreshError) {
+                console.error("Error refreshing access token:", refreshError);
+                return null;
+            }
+
+        }
+        console.error("Error refreshing access token:", axiosError);
         return null;
     }
 };
 
-export const boardEditApi = async (data: any, token: string | null , boardNumber : number) => {
-    const response = await axios.patch(`http://localhost:4000/api/board/${boardNumber}/edit`, data, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    }).catch((error) => null);
-    if (!response) {
+export const boardEditApi = async (token: string | null, refreshToken: string | null, boardNumber: number, data: any) => {
+    const url = `http://localhost:4000/api/board/${boardNumber}/edit`
+    try {
+        const response = await axios.patch(url, data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        const result = response.data;
+        return result
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
+            try {
+                // 액세스 토큰 만료로 인한 에러 발생 시, refreshToken을 사용하여 새로운 액세스 토큰 발급
+                const refreshResponse = await getAccessTokenApi(refreshToken)
+
+                if (refreshResponse.data) {
+                    const token = refreshResponse.data.token;
+                    // 새로 발급된 액세스 토큰으로 다시 요청 보내기
+                    const newResponse = await axios.get(url, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    const result = newResponse.data;
+                    return result;
+                } else {
+                    // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
+                    console.error("Refresh token is expired or invalid");
+                    return null;
+                }
+            } catch (refreshError) {
+                console.error("Error refreshing access token:", refreshError);
+                return null;
+            }
+
+        }
+        console.error("Error refreshing access token:", axiosError);
         return null;
     }
 
-    const result = response.data;
-    return result
+
 }
 

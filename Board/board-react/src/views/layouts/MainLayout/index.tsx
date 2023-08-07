@@ -23,6 +23,7 @@ export default function MainLayout() {
 
   return (
     <>
+    
       <Navigation
         onMyPageClick={handleMyPageClick}
         onHomeClick={handleHomeClick}

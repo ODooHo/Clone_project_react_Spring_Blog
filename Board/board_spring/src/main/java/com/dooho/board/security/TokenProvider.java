@@ -21,7 +21,7 @@ public class TokenProvider {
     private static final String SECURITY_KEY = "wbifpqwhjfmj!@!";
     //jwt 생성하는 메서드
     public String createAccessToken(String userEmail){
-        Date exprTime = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+        Date exprTime = Date.from(Instant.now().plus(30, ChronoUnit.MINUTES));
 
         //jwt 생성
         return Jwts.builder()
@@ -34,35 +34,35 @@ public class TokenProvider {
                 .compact();
     }
 
-//    public String createAccessTokenFromRefreshToken(String refreshToken) {
-//        try {
-//            // Refresh Token의 유효성을 검증
-//            Claims claims = Jwts.parser().setSigningKey(SECURITY_KEY).parseClaimsJws(refreshToken).getBody();
-//
-//            // Refresh Token의 주인 (userEmail) 가져오기
-//            String userEmail = claims.getSubject();
-//
-//            // 여기에서 필요한 추가 로직을 구현하여 새로운 Access Token을 생성하고 반환
-//            // 예를 들어, 데이터베이스에서 해당 유저의 정보를 조회하거나, 다른 정보를 기반으로 Access Token을 생성할 수 있습니다.
-//            String newAccessToken = createAccessToken(userEmail);
-//            return newAccessToken;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-//
-//    public String createRefreshToken(String userEmail) {
-//        Date exprTime = Date.from(Instant.now().plus(7,ChronoUnit.DAYS));
-//
-//        return Jwts.builder()
-//                .signWith(SignatureAlgorithm.HS512,SECURITY_KEY)
-//                .setSubject(userEmail)
-//                .setIssuedAt(new Date())
-//                .setExpiration(exprTime)
-//                .compact();
-//
-//    }
+    public String createAccessTokenFromRefreshToken(String refreshToken) {
+        try {
+            // Refresh Token의 유효성을 검증
+            Claims claims = Jwts.parser().setSigningKey(SECURITY_KEY).parseClaimsJws(refreshToken).getBody();
+
+            // Refresh Token의 주인 (userEmail) 가져오기
+            String userEmail = claims.getSubject();
+
+            // 여기에서 필요한 추가 로직을 구현하여 새로운 Access Token을 생성하고 반환
+            // 예를 들어, 데이터베이스에서 해당 유저의 정보를 조회하거나, 다른 정보를 기반으로 Access Token을 생성할 수 있습니다.
+            String newAccessToken = createAccessToken(userEmail);
+            return newAccessToken;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String createRefreshToken(String userEmail) {
+        Date exprTime = Date.from(Instant.now().plus(7,ChronoUnit.DAYS));
+
+        return Jwts.builder()
+                .signWith(SignatureAlgorithm.HS512,SECURITY_KEY)
+                .setSubject(userEmail)
+                .setIssuedAt(new Date())
+                .setExpiration(exprTime)
+                .compact();
+
+    }
 
     //jwt 검증
     public String validate(String token){

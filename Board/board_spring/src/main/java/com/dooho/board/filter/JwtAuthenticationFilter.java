@@ -33,22 +33,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        try{
+        try {
             String token = parseBearerToken(request);
 
-            if(token != null && !token.equalsIgnoreCase("null")){
-                //토큰을 검증하여 payload의 userEmail 가져옴
+            if (token != null && !token.equalsIgnoreCase("null")) {
+                // 토큰을 검증하여 payload의 userEmail 가져옴
                 String userEmail = tokenProvider.validate(token);
 
-                //security context에 추가할 객체
-                AbstractAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userEmail,null, AuthorityUtils.NO_AUTHORITIES);
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                //security context에 AbstractAuthenticationToken 객체를 추가해서 해당
-                // thread가 지속적으로 인증 정보를 가질 수 있도록 해줌
-                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-                securityContext.setAuthentication(authentication);
-                SecurityContextHolder.setContext(securityContext);
+                // 만료된 AccessToken이라면 Refresh Token을 이용하여 새로운 AccessToken 발급
+                if (userEmail == null) {
+                    String refreshToken = request.getHeader("refreshToken");
+                    if (refreshToken != null) {
+                        String newAccessToken = tokenProvider.createAccessTokenFromRefreshToken(refreshToken);
+
+                        if (newAccessToken != null) {
+                            userEmail = tokenProvider.validate(newAccessToken);
+                            // 새로 발급한 AccessToken으로 SecurityContext를 업데이트
+                            AbstractAuthenticationToken authentication =
+                                    new UsernamePasswordAuthenticationToken(userEmail, null, AuthorityUtils.NO_AUTHORITIES);
+                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                            securityContext.setAuthentication(authentication);
+                            SecurityContextHolder.setContext(securityContext);
+
+                            // 새로운 AccessToken을 응답 헤더에 추가
+                            response.addHeader("newAccessToken", newAccessToken);
+                        }
+                    }
+                } else {
+                    // 만료되지 않은 AccessToken이라면 SecurityContext에 추가
+                    AbstractAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userEmail, null, AuthorityUtils.NO_AUTHORITIES);
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                    securityContext.setAuthentication(authentication);
+                    SecurityContextHolder.setContext(securityContext);
+                }
             }
         } catch (Exception e){
                 e.printStackTrace();

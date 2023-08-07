@@ -1,13 +1,16 @@
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
+import CatchingPokemonRoundedIcon from "@mui/icons-material/CatchingPokemonRounded";
 import { useUserStore } from "../../stores";
 import { useCookies } from "react-cookie";
 import SearchIcon from "@mui/icons-material/Search";
+import { ThemeProvider } from "@emotion/react";
+import theme from "../../theme/theme";
 
 interface NavigationProps {
   onMyPageClick: () => void;
@@ -24,13 +27,22 @@ export default function Navigation({
 }: NavigationProps) {
   const { user, removeUser } = useUserStore();
   const [cookies, setCookies] = useCookies();
+  const [isRotated, setIsRotated] = useState(false);
 
   const logOutHandler = () => {
     setCookies("token", "");
+    setCookies("refreshToken", "");
     removeUser();
   };
 
+
+  const handleButtonClick = () => {
+    setIsRotated(!isRotated);
+  };
+
+
   return (
+    <ThemeProvider theme={theme}>
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="fixed"
@@ -39,15 +51,17 @@ export default function Navigation({
       >
         <Toolbar>
           <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
+            color="error"
+            onClick={handleButtonClick}
+            style={{
+              transform: isRotated ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s ease", // Adding transition for smooth animation
+            }}
           >
-            <MenuIcon />
+            <CatchingPokemonRoundedIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
             Blog
           </Typography>
           {user ? (
@@ -83,5 +97,6 @@ export default function Navigation({
         </Toolbar>
       </AppBar>
     </Box>
+    </ThemeProvider>
   );
 }

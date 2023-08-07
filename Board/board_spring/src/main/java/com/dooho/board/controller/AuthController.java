@@ -1,6 +1,7 @@
 package com.dooho.board.controller;
 
 import com.dooho.board.dto.ResponseDto;
+import com.dooho.board.dto.auth.RefreshResponseDto;
 import com.dooho.board.dto.auth.SignInDto;
 import com.dooho.board.dto.auth.SignInResponseDto;
 import com.dooho.board.dto.auth.SignUpDto;
@@ -31,6 +32,13 @@ public class AuthController {
     @PostMapping("/signIn")
     public ResponseDto<SignInResponseDto> signIn(@RequestBody SignInDto requestBody){
         ResponseDto<SignInResponseDto> result = authService.signIn(requestBody);
+        return result;
+    }
+
+    @PostMapping("/getAccess")
+    public ResponseDto<RefreshResponseDto> getAccess(@RequestBody String refreshToken){
+        System.out.println(refreshToken);
+        ResponseDto<RefreshResponseDto> result = authService.getAccess(refreshToken);
         return result;
     }
 }

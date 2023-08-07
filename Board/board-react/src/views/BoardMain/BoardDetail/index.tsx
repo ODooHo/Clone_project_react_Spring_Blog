@@ -56,41 +56,46 @@ export default function BoardDetail({
   }>({});
   const { user } = useUserStore();
   const token = cookies.token;
+  const refreshToken = cookies.refreshToken;
   const [refresh, setRefresh] = useState(1);
   const [isInitialMount, setIsInitialMount] = useState(true);
   const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
   const [videoflag, setVideoFlag] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
         if (isInitialMount) {
-          await BoardIncreaseApi(token, boardNumber);
+          await BoardIncreaseApi(token, refreshToken,boardNumber);
           setIsInitialMount(false); // 최초 마운트 이후에는 다시 실행되지 않도록 상태 변경
         }
-        const response = await BoardApi(token, boardNumber);
+        const response = await BoardApi(token, refreshToken,boardNumber);
         const data = response.data;
         setBoardData(data);
         setLiked(data.boardLikeCount);
-        const likyResponse = await LikyApi(token, boardNumber);
+        const likyResponse = await LikyApi(token, refreshToken, boardNumber);
         const likyData = likyResponse.data;
-        setLiky(likyData);     
+        setLiky(likyData);   
+      
         if (!boardData) return; // Return early if boardData is not available yet
-        const profileUrl = await getImageApi(token, boardData.boardWriterEmail);
+        const profileUrl = await getImageApi(token,refreshToken, boardData.boardWriterEmail);
         setProfileImages({ [boardData.boardNumber]: profileUrl });
-
         const imageUrl = await getImageApi(
           token,
+          refreshToken,
           boardData.boardNumber.toString()
         );
-        setBoardImages({ [boardData.boardNumber]: imageUrl });
+        setBoardImages({ [boardData.boardNumber]: imageUrl});
         
         if (videoflag){
           const videoName = boardData.boardNumber.toString();
-          const videoBlobUrl = await getVideoApi(token, videoName);
+          const videoBlobUrl = await getVideoApi(token, refreshToken, videoName);
           setVideoUrl(videoBlobUrl || undefined);
           setVideoFlag(false);
         }
+        
+
       } catch (error) {
         console.error("게시글 가져오기 실패:", error);
         setBoardData(undefined);
@@ -100,42 +105,14 @@ export default function BoardDetail({
         setBoardImages([null])
         setVideoUrl(undefined);
       }
+
     }
     fetchData();
   }, [refresh]); // Run only once on component mount
 
-  useEffect(() => {
-    async function fetchProfileImage() {
-      try {
-        if (!boardData) return; // Return early if boardData is not available yet
-        const token = cookies.token;
-        const profileUrl = await getImageApi(token, boardData.boardWriterEmail);
-        setProfileImages({ [boardData.boardNumber]: profileUrl });
-
-        const imageUrl = await getImageApi(
-          token,
-          boardData.boardNumber.toString()
-        );
-        setBoardImages({ [boardData.boardNumber]: imageUrl });
-        
-        if (videoflag){
-          const videoName = boardData.boardNumber.toString();
-          const videoBlobUrl = await getVideoApi(token, videoName);
-          setVideoUrl(videoBlobUrl || undefined);
-          setVideoFlag(false);
-        }
-
-      } catch (error) {
-        console.error("Error fetching profile image:", error);
-        //setVideoUrl(undefined);
-      }
-    }
-
-    fetchProfileImage();
-
-
-
-  }, [boardData, cookies.token]);
+  
+  
+  
 
 
 
@@ -147,7 +124,7 @@ export default function BoardDetail({
 
   const handleDeleteClick = async () => {
     try {
-      const response = await BoardDeleteApi(token, boardNumber);
+      const response = await BoardDeleteApi(token,refreshToken, boardNumber);
       console.log(response);
       if (response && response.result) {
         alert("게시물이 삭제되었습니다.");
@@ -176,10 +153,11 @@ export default function BoardDetail({
         likeUserNickname: user.userNickname,
       };
       try {
-        const response = await LikyRegisterApi(
-          likeUserdata,
+        const response = await LikyRegisterApi(   
           token,
-          boardNumber
+          refreshToken,
+          boardNumber,
+          likeUserdata
         );
         if (response) {
           setLiked(true); // 좋아요 상태를 업데이트합니다.
@@ -192,7 +170,7 @@ export default function BoardDetail({
     } else {
       // 사용자가 이미 좋아요를 누른 경우, 좋아요 취소 API를 호출합니다.
       try {
-        const response = await deleteLikyApi(token, boardNumber, userNickname);
+        const response = await deleteLikyApi(token, refreshToken, boardNumber, userNickname);
         if (response && response.result) {
           setLiked(false); // 좋아요 상태를 업데이트합니다.
           handleRefresh();
@@ -207,7 +185,7 @@ export default function BoardDetail({
 
   const handleDownloadClick = async (fileName: number) => {
     try {
-      const response = await fileDownloadApi(token, fileName);
+      const response = await fileDownloadApi(token,refreshToken, fileName);
 
       const contentType = response.type;
 
@@ -253,6 +231,8 @@ export default function BoardDetail({
     boardCommentCount,
   } = boardData;
 
+  const defaultImage = "default-image.png";
+
   return (
     <>
       <Card>
@@ -276,7 +256,7 @@ export default function BoardDetail({
                     <img
                       src={
                         profileImages[boardData.boardNumber] ||
-                        "default-image-url.jpg"
+                        defaultImage
                       }
                       width="100%"
                       height="100%"
@@ -316,7 +296,7 @@ export default function BoardDetail({
                       height="auto"
                       image={
                         boardImages[boardData.boardNumber] ||
-                        "default-image-url.jpg"
+                        undefined
                       }
                       alt="게시물 이미지"
                       sx={{
@@ -337,7 +317,7 @@ export default function BoardDetail({
                           display: "block", // Center align the video
                           margin: "0 auto", // Center align the video
                         }}
-                        src={videoUrl || "default.mp4"}
+                        src={videoUrl || undefined}
                       >
                       </video>
                   )}

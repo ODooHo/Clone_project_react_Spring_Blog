@@ -38,6 +38,7 @@ export default function WriteBoard({ onMainClick }: WriteBoardProps) {
     data.append("boardWriterNickname", user.userNickname);
     data.append("boardWriteDate", new Date().toISOString());
     const token = cookies.token;
+    const refreshToken = cookies.refreshToken;
 
     if (boardImage) {
       data.append("boardImage", boardImage);
@@ -49,7 +50,7 @@ export default function WriteBoard({ onMainClick }: WriteBoardProps) {
       data.append("boardFile", boardFile);
     }
 
-    const uploadReponse = await BoardRegisterApi(data, token);
+    const uploadReponse = await BoardRegisterApi(token, refreshToken, data);
 
     if (!uploadReponse) {
       alert("게시글 작성(파일)에 실패했습니다.");

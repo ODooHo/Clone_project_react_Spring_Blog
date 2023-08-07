@@ -29,15 +29,19 @@ export default function SearchMain({
   const [profileImages, setProfileImages] = useState<{
     [key: number]: string | null;
   }>({});
+  const token = cookies.token;
+  const refreshToken = cookies.refreshToken;
 
   useEffect(() => {
     async function fetchImages() {
       try {
-        const token = cookies.token;
-
         // Fetch profile images for all boards
         const imagePromises = searchResults.map(async (board) => {
-          const imageUrl = await getImageApi(token, board.boardWriterEmail);
+          const imageUrl = await getImageApi(
+            token,
+            refreshToken,
+            board.boardWriterEmail
+          );
           return { [board.boardNumber]: imageUrl };
         });
 
@@ -65,7 +69,7 @@ export default function SearchMain({
       popularTerm: searchQuery,
     };
     try {
-      const response = await SearchBoardApi(data, token);
+      const response = await SearchBoardApi(token, refreshToken, data);
       const responseData = response.data;
       setSearchResults(responseData);
       if (!response) {
@@ -86,7 +90,7 @@ export default function SearchMain({
     };
     try {
       // 검색 결과를 가져오는 API를 호출하고, 검색어를 파라미터로 전달합니다.
-      const response = await SearchBoardApi(data, token);
+      const response = await SearchBoardApi(token, refreshToken, data);
       const searchData = response.data;
       setSearchResults(searchData); // 예시: 검색 결과를 state에 저장하는 경우
       if (!response) {

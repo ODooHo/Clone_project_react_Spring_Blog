@@ -13,12 +13,13 @@ export default function PopularSearch({ onSearchClick }: PopularSearchProps) {
     []
   );
   const [cookies] = useCookies();
+  const token = cookies.token;
+  const refreshToken = cookies.refreshToken;
 
   useEffect(() => {
     async function fetchData() {
-      const token = cookies.token;
       try {
-        const response = await PopularSearchApi(token);
+        const response = await PopularSearchApi(token,refreshToken);
         const data = response.data;
         setPopularSearches(data);
       } catch (error) {

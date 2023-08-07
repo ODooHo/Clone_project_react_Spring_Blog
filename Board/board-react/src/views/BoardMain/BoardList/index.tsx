@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Card, Grid, Typography } from "@mui/material";
 import { useCookies } from "react-cookie";
-import { Board} from "../../../interfaces";
+import { Board } from "../../../interfaces";
 import { BoardListApi } from "../../../apis/boardApis";
 import { getImageApi } from "../../../apis/fileApis";
 
@@ -21,12 +21,12 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
   const [profileImages, setProfileImages] = useState<{
     [key: number]: string | null;
   }>({});
+  const token = cookies.token;
+  const refreshToken = cookies.refreshToken;
 
   const BoardHandler = async () => {
-    const token = cookies.token;
-
     try {
-      const response = await BoardListApi(token);
+      const response = await BoardListApi(token, refreshToken);
       const data = response.data;
       setBoardData(data);
     } catch (error) {
@@ -52,7 +52,11 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
 
         // Fetch profile images for all boards
         const imagePromises = boardData.map(async (board) => {
-          const imageUrl = await getImageApi(token, board.boardWriterEmail);
+          const imageUrl = await getImageApi(
+            token,
+            refreshToken,
+            board.boardWriterEmail
+          );
           return { [board.boardNumber]: imageUrl };
         });
 
@@ -116,6 +120,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
 
   const pageData = getPageData();
 
+  const defaultImage = "default-image.png";
   return (
     <>
       <Card
@@ -131,7 +136,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
           <Typography variant="h5">최신 게시글</Typography>
         </Box>
         <Box
-          height={"50vh"}
+          height={"70vh"}
           display="flex"
           flexDirection="column"
           justifyContent="flex-start"
@@ -162,10 +167,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
                         mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
                       >
                         <img
-                          src={
-                            profileImages[board.boardNumber] ||
-                            "default-image-url.jpg"
-                          }
+                          src={profileImages[board.boardNumber] || defaultImage}
                           width="100%"
                           height="100%"
                         />
@@ -192,29 +194,35 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
                       </Box>
                     </Box>
                   </Box>
-                  <Typography
-                    sx={{
-                      fontWeight: "bold",
-                      fontSize: "1.2rem", // 원하는 글꼴 크기 설정 (예: 1.2rem)
-                    }}
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="flex-start"
                   >
-                    {board.boardTitle}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    sx={{ mt: 1 }}
-                  >
-                    {board.boardContent.substr(0, 80)}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mt: 1 }}
-                  >
-                    조회수: {board.boardClickCount} 좋아요:{" "}
-                    {board.boardLikeCount} 댓글: {board.boardCommentCount}
-                  </Typography>
+                    <Typography
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "1.2rem", // 원하는 글꼴 크기 설정 (예: 1.2rem)
+                      }}
+                    >
+                      {board.boardTitle}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      color="text.secondary"
+                      sx={{ mt: 1 }}
+                    >
+                      {board.boardContent.slice(0, 80)}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mt: 1 }}
+                    >
+                      조회수: {board.boardClickCount} 좋아요:{" "}
+                      {board.boardLikeCount} 댓글: {board.boardCommentCount}
+                    </Typography>
+                  </Box>
                 </Button>
               </div>
             ))}
