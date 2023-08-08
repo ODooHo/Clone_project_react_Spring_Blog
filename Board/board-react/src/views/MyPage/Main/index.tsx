@@ -3,7 +3,7 @@ import { Box, Button, Card, IconButton, Typography } from "@mui/material";
 import { Board } from "../../../interfaces";
 import { useCookies } from "react-cookie";
 import { MyPageApi } from "../../../apis/userApis";
-import { getImageApi } from "../../../apis/fileApis";
+import { getImageApi, getProfileApi } from "../../../apis/fileApis";
 import EditIcon from "@mui/icons-material/Edit";
 import PersonIcon from "@mui/icons-material/Person";
 // 인터페이스를 정의합니다.
@@ -49,7 +49,7 @@ export default function Main({
           setUserProfile(Profile);
 
           // 프로필 이미지를 가져와서 상태에 저장합니다.
-          const profileImageUrl = await getImageApi(token, refreshToken, Email);
+          const profileImageUrl = await getProfileApi(token, refreshToken, Email);
           setProfileImageUrl(profileImageUrl);
         } else {
           setUserEmail("");

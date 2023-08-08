@@ -55,8 +55,6 @@ export default function SignIn(props: Props) {
     setCookies("token", token, { expires:tokenExpires});
     setCookies("refreshToken", refreshToken, {expires :refreshExpires});
 
-    console.log(token)
-    console.log(refreshToken)
 
     setUser(user);
   };

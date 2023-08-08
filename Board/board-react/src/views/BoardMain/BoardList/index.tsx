@@ -3,7 +3,7 @@ import { Box, Button, Card, Grid, Typography } from "@mui/material";
 import { useCookies } from "react-cookie";
 import { Board } from "../../../interfaces";
 import { BoardListApi } from "../../../apis/boardApis";
-import { getImageApi } from "../../../apis/fileApis";
+import { getImageApi, getProfileApi } from "../../../apis/fileApis";
 
 // 인터페이스를 정의합니다.
 
@@ -52,7 +52,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
 
         // Fetch profile images for all boards
         const imagePromises = boardData.map(async (board) => {
-          const imageUrl = await getImageApi(
+          const imageUrl = await getProfileApi(
             token,
             refreshToken,
             board.boardWriterEmail

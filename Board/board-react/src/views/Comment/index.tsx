@@ -9,7 +9,7 @@ import {
   deleteCommentApi,
   editCommentApi,
 } from "../../apis/commentApis";
-import { getImageApi } from "../../apis/fileApis";
+import { getImageApi, getProfileApi } from "../../apis/fileApis";
 
 interface CommentMainProps {
   boardNumber: number;
@@ -52,7 +52,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
 
         // Fetch profile images for all comments
         const imagePromises = comments.map(async (comment) => {
-          const imageUrl = await getImageApi(
+          const imageUrl = await getProfileApi(
             token,
             refreshToken,
             comment.userEmail
@@ -172,6 +172,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
       console.error("댓글 수정 실패:", error);
     }
   };
+  const defaultImage = "default-image.png";
 
   return (
     <>
@@ -239,7 +240,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
             >
               <img
                 src={
-                  profileImages[comment.commentId] || "default-image-url.jpg"
+                  profileImages[comment.commentId] || defaultImage
                 }
                 width="100%"
                 height="100%"

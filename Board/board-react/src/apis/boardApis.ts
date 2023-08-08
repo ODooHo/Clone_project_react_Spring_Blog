@@ -215,7 +215,7 @@ export const BoardRegisterApi = async (token: string | null, refreshToken: strin
                 if (refreshResponse.data) {
                     const token = refreshResponse.data.token;
                     // 새로 발급된 액세스 토큰으로 다시 요청 보내기
-                    const newResponse = await axios.get(url, {
+                    const newResponse = await axios.post(url, data,{
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },

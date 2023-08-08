@@ -38,6 +38,16 @@ public class FileService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    @Value("${default.image.extension}")
+    private String defaultImageExtension;
+
+    @Value("${default.video.extension}")
+    private String defaultVideoExtension;
+
+    @Value("${default.file.extension}")
+    private String defaultFileExtension;
+
+
     @Autowired
     public FileService(UserRepository userRepository, BoardRepository boardRepository, CommentRepository commentRepository) {
         this.userRepository = userRepository;
@@ -129,15 +139,72 @@ public class FileService {
     }
 
 
-    public byte[] getImage(String imageName) throws IOException {
+    public ResponseEntity<byte[]> getProfileImage(String imageName) throws IOException {
         String fileDirectory = "src/main/resources/static/img/";
+        String defaultImageName = "default-image";
+        String defaultExtension = ".png"; // 기본 이미지 확장자 설정
 
-        String fileName = imageName + getExtension(fileDirectory, imageName);
+        String extension = getExtension(fileDirectory, imageName);
+        String fileName = imageName + extension;
+
+        if (!Files.exists(Paths.get(fileDirectory + fileName))) {
+            fileName = defaultImageName + defaultExtension;
+        }
 
         Path imagePath = Paths.get(fileDirectory + fileName);
 
-        return Files.readAllBytes(imagePath);
+        byte[] imageData = Files.readAllBytes(imagePath);
+
+        HttpHeaders headers = new HttpHeaders();
+        MediaType mediaType = MediaType.IMAGE_JPEG;
+
+        if (extension.equalsIgnoreCase(".jpg") || extension.equalsIgnoreCase(".jpeg")) {
+            mediaType = MediaType.IMAGE_JPEG;
+        } else if (extension.equalsIgnoreCase(".png")) {
+            mediaType = MediaType.IMAGE_PNG;
+        }
+
+        headers.setContentType(mediaType); // 이미지 타입에 맞게 설정
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(imageData);
     }
+
+
+
+
+    public ResponseEntity<byte[]> getImage(String imageName) throws IOException {
+        String fileDirectory = "src/main/resources/static/img/";
+
+        String extension = getExtension(fileDirectory, imageName);
+        String fileName = imageName + extension;
+        Path imagePath = Paths.get(fileDirectory + fileName);
+
+        if (!Files.exists(imagePath)) {
+            // 파일이 존재하지 않을 경우 빈 응답을 반환합니다.
+            return ResponseEntity.ok().body(null);
+        }
+
+        byte[] imageData = Files.readAllBytes(imagePath);
+
+        HttpHeaders headers = new HttpHeaders();
+        MediaType mediaType = MediaType.IMAGE_JPEG;
+
+        if (extension.equalsIgnoreCase(".jpg") || extension.equalsIgnoreCase(".jpeg")) {
+            mediaType = MediaType.IMAGE_JPEG;
+        } else if (extension.equalsIgnoreCase(".png")) {
+            mediaType = MediaType.IMAGE_PNG;
+        }
+
+        headers.setContentType(mediaType); // 이미지 타입에 맞게 설정
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(imageData);
+    }
+
+
 
 
 
@@ -145,10 +212,16 @@ public class FileService {
     public ResponseEntity<Resource> getVideo(String videoName) throws IOException {
 
         String fileDirectory = "src/main/resources/static/video/";
+        String extension = getExtension(fileDirectory, videoName);
 
-        String fileName = videoName + getExtension(fileDirectory, videoName);
+        String fileName = videoName + extension;
 
         Path videoPath = Paths.get(fileDirectory + fileName);
+
+        if (!Files.exists(videoPath)) {
+            // 파일이 존재하지 않으면 클라이언트에게 오류를 응답합니다.
+            return ResponseEntity.ok().body(null);
+        }
         Resource videoResource = new UrlResource(videoPath.toUri());
 
         return ResponseEntity.ok()
@@ -160,8 +233,13 @@ public class FileService {
         // 파일이 저장된 디렉토리 경로
         String fileDirectory = "src/main/resources/static/file/";
 
+        String extension = getExtension(fileDirectory, fileId);
+        if (extension.isEmpty()) {
+            extension = defaultFileExtension;
+        }
+
         // 파일의 확장자를 추출하여 파일 이름을 만듭니다.
-        String fileName = fileId + getExtension(fileDirectory, fileId);
+        String fileName = fileId + extension;
 
         // 원본 파일이 존재하는지 확인합니다.
         Path filePath = Paths.get(fileDirectory + fileName);
@@ -169,6 +247,7 @@ public class FileService {
             // 파일이 존재하지 않으면 클라이언트에게 오류를 응답합니다.
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+
 
         // 모든 파일의 MIME 타입을 "application/octet-stream"으로 설정하여 다운로드 가능하게 합니다.
         HttpHeaders headers = new HttpHeaders();
@@ -188,7 +267,12 @@ public class FileService {
         File folder = new File(fileDirectory);
 
         FilenameFilter filter = (dir, name) -> {
-            return name.startsWith(fileId);
+            try{
+                return name.startsWith(fileId);
+            }catch(Exception e){
+                e.printStackTrace();
+                return false;
+            }
         };
 
         String[] files = folder.list(filter);

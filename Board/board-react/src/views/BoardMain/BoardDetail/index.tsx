@@ -28,6 +28,7 @@ import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import {
   fileDownloadApi,
   getImageApi,
+  getProfileApi,
   getVideoApi,
 } from "../../../apis/fileApis";
 
@@ -47,7 +48,6 @@ export default function BoardDetail({
   const [boardData, setBoardData] = useState<Board | undefined>(undefined);
   const [cookies, setCookies] = useCookies();
   const [liked, setLiked] = useState<boolean>(false);
-  const [liky, setLiky] = useState<Liky[]>([]);
   const [profileImages, setProfileImages] = useState<{
     [key: number]: string | null;
   }>({});
@@ -60,61 +60,61 @@ export default function BoardDetail({
   const [refresh, setRefresh] = useState(1);
   const [isInitialMount, setIsInitialMount] = useState(true);
   const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
-  const [videoflag, setVideoFlag] = useState(true);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
         if (isInitialMount) {
-          await BoardIncreaseApi(token, refreshToken,boardNumber);
+          await BoardIncreaseApi(token, refreshToken, boardNumber);
           setIsInitialMount(false); // 최초 마운트 이후에는 다시 실행되지 않도록 상태 변경
         }
-        const response = await BoardApi(token, refreshToken,boardNumber);
-        const data = response.data;
+
+        const [boardResponse, likyResponse] = await Promise.all([
+          BoardApi(token, refreshToken, boardNumber),
+          LikyApi(token, refreshToken, boardNumber),
+        ]);
+        const data = boardResponse.data;
         setBoardData(data);
         setLiked(data.boardLikeCount);
-        const likyResponse = await LikyApi(token, refreshToken, boardNumber);
         const likyData = likyResponse.data;
-        setLiky(likyData);   
-      
-        if (!boardData) return; // Return early if boardData is not available yet
-        const profileUrl = await getImageApi(token,refreshToken, boardData.boardWriterEmail);
-        setProfileImages({ [boardData.boardNumber]: profileUrl });
-        const imageUrl = await getImageApi(
-          token,
-          refreshToken,
-          boardData.boardNumber.toString()
+        const userLiked = likyResponse.data.some(
+          (like: Liky) => like.userEmail === user?.userEmail
         );
-        setBoardImages({ [boardData.boardNumber]: imageUrl});
-        
-        if (videoflag){
-          const videoName = boardData.boardNumber.toString();
-          const videoBlobUrl = await getVideoApi(token, refreshToken, videoName);
-          setVideoUrl(videoBlobUrl || undefined);
-          setVideoFlag(false);
-        }
-        
-
+        setLiked(userLiked);
       } catch (error) {
         console.error("게시글 가져오기 실패:", error);
         setBoardData(undefined);
-        setLiky([]);
         setLiked(false);
-        setProfileImages([null]);
-        setBoardImages([null])
-        setVideoUrl(undefined);
-      }
 
+      }
     }
     fetchData();
   }, [refresh]); // Run only once on component mount
 
-  
-  
-  
+  useEffect(() => {
+    async function fetchMedia(){
+      try{
+        if (!boardData) return; // Return early if boardData is not available yet
 
+        const videoName = boardData.boardNumber.toString();
+        const [profileUrl, imageUrl, videoUrl] = await Promise.all([
+          getProfileApi(token, refreshToken, boardData.boardWriterEmail),
+          getImageApi(token, refreshToken, boardData.boardNumber.toString()),
+          getVideoApi(token, refreshToken, videoName),
+        ]);
+        setProfileImages({ [boardData.boardNumber]: profileUrl });
+        setBoardImages({ [boardData.boardNumber]: imageUrl });
 
+        setVideoUrl(videoUrl || undefined);
+      }catch (error) {
+        console.error("게시글 가져오기 실패:", error);
+        setProfileImages([null]);
+        setBoardImages([null]);
+        setVideoUrl(undefined);
+      }
+    }
+    fetchMedia();
+  },[boardData?.boardContent, boardData?.boardCommentCount, token])
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
@@ -124,8 +124,7 @@ export default function BoardDetail({
 
   const handleDeleteClick = async () => {
     try {
-      const response = await BoardDeleteApi(token,refreshToken, boardNumber);
-      console.log(response);
+      const response = await BoardDeleteApi(token, refreshToken, boardNumber);
       if (response && response.result) {
         alert("게시물이 삭제되었습니다.");
         onMainClick();
@@ -137,67 +136,42 @@ export default function BoardDetail({
     }
   };
 
-  const handleLikeClick = async () => {
-    // 사용자의 닉네임을 가져옵니다.
-    const userNickname = user?.userNickname;
+  
+const handleLikeClick = async () => {
+  try {
+    const userLiked = liked;
 
-    // 좋아요가 눌렸는지 여부를 판단합니다.
-    const isLiked = liky.some((like) => like.likeUserNickname === userNickname);
-
-    if (!isLiked) {
-      // 사용자가 좋아요를 누르지 않은 경우, 좋아요 등록 API를 호출합니다.
+    if (!userLiked) {
       const likeUserdata = {
         boardNumber,
         userEmail: user.userEmail,
         likeUserProfile: user.userProfile,
         likeUserNickname: user.userNickname,
       };
-      try {
-        const response = await LikyRegisterApi(   
-          token,
-          refreshToken,
-          boardNumber,
-          likeUserdata
-        );
-        if (response) {
-          setLiked(true); // 좋아요 상태를 업데이트합니다.
-          handleRefresh();
-        }
-      } catch (error) {
-        console.error("좋아요 가져오기 실패:", error);
-        setLiked(false);
-      }
+      await LikyRegisterApi(token, refreshToken, boardNumber, likeUserdata);
     } else {
-      // 사용자가 이미 좋아요를 누른 경우, 좋아요 취소 API를 호출합니다.
-      try {
-        const response = await deleteLikyApi(token, refreshToken, boardNumber, userNickname);
-        if (response && response.result) {
-          setLiked(false); // 좋아요 상태를 업데이트합니다.
-          handleRefresh();
-        } else {
-          alert("좋아요 취소 실패");
-        }
-      } catch (error) {
-        console.error("좋아요 취소 실패:", error);
-      }
+      await deleteLikyApi(token, refreshToken, boardNumber, user.userNickname);
     }
-  };
+
+    setLiked(!userLiked); // 좋아요 상태를 토글
+    handleRefresh();
+  } catch (error) {
+    console.error("좋아요 처리 실패:", error);
+  }
+};
 
   const handleDownloadClick = async (fileName: number) => {
     try {
-      const response = await fileDownloadApi(token,refreshToken, fileName);
+      const response = await fileDownloadApi(token, refreshToken, fileName);
 
       const contentType = response.type;
 
       const fileUrl = URL.createObjectURL(response);
 
       const link = document.createElement("a");
-      link.setAttribute('href', fileUrl);
-      
-      link.setAttribute('download', fileName.toString());
-      
+      link.setAttribute("href", fileUrl);
 
-
+      link.setAttribute("download", fileName.toString());
 
       document.body.appendChild(link);
       link.click();
@@ -254,10 +228,7 @@ export default function BoardDetail({
                     mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
                   >
                     <img
-                      src={
-                        profileImages[boardData.boardNumber] ||
-                        defaultImage
-                      }
+                      src={profileImages[boardData.boardNumber] || defaultImage}
                       width="100%"
                       height="100%"
                     />
@@ -294,32 +265,28 @@ export default function BoardDetail({
                     <CardMedia
                       component="img"
                       height="auto"
-                      image={
-                        boardImages[boardData.boardNumber] ||
-                        undefined
-                      }
+                      image={boardImages[boardData.boardNumber] || undefined}
                       alt="게시물 이미지"
                       sx={{
                         display: "block", // Center align the image
                         margin: "0 auto", // Center align the image
                         maxWidth: "60%",
                         height: "auto",
-                        marginBottom : "20px"
+                        marginBottom: "20px",
                       }}
                     />
                   )}
                   {/* 게시물 동영상을 보여줄 경우 */}
                   {boardVideo && (
-                      <video
-                        width="60%"
-                        controls
-                        style={{
-                          display: "block", // Center align the video
-                          margin: "0 auto", // Center align the video
-                        }}
-                        src={videoUrl || undefined}
-                      >
-                      </video>
+                    <video
+                      width="60%"
+                      controls
+                      style={{
+                        display: "block", // Center align the video
+                        margin: "0 auto", // Center align the video
+                      }}
+                      src={videoUrl || undefined}
+                    ></video>
                   )}
                   {/* 게시물 파일을 다운로드 링크로 보여줄 경우 */}
                   {boardFile && (
