@@ -5,6 +5,8 @@ import BoardMain from "../../BoardMain";
 import { useUserStore } from "../../../stores";
 import MyPage from "../../MyPage";
 import Search from "../../Search";
+import { ThemeProvider } from "@mui/material";
+import theme from "../../../theme/theme";
 export default function MainLayout() {
   const { user } = useUserStore();
   const [currentPage, setCurrentPage] = useState("boardMain"); // 초기 페이지를 'boardMain'으로 설정합니다
@@ -23,7 +25,7 @@ export default function MainLayout() {
 
   return (
     <>
-    
+    <ThemeProvider theme={theme}>
       <Navigation
         onMyPageClick={handleMyPageClick}
         onHomeClick={handleHomeClick}
@@ -41,6 +43,7 @@ export default function MainLayout() {
       ) : (
         <Authentication />
       )}
+      </ThemeProvider>
     </>
   );
 }

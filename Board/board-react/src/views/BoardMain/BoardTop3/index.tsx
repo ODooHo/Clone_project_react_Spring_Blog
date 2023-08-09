@@ -3,7 +3,7 @@ import { Box, Button, Divider, Typography } from "@mui/material";
 import { useCookies } from "react-cookie";
 import { Board } from "../../../interfaces";
 import { BoardTop3Api } from "../../../apis/boardApis";
-import { getImageApi } from "../../../apis/fileApis";
+import { getImageApi, getProfileApi } from "../../../apis/fileApis";
 
 // 인터페이스를 정의합니다.
 
@@ -18,8 +18,8 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
   const [profileImages, setProfileImages] = useState<{
     [key: number]: string | null;
   }>({});
-  const token = cookies.token;
-  const refreshToken = cookies.refreshToken;
+  const token = localStorage.getItem('token');;
+  const refreshToken = localStorage.getItem('refreshToken');;
 
   useEffect(() => {
     async function fetchData() {
@@ -39,10 +39,9 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
   useEffect(() => {
     async function fetchImages() {
       try {
-
         // Fetch profile images for all boards
         const imagePromises = boardData.map(async (board) => {
-          const imageUrl = await getImageApi(
+          const imageUrl = await getProfileApi(
             token,
             refreshToken,
             board.boardWriterEmail
@@ -81,6 +80,7 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
           주간 Top3 게시글
         </Typography>
         <Divider />
+
         <Box
           display="flex"
           flexDirection="row"

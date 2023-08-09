@@ -30,6 +30,7 @@ export const CommentRegisterApi = async (token: string | null, refreshToken: str
                     });
 
                     const result = newResponse.data;
+                    localStorage.setItem('token',token);
                     
                     return result;
                 } else {
@@ -79,6 +80,7 @@ export const CommentListApi = async (token: string | null, refreshToken: string 
                     });
 
                     const result = newResponse.data;
+                    localStorage.setItem('token',token);
                     
                     return result;
                 } else {
@@ -127,6 +129,7 @@ export const deleteCommentApi = async (token: string | null, refreshToken: strin
                     });
 
                     const result = newResponse.data;
+                    localStorage.setItem('token',token);
                     
                     return result;
                 } else {
@@ -168,13 +171,14 @@ export const editCommentApi = async (token: string | null, refreshToken: string 
                 if (refreshResponse.data) {
                     const token = refreshResponse.data.token;
                     // 새로 발급된 액세스 토큰으로 다시 요청 보내기
-                    const newResponse = await axios.get(url, {
+                    const newResponse = await axios.patch(url, data ,{
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
                     });
 
                     const result = newResponse.data;
+                    localStorage.setItem('token',token);
                     
                     return result;
                 } else {

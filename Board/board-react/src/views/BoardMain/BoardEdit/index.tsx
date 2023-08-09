@@ -30,8 +30,8 @@ import { Board } from "../../../interfaces";
 
     const { user } = useUserStore();
     const [cookies] = useCookies();
-    const token = cookies.token;
-    const refreshToken = cookies.refreshToken;    
+    const token = localStorage.getItem('token');;
+    const refreshToken = localStorage.getItem('refreshToken');;    
 
     useEffect(() => {
       async function fetchBoardData() {
@@ -49,7 +49,7 @@ import { Board } from "../../../interfaces";
     }, [boardNumber, cookies.token]);
   
     const registerHandler = async () => {
-        const token = cookies.token;
+        const token = localStorage.getItem('token');;
         const data = {
             boardTitle,
             boardContent,

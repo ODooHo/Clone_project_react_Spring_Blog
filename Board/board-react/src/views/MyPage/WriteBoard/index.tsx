@@ -37,8 +37,8 @@ export default function WriteBoard({ onMainClick }: WriteBoardProps) {
     data.append("boardWriterProfile", user.userProfile);
     data.append("boardWriterNickname", user.userNickname);
     data.append("boardWriteDate", new Date().toISOString());
-    const token = cookies.token;
-    const refreshToken = cookies.refreshToken;
+    const token = localStorage.getItem('token');;
+    const refreshToken = localStorage.getItem('refreshToken');;
 
     if (boardImage) {
       data.append("boardImage", boardImage);
@@ -111,7 +111,7 @@ export default function WriteBoard({ onMainClick }: WriteBoardProps) {
         <CardActions>
           <IconButton color="inherit">
             <label htmlFor="img-upload">
-              <AddPhotoAlternateIcon />
+              <AddPhotoAlternateIcon sx={{ cursor: "pointer" }} />
             </label>
             <input
               type="file"
@@ -122,7 +122,7 @@ export default function WriteBoard({ onMainClick }: WriteBoardProps) {
           </IconButton>
           <IconButton color="inherit">
             <label htmlFor="video-upload">
-              <VideoCallIcon />
+              <VideoCallIcon sx={{ cursor: "pointer" }} />
             </label>
             <input
               type="file"
@@ -133,7 +133,7 @@ export default function WriteBoard({ onMainClick }: WriteBoardProps) {
           </IconButton>
           <IconButton color="inherit">
             <label htmlFor="file-upload">
-              <AttachFileIcon />
+              <AttachFileIcon sx={{ cursor: "pointer" }} />
             </label>
             <input
               type="file"

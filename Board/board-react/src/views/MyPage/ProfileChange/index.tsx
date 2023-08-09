@@ -21,8 +21,8 @@ export default function ProfileChange({
 }: PatchUserProps) {
   const [userProfile, setUserProfile] = useState<File | null>(null);
   const [cookies] = useCookies();
-  const token = cookies.token;
-  const refreshToken = cookies.refreshToken;
+  const token = localStorage.getItem('token');;
+  const refreshToken = localStorage.getItem('refreshToken');;
 
   const ProfileChangeHandler = async () => {
     const data = new FormData();

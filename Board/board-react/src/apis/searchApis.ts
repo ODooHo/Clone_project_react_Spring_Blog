@@ -22,13 +22,14 @@ export const SearchBoardApi = async (token: string | null, refreshToken: string 
                 if (refreshResponse.data) {
                     const token = refreshResponse.data.token;
                     // 새로 발급된 액세스 토큰으로 다시 요청 보내기
-                    const newResponse = await axios.post(url,data, {
+                    const newResponse = await axios.post(url, data, {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
                     });
 
                     const result = newResponse.data;
+                    localStorage.setItem('token', token);
                     return result;
                 } else {
                     // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
@@ -76,6 +77,7 @@ export const PopularSearchApi = async (token: string | null, refreshToken: strin
                     });
 
                     const result = newResponse.data;
+                    localStorage.setItem('token', token);
                     return result;
                 } else {
                     // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우

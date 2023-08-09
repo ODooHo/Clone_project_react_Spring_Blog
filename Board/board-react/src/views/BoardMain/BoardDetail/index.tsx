@@ -55,8 +55,8 @@ export default function BoardDetail({
     [key: number]: string | null;
   }>({});
   const { user } = useUserStore();
-  const token = cookies.token;
-  const refreshToken = cookies.refreshToken;
+  const token = localStorage.getItem('token');
+  const refreshToken = localStorage.getItem('refreshToken');;
   const [refresh, setRefresh] = useState(1);
   const [isInitialMount, setIsInitialMount] = useState(true);
   const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
@@ -77,7 +77,7 @@ export default function BoardDetail({
         setBoardData(data);
         setLiked(data.boardLikeCount);
         const likyData = likyResponse.data;
-        const userLiked = likyResponse.data.some(
+        const userLiked = likyData.some(
           (like: Liky) => like.userEmail === user?.userEmail
         );
         setLiked(userLiked);
@@ -85,7 +85,6 @@ export default function BoardDetail({
         console.error("게시글 가져오기 실패:", error);
         setBoardData(undefined);
         setLiked(false);
-
       }
     }
     fetchData();

@@ -9,8 +9,6 @@ import CatchingPokemonRoundedIcon from "@mui/icons-material/CatchingPokemonRound
 import { useUserStore } from "../../stores";
 import { useCookies } from "react-cookie";
 import SearchIcon from "@mui/icons-material/Search";
-import { ThemeProvider } from "@emotion/react";
-import theme from "../../theme/theme";
 
 interface NavigationProps {
   onMyPageClick: () => void;
@@ -42,12 +40,11 @@ export default function Navigation({
 
 
   return (
-    <ThemeProvider theme={theme}>
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="fixed"
         variant="outlined"
-        sx={{ backgroundColor: "white", color: "black", boxShadow: "none" }}
+        color="default"
       >
         <Toolbar>
           <IconButton
@@ -97,6 +94,5 @@ export default function Navigation({
         </Toolbar>
       </AppBar>
     </Box>
-    </ThemeProvider>
   );
 }

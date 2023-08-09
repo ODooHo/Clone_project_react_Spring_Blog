@@ -26,14 +26,13 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
     [key: string]: string | null;
   }>({});
 
-  const token = cookies.token;
-  const refreshToken = cookies.refreshToken;
+  const token = localStorage.getItem('token');;
+  const refreshToken = localStorage.getItem('refreshToken');;
 
   // 페이지가 변경될 때마다 API를 호출하도록 useEffect 사용
   useEffect(() => {
     async function fetchData() {
       try {
-        const token = cookies.token;
         const response = await CommentListApi(token, refreshToken, boardNumber);
         const data = response.data;
         setComments(data);
@@ -48,7 +47,6 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
   useEffect(() => {
     async function fetchCommentImages() {
       try {
-        const token = cookies.token;
 
         // Fetch profile images for all comments
         const imagePromises = comments.map(async (comment) => {
@@ -82,7 +80,6 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
   };
 
   const CommentRegisterHandler = async () => {
-    const token = cookies.token;
     const registerData = {
       boardNumber,
       commentContent,
@@ -120,7 +117,6 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
 
   const handleDeleteClick = async (commentId: number) => {
     try {
-      const token = cookies.token;
       const response = await deleteCommentApi(
         token,
         refreshToken,
@@ -146,7 +142,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
     editedContent: string
   ) => {
     try {
-      const token = cookies.token;
+      const token = localStorage.getItem('token');;
       const data = {
         commentContent: editedContent,
         commentWriteDate: new Date().toISOString(),

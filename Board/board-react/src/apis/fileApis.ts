@@ -34,6 +34,7 @@ export const profileUploadApi = async (token: string | null, refreshToken: strin
                     });
 
                     const result = newResponse.data;
+                    localStorage.setItem('token',token);
                     
                     return result;
                 } else {
@@ -87,6 +88,7 @@ export const getProfileApi = async (token: string | null, refreshToken: string |
                         responseType: 'blob'
                     });
                     const imageUrl = URL.createObjectURL(newResponse.data);
+                    localStorage.setItem('token',token);
                     return imageUrl;
                 } else {
                     // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
@@ -138,6 +140,7 @@ export const getImageApi = async (token: string | null, refreshToken: string | n
                         responseType: 'blob'
                     });
                     const imageUrl = URL.createObjectURL(newResponse.data);
+                    localStorage.setItem('token',token);
                     return imageUrl;
                 } else {
                     // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
@@ -175,6 +178,7 @@ export const getVideoApi = async (token: string | null, refreshToken: string | n
         return videoUrl;
     } catch (error) {
         const axiosError = error as AxiosError;
+        //403 -> 토큰 만료시 에러, 500 -> 토큰 만료시 userEntity 찾지 못하는 에러 
         if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
             try {
                 // 액세스 토큰 만료로 인한 에러 발생 시, refreshToken을 사용하여 새로운 액세스 토큰 발급
@@ -191,6 +195,7 @@ export const getVideoApi = async (token: string | null, refreshToken: string | n
                     });
 
                     const videoUrl = URL.createObjectURL(newResponse.data);
+                    localStorage.setItem('token',token);
                     return videoUrl;
                 } else {
                     // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
@@ -241,6 +246,7 @@ export const fileDownloadApi = async (token: string | null, refreshToken: string
                     
 
                     const result = newResponse.data;
+                    localStorage.setItem('token',token);
                     
                     return result;
                 } else {

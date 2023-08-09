@@ -13,8 +13,8 @@ export default function PopularSearch({ onSearchClick }: PopularSearchProps) {
     []
   );
   const [cookies] = useCookies();
-  const token = cookies.token;
-  const refreshToken = cookies.refreshToken;
+  const token = localStorage.getItem('token');;
+  const refreshToken = localStorage.getItem('refreshToken');;
 
   useEffect(() => {
     async function fetchData() {

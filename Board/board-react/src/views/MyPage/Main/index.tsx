@@ -30,13 +30,12 @@ export default function Main({
   const [userEmail, setUserEmail] = useState<string>("");
   const [cookies] = useCookies();
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
-  const token = cookies.token;
-  const refreshToken = cookies.refreshToken;
+  const token = localStorage.getItem('token');;
+  const refreshToken = localStorage.getItem('refreshToken');;
   useEffect(() => {
     async function fetchData() {
       try {
-        
-
+      
         const response = await MyPageApi(token ,refreshToken);
         const Nickname = response.data.userNickname;
         const Profile = response.data.userProfile;
@@ -71,7 +70,7 @@ export default function Main({
     <>
       <Box display="flex" flexDirection="column" justifyContent="flex-start">
         <Box
-          marginTop="100px"
+          marginTop="80px"
           marginBottom="10px"
           display="flex"
           borderBottom={1}

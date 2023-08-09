@@ -21,8 +21,8 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
   const [profileImages, setProfileImages] = useState<{
     [key: number]: string | null;
   }>({});
-  const token = cookies.token;
-  const refreshToken = cookies.refreshToken;
+  const token = localStorage.getItem('token');;
+  const refreshToken = localStorage.getItem('refreshToken');;
 
   const BoardHandler = async () => {
     try {
@@ -48,7 +48,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
   useEffect(() => {
     async function fetchImages() {
       try {
-        const token = cookies.token;
+        const token = localStorage.getItem('token');;
 
         // Fetch profile images for all boards
         const imagePromises = boardData.map(async (board) => {

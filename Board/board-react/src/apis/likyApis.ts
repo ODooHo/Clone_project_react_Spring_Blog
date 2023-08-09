@@ -31,7 +31,7 @@ export const LikyApi = async (token: string | null, refreshToken : string| null 
                         },
                     });
                     const result = newResponse.data;
-                    console.log(result)
+                    localStorage.setItem('token',token);
                     return result;
                 } else {
                     // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
@@ -77,7 +77,7 @@ export const getLikyCountApi = async (token: string | null, refreshToken : strin
                         },
                     });
                     const result = newResponse.data;
-                    console.log(result)
+                    localStorage.setItem('token',token);
                     return result;
                 } else {
                     // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
@@ -123,7 +123,7 @@ export const LikyRegisterApi = async ( token: string | null, refreshToken : stri
                         },
                     });
                     const result = newResponse.data;
-                    console.log(result)
+                    localStorage.setItem('token',token);
                     return result;
                 } else {
                     // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
@@ -169,7 +169,7 @@ export const deleteLikyApi = async (token: string | null, refreshToken : string|
                         },
                     });
                     const result = newResponse.data;
-                    console.log(result)
+                    localStorage.setItem('token',token);
                     return result;
                 } else {
                     // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우

@@ -22,8 +22,8 @@ export default function PatchUser({
   const [userNickname, setUserNickname] = useState<string>("");
   const [userProfile] = useState<File | null>(null);
   const [cookies] = useCookies();
-  const token = cookies.token;
-  const refreshToken = cookies.refreshToken;
+  const token = localStorage.getItem('token');;
+  const refreshToken = localStorage.getItem('refreshToken');;
 
   const patchUserHandler = async () => {
     const data = {

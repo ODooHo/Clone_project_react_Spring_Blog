@@ -29,8 +29,8 @@ export default function SearchMain({
   const [profileImages, setProfileImages] = useState<{
     [key: number]: string | null;
   }>({});
-  const token = cookies.token;
-  const refreshToken = cookies.refreshToken;
+  const token = localStorage.getItem('token');;
+  const refreshToken = localStorage.getItem('refreshToken');;
 
   useEffect(() => {
     async function fetchImages() {
@@ -63,7 +63,7 @@ export default function SearchMain({
   }, [searchResults, cookies.token]);
 
   const handleSearch = async () => {
-    const token = cookies.token;
+    const token = localStorage.getItem('token');;
     const count = 1;
     const data = {
       popularTerm: searchQuery,
@@ -83,7 +83,6 @@ export default function SearchMain({
   };
 
   const handleSearchClick = async (searchTerm: string) => {
-    const token = cookies.token;
 
     const data = {
       popularTerm: searchTerm,
