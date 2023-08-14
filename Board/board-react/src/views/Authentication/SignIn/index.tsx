@@ -40,11 +40,6 @@ export default function SignIn(props: Props) {
       return;
     }
 
-    if (!signInResponse.result) {
-      setLoginError(true);
-      return;
-    }
-
     const { token, tokenExprTime, refreshToken,refreshExprTime ,user} = signInResponse.data;
     const tokenExpires = new Date();
     tokenExpires.setMilliseconds(tokenExpires.getMilliseconds() + tokenExprTime);

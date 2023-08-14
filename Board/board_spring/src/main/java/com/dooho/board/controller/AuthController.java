@@ -25,7 +25,6 @@ public class AuthController {
     @PostMapping("/signUp")
     public ResponseDto<?> signUp(@RequestBody SignUpDto requestBody){
         ResponseDto<?> result = authService.signUp(requestBody);
-        System.out.println("requestBody = " + requestBody);
         return result;
     }
 
@@ -37,7 +36,6 @@ public class AuthController {
 
     @PostMapping("/getAccess")
     public ResponseDto<RefreshResponseDto> getAccess(@RequestBody String refreshToken){
-        System.out.println(refreshToken);
         ResponseDto<RefreshResponseDto> result = authService.getAccess(refreshToken);
         return result;
     }

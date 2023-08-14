@@ -63,10 +63,6 @@ import { Board } from "../../../interfaces";
         alert("게시글 수정에 실패했습니다.");
         return;
       }
-      if (!response.result) {
-        alert("게시글 수정에 실패했습니다.");
-        return;
-      }
   
       alert("게시글 작성에 성공했습니다!");
   

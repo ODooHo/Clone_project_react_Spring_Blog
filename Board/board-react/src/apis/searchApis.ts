@@ -3,8 +3,10 @@ import { getAccessTokenApi } from "./authApis";
 
 
 
+const defaultUrl = 'http://localhost:4000'
+
 export const SearchBoardApi = async (token: string | null, refreshToken: string | null, data: any) => {
-    const url = "http://localhost:4000/api/search";
+    const url = `${defaultUrl}/api/search`;
     try {
         const response = await axios.post(url, data, {
             headers: {
@@ -50,7 +52,7 @@ export const SearchBoardApi = async (token: string | null, refreshToken: string 
 }
 
 export const PopularSearchApi = async (token: string | null, refreshToken: string | null) => {
-    const url = `http://localhost:4000/api/search/popularSearchList`
+    const url = `${defaultUrl}/api/search/popularSearchList`
     try {
         const response = await axios.get(url, {
             headers: {

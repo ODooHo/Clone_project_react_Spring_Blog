@@ -99,10 +99,6 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
       alert("댓글 작성에 실패했습니다.");
       return;
     }
-    if (!response.result) {
-      alert("댓글 작성에 실패했습니다.");
-      return;
-    }
     alert("댓글 작성에 성공했습니다!");
 
     handleRefresh();
@@ -124,7 +120,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
         commentId
       );
       console.log(response);
-      if (response && response.result) {
+      if (response) {
         alert("댓글이 삭제되었습니다.");
         setComments((prevComments) =>
           prevComments.filter((comment) => comment.commentId !== commentId)
@@ -154,7 +150,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
         commentId,
         data
       );
-      if (response && response.result) {
+      if (response) {
         alert("댓글이 수정되었습니다.");
         setEditStates((prevEditStates) => ({
           ...prevEditStates,

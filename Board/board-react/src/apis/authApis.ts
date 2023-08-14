@@ -1,8 +1,11 @@
 import axios from "axios";
 
-export const signInApi = async (data: any) => {
+const defaultUrl = 'http://localhost:4000'
 
-    const response = await axios.post("http://localhost:4000/api/auth/signIn", data).catch((error) => null);
+
+export const signInApi = async (data: any) => {
+    const url = `${defaultUrl}/api/auth/signIn`
+    const response = await axios.post(url, data).catch((error) => null);
     if (!response) {
         return null;
     }
@@ -12,7 +15,8 @@ export const signInApi = async (data: any) => {
 }
 
 export const signUpApi = async (data: any) => {
-    const response = await axios.post("http://localhost:4000/api/auth/signUp", data).catch((error) => null);
+    const url = `${defaultUrl}/api/auth/signUp`
+    const response = await axios.post(url, data).catch((error) => null);
     if (!response) {
         return null;
     }
@@ -23,7 +27,8 @@ export const signUpApi = async (data: any) => {
 
 
 export const getAccessTokenApi = async (data: any) => {
-    const response = await axios.post("http://localhost:4000/api/auth/getAccess", data, {
+    const url = `${defaultUrl}/api/auth/getAccess`
+    const response = await axios.post(url, data, {
         headers: {
             Authorization: `Bearer ${data}`,
         },

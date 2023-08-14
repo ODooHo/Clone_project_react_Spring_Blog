@@ -1,10 +1,10 @@
 import axios, { AxiosError } from "axios";
 import { getAccessTokenApi } from "./authApis";
 
-
+const defaultUrl = 'http://localhost:4000'
 
 export const CommentRegisterApi = async (token: string | null, refreshToken: string | null, index: number, data: any,) => {
-    const url = `http://localhost:4000/api/board/${index}/comment/register`
+    const url = `${defaultUrl}/api/board/${index}/comment/register`
     
     try {
         const response = await axios.post(url, data, {
@@ -51,7 +51,7 @@ export const CommentRegisterApi = async (token: string | null, refreshToken: str
 };
 
 export const CommentListApi = async (token: string | null, refreshToken: string | null, index: number) => {
-    const url = `http://localhost:4000/api/board/${index}/comment/list`;
+    const url = `${defaultUrl}/api/board/${index}/comment/list`;
     
     try {
         const response = await axios.get(url, {
@@ -100,7 +100,7 @@ export const CommentListApi = async (token: string | null, refreshToken: string 
 };
 
 export const deleteCommentApi = async (token: string | null, refreshToken: string | null, boardNumber: number, commentId: number) => {
-    const url = `http://localhost:4000/api/board/${boardNumber}/comment/${commentId}/delete`
+    const url = `${defaultUrl}/api/board/${boardNumber}/comment/${commentId}/delete`
     
     try {
         const response = await axios.get(url, {
@@ -149,7 +149,7 @@ export const deleteCommentApi = async (token: string | null, refreshToken: strin
 };
 
 export const editCommentApi = async (token: string | null, refreshToken: string | null, boardNumber: number, commentId: number, data: any) => {
-    const url = `http://localhost:4000/api/board/${boardNumber}/comment/${commentId}/edit`
+    const url = `${defaultUrl}/api/board/${boardNumber}/comment/${commentId}/edit`
     
 
     try {

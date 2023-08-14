@@ -39,10 +39,7 @@ export default function ProfileChange({
       alert("프로필 수정에 실패했습니다.");
       return;
     }
-    if (!patchUserResponse.result) {
-      alert("프로필 수정에 실패했습니다.");
-      return;
-    }
+
 
     alert("프로필 변경에 성공했습니다!");
 

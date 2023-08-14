@@ -124,7 +124,7 @@ export default function BoardDetail({
   const handleDeleteClick = async () => {
     try {
       const response = await BoardDeleteApi(token, refreshToken, boardNumber);
-      if (response && response.result) {
+      if (response) {
         alert("게시물이 삭제되었습니다.");
         onMainClick();
       } else {

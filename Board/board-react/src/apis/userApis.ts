@@ -3,8 +3,10 @@ import { getAccessTokenApi } from "./authApis";
 
 //403 -> 토큰 만료시 에러, 500 -> 토큰 만료시 userEntity 찾지 못하는 에러 
 
+const defaultUrl = 'http://localhost:4000'
+
 export const MyPageApi = async (token: string | null , refreshToken: string | null) => {
-    const url = "http://localhost:4000/api/user/myPage"
+    const url = `${defaultUrl}/api/user/myPage`
     try {
         const response = await axios.get(url, {
             headers: {
@@ -49,7 +51,7 @@ export const MyPageApi = async (token: string | null , refreshToken: string | nu
 };
 
 export const PatchUserApi = async (token: string | null , refreshToken: string | null ,data: any ) => {
-    const url = "http://localhost:4000/api/user/edit"
+    const url = `${defaultUrl}/api/user/edit`
     try{
 
     const response = await axios.patch(url, data, {

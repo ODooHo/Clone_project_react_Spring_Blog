@@ -3,8 +3,10 @@ import { getAccessTokenApi } from "./authApis";
 
 
 
+const defaultUrl = 'http://localhost:4000'
+
 export const LikyApi = async (token: string | null, refreshToken : string| null ,index: number) => {
-    const url = `http://localhost:4000/api/board/${index}/liky/get`
+    const url = `${defaultUrl}/api/board/${index}/liky/get`
     
     try {
         const response = await axios.get(url, {
@@ -50,7 +52,7 @@ export const LikyApi = async (token: string | null, refreshToken : string| null 
 };
 
 export const getLikyCountApi = async (token: string | null, refreshToken : string| null , index: number) => {
-    const url = `http://localhost:4000/api/board/${index}/liky/get/count`
+    const url = `${defaultUrl}/api/board/${index}/liky/get/count`
     
     try {
         const response = await axios.get(url, {
@@ -96,7 +98,7 @@ export const getLikyCountApi = async (token: string | null, refreshToken : strin
 };
 
 export const LikyRegisterApi = async ( token: string | null, refreshToken : string| null , index: number , data: any,) => { 
-    const url = `http://localhost:4000/api/board/${index}/liky/add`
+    const url = `${defaultUrl}/api/board/${index}/liky/add`
     
     try {
         const response = await axios.post(url, data, {
@@ -142,7 +144,7 @@ export const LikyRegisterApi = async ( token: string | null, refreshToken : stri
 }
 
 export const deleteLikyApi = async (token: string | null, refreshToken : string| null , boardNumber: number , likeUserNickname : string) => {
-    const url = `http://localhost:4000/api/board/${boardNumber}/liky/delete/${likeUserNickname}`
+    const url = `${defaultUrl}/api/board/${boardNumber}/liky/delete/${likeUserNickname}`
     
     try {
         const response = await axios.get(url, {

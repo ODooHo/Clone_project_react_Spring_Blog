@@ -4,8 +4,11 @@ import { useCookies } from "react-cookie";
 
 
 
+const defaultUrl = 'http://localhost:4000'
+
+
 export const profileUploadApi = async (token: string | null, refreshToken: string | null, data: any) => {
-    const url = "http://localhost:4000/api/upload/profile";
+    const url = `${defaultUrl}/api/upload/profile`;
     
     try {
         const response = await axios.post(url, data, {
@@ -58,7 +61,7 @@ export const profileUploadApi = async (token: string | null, refreshToken: strin
 
 
 export const getProfileApi = async (token: string | null, refreshToken: string | null, imageName: string | number) => {
-    const url = `http://localhost:4000/api/images/${imageName}/profile`;
+    const url = `${defaultUrl}/api/images/${imageName}/profile`;
     
     try {
         const response = await axios.get(url, {
@@ -110,7 +113,7 @@ export const getProfileApi = async (token: string | null, refreshToken: string |
 };
 
 export const getImageApi = async (token: string | null, refreshToken: string | null, imageName: string | number) => {
-    const url = `http://localhost:4000/api/images/${imageName}`;
+    const url = `${defaultUrl}/api/images/${imageName}`;
     
     try {
         const response = await axios.get(url, {
@@ -163,7 +166,7 @@ export const getImageApi = async (token: string | null, refreshToken: string | n
 
 
 export const getVideoApi = async (token: string | null, refreshToken: string | null, videoName: string | number) => {
-    const url = `http://localhost:4000/api/videos/${videoName}`;
+    const url = `${defaultUrl}/api/videos/${videoName}`;
     
     try {
         const response = await axios.get(url, {
@@ -214,7 +217,7 @@ export const getVideoApi = async (token: string | null, refreshToken: string | n
 };
 
 export const fileDownloadApi = async (token: string | null, refreshToken: string | null, fileName: number) => {
-    const url = `http://localhost:4000/api/files/${fileName}`
+    const url = `${defaultUrl}/api/files/${fileName}`
     
 
     try {
