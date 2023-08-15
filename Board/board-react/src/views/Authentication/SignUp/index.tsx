@@ -6,12 +6,9 @@ import Button from "@mui/material/Button";
 import { Typography } from "@mui/material";
 import { signUpApi } from "../../../apis/authApis";
 
-
-interface Props{
-  setAuthView: (authView: boolean) => void,
-
+interface Props {
+  setAuthView: (authView: boolean) => void;
 }
-
 
 export default function SignUp(props: Props) {
   const [userEmail, setUserEmail] = useState<string>("");
@@ -22,7 +19,7 @@ export default function SignUp(props: Props) {
   const [userAddress, setUserAddress] = useState<string>("");
   const [userAddressDetail, setUserAddressDetail] = useState<string>("");
 
-  const {setAuthView} = props;
+  const { setAuthView } = props;
 
   const signUpHandler = async () => {
     const data = {
@@ -36,18 +33,19 @@ export default function SignUp(props: Props) {
     };
 
     const signUpResponse = await signUpApi(data);
-    if (!signUpResponse){
-      alert('회원가입에 실패했습니다.');
+    if (!signUpResponse) {
+      alert("회원가입에 실패했습니다.");
       return;
     }
 
-    alert('회원가입에 성공했습니다.');
+    alert("회원가입에 성공했습니다.");
     setAuthView(false);
-
   };
 
   return (
-    <Card sx={{ minWidth: 275, maxWidth: "50vw", padding: 5 }}>
+    <Card
+      sx={{ minWidth: 275, maxWidth: "50vw", padding: 5, borderRadius: "30px" }}
+    >
       <Box>
         <Typography variant="h5">회원가입</Typography>
       </Box>
@@ -98,15 +96,27 @@ export default function SignUp(props: Props) {
           onChange={(e) => setUserAddressDetail(e.target.value)}
         />
       </Box>
-      <Box component='div'>
-            <Button fullWidth onClick={() => signUpHandler()} variant="contained">
-            회원가입
+      <Box component="div">
+        <Button fullWidth onClick={() => signUpHandler()} variant="contained" color="inherit" sx={{ color: "white", backgroundColor: "black" }}>
+          회원가입
         </Button>
-        </Box>
-        <Box component='div' display = 'flex' mt={2}>
-            <Typography>이미 계정이 있으신가요?</Typography>
-            <Typography fontWeight = {800} ml={1} onClick={() => setAuthView(false) }>로그인</Typography>
-        </Box>
+      </Box>
+      <Box component="div" display="flex" mt={2}>
+        <Typography>이미 계정이 있으신가요?</Typography>
+        <Typography
+          fontWeight={800}
+          ml={1}
+          onClick={() => setAuthView(false)}
+          sx={{
+            cursor: "pointer",
+            "&:hover": {
+              textDecoration: "underline", // Add underline effect on hover
+            },
+          }}
+        >
+          로그인
+        </Typography>
+      </Box>
     </Card>
   );
 }

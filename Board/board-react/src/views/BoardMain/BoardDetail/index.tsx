@@ -98,8 +98,8 @@ export default function BoardDetail({
         const videoName = boardData.boardNumber.toString();
         const [profileUrl, imageUrl, videoUrl] = await Promise.all([
           getProfileApi(token, refreshToken, boardData.boardWriterEmail),
-          getImageApi(token, refreshToken, boardData.boardNumber.toString()),
-          getVideoApi(token, refreshToken, videoName),
+          getImageApi(token, refreshToken, boardImage),
+          getVideoApi(token, refreshToken, boardVideo),
         ]);
         setProfileImages({ [boardData.boardNumber]: profileUrl });
         setBoardImages({ [boardData.boardNumber]: imageUrl });
@@ -159,8 +159,9 @@ const handleLikeClick = async () => {
   }
 };
 
-  const handleDownloadClick = async (fileName: number) => {
+  const handleDownloadClick = async (fileName: string) => {
     try {
+
       const response = await fileDownloadApi(token, refreshToken, fileName);
 
       const contentType = response.type;
@@ -206,9 +207,24 @@ const handleLikeClick = async () => {
 
   const defaultImage = "default-image.png";
 
+  const contentLines = boardContent.split('\n').map((line, index) => (
+    <Typography
+      variant="body2"
+      key={index}
+      gutterBottom
+      marginTop="20px"
+      marginBottom="10px" // 줄바꿈 사이의 간격 조절
+      sx={{ fontSize: "1.2rem", lineHeight: "1.8rem" }}
+    >
+      {line}
+    </Typography>
+  ));
+
   return (
     <>
-      <Card>
+      <Card 
+      elevation={0}
+      sx={{backgroundColor:"#FAFAFA"}}>
         <Box display="flex" justifyContent="center" marginTop="70px">
           <Box sx={{ maxWidth: 900, width: "100%" }}>
             <Card>
@@ -246,17 +262,8 @@ const handleLikeClick = async () => {
                     </Typography>
                   </Box>
                 </Box>
-                <Box textAlign="center">
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    gutterBottom
-                    marginTop="20px"
-                    marginBottom="50px"
-                    sx={{ fontSize: "1.2rem", lineHeight: "1.8rem" }}
-                  >
-                    {boardContent}
-                  </Typography>
+                <Box>
+                  {contentLines}
                 </Box>
                 <Box my={2}>
                   {/* 게시물 이미지를 보여줄 경우 */}
@@ -298,7 +305,7 @@ const handleLikeClick = async () => {
                           textDecoration: "underline", // Add underline effect on hover
                         },
                       }}
-                      onClick={() => handleDownloadClick(boardNumber)}
+                      onClick={() => handleDownloadClick(boardFile)}
                     >
                       게시물 파일 다운로드
                     </Typography>

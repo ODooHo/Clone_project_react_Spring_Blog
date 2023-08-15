@@ -7,12 +7,6 @@ export default function Authentication() {
   // authView : true - signUp / false - signIn
   const [authView, setAuthView] = useState<boolean>(false);
 
-  const backgroundStyle = {
-    backgroundImage: 'url("1.jpg")', // Replace with your image path
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  };
-
   return (
     <>
       <Box display="flex" height="100vh">
@@ -21,7 +15,6 @@ export default function Authentication() {
           display="flex"
           justifyContent="center"
           alignItems="center"
-          sx={backgroundStyle}
         ></Box>
            <Box
           flex={1}

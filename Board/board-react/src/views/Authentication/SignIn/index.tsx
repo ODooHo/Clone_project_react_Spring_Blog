@@ -54,7 +54,7 @@ export default function SignIn(props: Props) {
   };
 
   return (
-    <Card sx={{ minWidth: 275, maxWidth: "50vw", padding: 5 }}>
+    <Card sx={{ minWidth: 275, maxWidth: "50vw", padding: 5 ,borderRadius : "30px"}} >
       <Box>
         <Typography variant="h5">로그인</Typography>
       </Box>

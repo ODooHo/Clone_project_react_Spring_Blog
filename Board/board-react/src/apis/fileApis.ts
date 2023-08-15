@@ -61,7 +61,7 @@ export const profileUploadApi = async (token: string | null, refreshToken: strin
 
 
 export const getProfileApi = async (token: string | null, refreshToken: string | null, imageName: string | number) => {
-    const url = `${defaultUrl}/api/images/${imageName}/profile`;
+    const url = `${defaultUrl}/api/images/${imageName}.jpg/profile`;
     
     try {
         const response = await axios.get(url, {
@@ -216,7 +216,7 @@ export const getVideoApi = async (token: string | null, refreshToken: string | n
     }
 };
 
-export const fileDownloadApi = async (token: string | null, refreshToken: string | null, fileName: number) => {
+export const fileDownloadApi = async (token: string | null, refreshToken: string | null, fileName: string) => {
     const url = `${defaultUrl}/api/files/${fileName}`
     
 

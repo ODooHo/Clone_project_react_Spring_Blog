@@ -30,13 +30,12 @@ export default function Main({
   const [userEmail, setUserEmail] = useState<string>("");
   const [cookies] = useCookies();
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
-  const token = localStorage.getItem('token');;
-  const refreshToken = localStorage.getItem('refreshToken');;
+  const token = localStorage.getItem("token");
+  const refreshToken = localStorage.getItem("refreshToken");
   useEffect(() => {
     async function fetchData() {
       try {
-      
-        const response = await MyPageApi(token ,refreshToken);
+        const response = await MyPageApi(token, refreshToken);
         const Nickname = response.data.userNickname;
         const Profile = response.data.userProfile;
         const data = response.data.userBoard;
@@ -48,7 +47,11 @@ export default function Main({
           setUserProfile(Profile);
 
           // 프로필 이미지를 가져와서 상태에 저장합니다.
-          const profileImageUrl = await getProfileApi(token, refreshToken, Email);
+          const profileImageUrl = await getProfileApi(
+            token,
+            refreshToken,
+            Email
+          );
           setProfileImageUrl(profileImageUrl);
         } else {
           setUserEmail("");
@@ -64,16 +67,16 @@ export default function Main({
     fetchData();
   }, [cookies.token]);
 
-  const defaultImage = "default-image.png"
+  const defaultImage = "default-image.png";
 
   return (
     <>
       <Box display="flex" flexDirection="column" justifyContent="flex-start">
         <Box
-          marginTop="80px"
+          marginTop="65px"
           marginBottom="10px"
           display="flex"
-          borderBottom={1}
+          sx={{ backgroundColor: "white" }}
         >
           <Box
             display="flex"
@@ -108,7 +111,15 @@ export default function Main({
         </Box>
 
         <Box width="100vw">
-          <Card sx={{ height: "200vh", padding: 5, marginBottom: "10px" }}>
+          <Card
+            elevation={0}
+            sx={{
+              height: "200vh",
+              padding: 5,
+              marginBottom: "10px",
+              backgroundColor: "#FAFAFA",
+            }}
+          >
             <Box
               display="flex"
               justifyContent="space-between"
@@ -127,6 +138,7 @@ export default function Main({
                   width: "300px",
                   height: "50px",
                   marginRight: "10%",
+                  backgroundColor: "white",
                 }}
                 onClick={() => onWriteBoardClick()}
               >
@@ -140,6 +152,8 @@ export default function Main({
               height={"70vh"}
               display="flex"
               flexDirection="column"
+              borderRadius={"30px"}
+              padding={3}
             >
               <Box flex="1" overflow="auto">
                 {boardData.length === 0 ? (
@@ -163,6 +177,7 @@ export default function Main({
                           alignItems: "flex-start",
                           flexDirection: "column",
                           padding: 2,
+                          backgroundColor: 'white',
                         }}
                         onClick={() => onDetailClick(board.boardNumber)}
                       >
@@ -180,7 +195,7 @@ export default function Main({
                               mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
                             >
                               <img
-                                src={profileImageUrl || defaultImage }
+                                src={profileImageUrl || defaultImage}
                                 width="100%"
                                 height="100%"
                               />
@@ -218,9 +233,9 @@ export default function Main({
                         <Typography
                           variant="body1"
                           color="text.secondary"
-                          sx={{ mt: 1 }}
+                          sx={{ mt: 1 ,textAlign: "left"}}
                         >
-                          {board.boardContent.substr(0, 80)}
+                          {board.boardContent.slice(0, 80)}
                         </Typography>
                         <Typography
                           variant="body2"

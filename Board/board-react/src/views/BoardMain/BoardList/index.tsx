@@ -21,8 +21,8 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
   const [profileImages, setProfileImages] = useState<{
     [key: number]: string | null;
   }>({});
-  const token = localStorage.getItem('token');;
-  const refreshToken = localStorage.getItem('refreshToken');;
+  const token = localStorage.getItem("token");
+  const refreshToken = localStorage.getItem("refreshToken");
 
   const BoardHandler = async () => {
     try {
@@ -48,7 +48,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
   useEffect(() => {
     async function fetchImages() {
       try {
-        const token = localStorage.getItem('token');;
+        const token = localStorage.getItem("token");
 
         // Fetch profile images for all boards
         const imagePromises = boardData.map(async (board) => {
@@ -124,12 +124,14 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
   return (
     <>
       <Card
+        elevation={0}
         sx={{
           minWidth: 300,
           maxWidth: "40vw",
           padding: 5,
           marginTop: "100px",
           marginLeft: "30px",
+          backgroundColor: "#FAFAFA",
         }}
       >
         <Box>
@@ -154,6 +156,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
                     alignItems: "flex-start",
                     flexDirection: "column",
                     padding: 2,
+                    backgroundColor: "white",
                   }}
                   onClick={() => onDetailClick(board.boardNumber)}
                 >
@@ -210,7 +213,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
                     <Typography
                       variant="body1"
                       color="text.secondary"
-                      sx={{ mt: 1 }}
+                      sx={{ mt: 1, textAlign: "left" }}
                     >
                       {board.boardContent.slice(0, 80)}
                     </Typography>
@@ -230,19 +233,37 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
           {/* 페이징 처리 버튼 */}
           <Box display="flex" justifyContent="center" mt={2}>
             {pageNumbers.map((pageNumber, index) => (
-              <Button
+              <Typography
                 key={index}
                 onClick={() =>
                   setCurrentPage(
                     pageNumber === "..." ? currentPage : Number(pageNumber)
                   )
                 }
-                variant="contained"
-                color={pageNumber === currentPage ? "primary" : "inherit"}
-                sx={{ mx: 1 }}
+                variant="body1"
+                component="span"
+                color={
+                  pageNumber === currentPage ? "primary" : "text.secondary"
+                }
+                sx={{
+                  cursor: "pointer",
+                  mx: 1,
+                  width: "40px", // 조절 가능한 버튼의 너비 값
+                  height: "40px", // 조절 가능한 버튼의 높이 값
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor:
+                    pageNumber === currentPage ? "#f0f0f0" : "transparent",
+                  borderRadius : "50%",
+                  transition: "background-color 0.2s ease-in-out",
+                  "&:hover": {
+                    backgroundColor: "#f0f0f0",
+                  },
+                }}
               >
                 {pageNumber}
-              </Button>
+              </Typography>
             ))}
           </Box>
         </Box>

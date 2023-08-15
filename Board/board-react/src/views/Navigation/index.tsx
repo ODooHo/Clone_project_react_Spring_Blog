@@ -9,6 +9,7 @@ import CatchingPokemonRoundedIcon from "@mui/icons-material/CatchingPokemonRound
 import { useUserStore } from "../../stores";
 import { useCookies } from "react-cookie";
 import SearchIcon from "@mui/icons-material/Search";
+import { colors } from "@mui/material";
 
 interface NavigationProps {
   onMyPageClick: () => void;
@@ -43,8 +44,8 @@ export default function Navigation({
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="fixed"
-        variant="outlined"
-        color="default"
+        elevation={0}
+        sx={{backgroundColor : "#ffffff"}}
       >
         <Toolbar>
           <IconButton
@@ -58,13 +59,13 @@ export default function Navigation({
             <CatchingPokemonRoundedIcon />
           </IconButton>
 
-          <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1 ,color : "black" }}>
             Blog
           </Typography>
           {user ? (
             <>
               <IconButton
-                color="inherit"
+
                 onClick={() =>
                   currentPage === "search" ? onHomeClick() : onSearchClick()
                 } // 검색 아이콘 클릭에 따라 페이지 이동
@@ -73,14 +74,12 @@ export default function Navigation({
               </IconButton>
               <Button
                 href="#text-buttons"
-                color="inherit"
                 onClick={() => logOutHandler()}
               >
                 로그아웃
               </Button>
               <Button
                 href="#text-buttons"
-                color="inherit"
                 onClick={() =>
                   currentPage === "boardMain" ? onMyPageClick() : onHomeClick()
                 } // 버튼 클릭에 따라 해당 함수 호출

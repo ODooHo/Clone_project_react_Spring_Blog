@@ -107,8 +107,8 @@ export default function SearchMain({
 
   return (
     <>
-      <Box marginTop="50px" sx={{ padding: 2 }}>
-        <Card variant="outlined">
+      <Box marginTop="50px" sx={{ padding: 2}}>
+        <Card elevation={0} sx={{backgroundColor : "#FAFAFA"}}>
           <CardContent>
             <Typography variant="h5" gutterBottom>
               검색
@@ -128,12 +128,14 @@ export default function SearchMain({
                 <Grid container spacing={2}>
                   <Grid item xs={9}>
                     <Card
+                      elevation={0}
                       sx={{
                         minWidth: 300,
                         maxWidth: "40vw",
                         padding: 5,
                         marginTop: "100px",
                         marginLeft: "30px",
+                        backgroundColor:"#FAFAFA"
                       }}
                     >
                       <Box
@@ -154,6 +156,7 @@ export default function SearchMain({
                                   alignItems: "flex-start",
                                   flexDirection: "column",
                                   padding: 2,
+                                  backgroundColor:"white",
                                 }}
                                 onClick={() => onDetailClick(board.boardNumber)}
                               >

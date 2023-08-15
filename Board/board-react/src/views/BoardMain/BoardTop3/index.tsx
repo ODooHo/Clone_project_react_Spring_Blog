@@ -66,10 +66,12 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
     fetchImages();
   }, [boardData, cookies.token]);
 
+  const defaultImage = "default-image.png";
+  const images = ["1.jpg", "2.jpg", "3.jpg"]; // 이미지 파일 이름들
+
   return (
     <>
       <Box
-        maxHeight="vh"
         padding="5px"
         marginTop="100px"
         display="flex"
@@ -88,71 +90,93 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
           alignItems="flex-start" // Adjust alignment to the top
           flexWrap="wrap"
         >
-          {boardData.map((board) => (
+          {boardData.slice(0,3).map((board,index) => (
             <Button
               key={board.boardNumber}
               variant="outlined"
-              color="inherit"
               sx={{
                 width: "300px",
-                height: "300px",
+                height: "400px",
                 margin: "10px",
                 display: "flex", // Add display flex to make flexbox work for the Button
                 flexDirection: "column", // Stack the elements vertically
-                justifyContent: "center", // Center children vertically
+                justifyContent: "flex-end", // Center children vertically
+                backgroundImage: `url(${images[index]})`, // 이미지 파일 경로 설정
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                padding: 2,
+                cursor: "pointer",
               }}
               onClick={() => onDetailClick(board.boardNumber)}
             >
-              <Typography
-                variant="h6"
-                sx={{
-                  maxWidth: "100%", // Allow the title to wrap to a new line
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  textAlign: "center",
-                }}
-              >
-                {board.boardTitle}
-              </Typography>
-              <Box
-                display="flex"
-                alignItems="center"
-                sx={{
-                  marginTop: "8px", // Reduce the space between the title and profile info
-                  textAlign: "center",
-                }}
-              >
-                <Box
-                  width={32}
-                  height={32}
-                  borderRadius="50%"
-                  overflow="hidden"
-                  mr={0}
-                >
-                  <img
-                    src={
-                      profileImages[board.boardNumber] ||
-                      "default-image-url.jpg"
-                    }
-                    width="100%"
-                    height="100%"
-                  />
-                </Box>
-                <Box marginLeft="8px">
-                  <Typography
-                    variant="body1"
-                    gutterBottom
-                    marginTop="2px"
-                    marginBottom="2px"
+                  <Box display="flex" width="100%" justifyContent="flex-start">
+                    <Box display="flex" alignItems="flex-start">
+                      <Box
+                        width={35}
+                        height={35}
+                        borderRadius="50%"
+                        overflow="hidden"
+                        mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
+                      >
+                        <img
+                          src={profileImages[board.boardNumber] || defaultImage}
+                          width="100%"
+                          height="100%"
+                        />
+                      </Box>
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="flex-start"
+                      >
+                        <Typography
+                          variant="body1"
+                          gutterBottom
+                          marginBottom="3px"
+                          color="white"
+                        >
+                          {board.boardWriterNickname}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="#A4A4A4"
+                          marginBottom="3px"
+                        >
+                          {board.boardWriteDate}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="flex-start"
                   >
-                    {board.boardWriterNickname}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {board.boardWriteDate}
-                  </Typography>
-                </Box>
-              </Box>
+                    <Typography
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "1.2rem", // 원하는 글꼴 크기 설정 (예: 1.2rem)
+                        color:"white"
+                      }}
+                    >
+                      {board.boardTitle}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      color="#A4A4A4"
+                      sx={{ mt: 1 ,textAlign: "left" }}
+                    >
+                      {board.boardContent.slice(0, 80)}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="#A4A4A4"
+                      sx={{ mt: 1 }}
+                    >
+                      조회수: {board.boardClickCount} 좋아요:{" "}
+                      {board.boardLikeCount} 댓글: {board.boardCommentCount}
+                    </Typography>
+                  </Box>
             </Button>
           ))}
         </Box>
