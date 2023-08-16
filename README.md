@@ -100,4 +100,4 @@
 ### 2023-08-16
 - 배포 완료
 - 좋아요 개수 음수로 나오는 버그 수정 / 댓글창 댓글 내용 남아있는 버그 수정
-- http://www.dh-blog-project.p-e.kr
+- www.dh-blog-project.p-e.kr
