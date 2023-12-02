@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
+import { useEffect, useState } from "react";
 import { Board, Liky } from "../../../interfaces";
 import {
   Box,
-  Button,
   Card,
   CardContent,
   CardMedia,
@@ -21,6 +19,7 @@ import {
   LikyApi,
   LikyRegisterApi,
   deleteLikyApi,
+  getLikyCountApi,
 } from "../../../apis/likyApis";
 
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
@@ -31,6 +30,8 @@ import {
   getProfileApi,
   getVideoApi,
 } from "../../../apis/fileApis";
+import DownloadIcon from "@mui/icons-material/Download";
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 
 interface BoardDetailProps {
   onMainClick: () => void;
@@ -46,7 +47,6 @@ export default function BoardDetail({
   boardNumber,
 }: BoardDetailProps) {
   const [boardData, setBoardData] = useState<Board | undefined>(undefined);
-  const [cookies, setCookies] = useCookies();
   const [liked, setLiked] = useState<boolean>(false);
   const [profileImages, setProfileImages] = useState<{
     [key: number]: string | null;
@@ -55,10 +55,11 @@ export default function BoardDetail({
     [key: number]: string | null;
   }>({});
   const { user } = useUserStore();
-  const token = localStorage.getItem('token');
-  const refreshToken = localStorage.getItem('refreshToken');;
+  const token = localStorage.getItem("token");
+  const refreshToken = localStorage.getItem("refreshToken");
   const [refresh, setRefresh] = useState(1);
   const [isInitialMount, setIsInitialMount] = useState(true);
+  const [likyCount, setLikyCount] = useState<number | undefined>(undefined);
   const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -81,6 +82,13 @@ export default function BoardDetail({
           (like: Liky) => like.userEmail === user?.userEmail
         );
         setLiked(userLiked);
+
+        const likyCount = await getLikyCountApi(
+          token,
+          refreshToken,
+          boardNumber
+        );
+        setLikyCount(likyCount.data);
       } catch (error) {
         console.error("게시글 가져오기 실패:", error);
         setBoardData(undefined);
@@ -91,13 +99,12 @@ export default function BoardDetail({
   }, [refresh]); // Run only once on component mount
 
   useEffect(() => {
-    async function fetchMedia(){
-      try{
+    async function fetchMedia() {
+      try {
         if (!boardData) return; // Return early if boardData is not available yet
 
-        const videoName = boardData.boardNumber.toString();
         const [profileUrl, imageUrl, videoUrl] = await Promise.all([
-          getProfileApi(token, refreshToken, boardData.boardWriterEmail),
+          getProfileApi(token, refreshToken, boardData.boardWriterProfile),
           getImageApi(token, refreshToken, boardImage),
           getVideoApi(token, refreshToken, boardVideo),
         ]);
@@ -105,7 +112,7 @@ export default function BoardDetail({
         setBoardImages({ [boardData.boardNumber]: imageUrl });
 
         setVideoUrl(videoUrl || undefined);
-      }catch (error) {
+      } catch (error) {
         console.error("게시글 가져오기 실패:", error);
         setProfileImages([null]);
         setBoardImages([null]);
@@ -113,7 +120,7 @@ export default function BoardDetail({
       }
     }
     fetchMedia();
-  },[boardData?.boardContent, boardData?.boardCommentCount, token])
+  }, [boardData?.boardContent, boardData?.boardCommentCount, token]);
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
@@ -135,33 +142,37 @@ export default function BoardDetail({
     }
   };
 
-  
-const handleLikeClick = async () => {
-  try {
-    const userLiked = liked;
+  const handleLikeClick = async () => {
+    try {
+      const userLiked = liked;
 
-    if (!userLiked) {
-      const likeUserdata = {
-        boardNumber,
-        userEmail: user.userEmail,
-        likeUserProfile: user.userProfile,
-        likeUserNickname: user.userNickname,
-      };
-      await LikyRegisterApi(token, refreshToken, boardNumber, likeUserdata);
-    } else {
-      await deleteLikyApi(token, refreshToken, boardNumber, user.userNickname);
+      if (!userLiked) {
+        const likeUserdata = {
+          boardNumber,
+          userEmail: user.userEmail,
+          likeUserProfile: user.userProfile,
+          likeUserNickname: user.userNickname,
+        };
+        await LikyRegisterApi(token, refreshToken, boardNumber, likeUserdata);
+        console.log(likyCount);
+      } else {
+        await deleteLikyApi(
+          token,
+          refreshToken,
+          boardNumber,
+          user.userNickname
+        );
+      }
+
+      setLiked(!userLiked); // 좋아요 상태를 토글
+      handleRefresh();
+    } catch (error) {
+      console.error("좋아요 처리 실패:", error);
     }
-
-    setLiked(!userLiked); // 좋아요 상태를 토글
-    handleRefresh();
-  } catch (error) {
-    console.error("좋아요 처리 실패:", error);
-  }
-};
+  };
 
   const handleDownloadClick = async (fileName: string) => {
     try {
-
       const response = await fileDownloadApi(token, refreshToken, fileName);
 
       const contentType = response.type;
@@ -207,7 +218,7 @@ const handleLikeClick = async () => {
 
   const defaultImage = "default-image.png";
 
-  const contentLines = boardContent.split('\n').map((line, index) => (
+  const contentLines = boardContent.split("\n").map((line, index) => (
     <Typography
       variant="body2"
       key={index}
@@ -222,12 +233,17 @@ const handleLikeClick = async () => {
 
   return (
     <>
-      <Card 
-      elevation={0}
-      sx={{backgroundColor:"#FAFAFA"}}>
+      <Card elevation={0} sx={{ backgroundColor: "#FAFAFA" }}>
         <Box display="flex" justifyContent="center" marginTop="70px">
           <Box sx={{ maxWidth: 900, width: "100%" }}>
             <Card>
+              <IconButton
+                color="inherit"
+                sx={{ backgroundColor: "#ffffff", color: "#000000"}}
+                onClick={onMainClick}
+              >
+                <NavigateBeforeIcon sx={{fontSize : "2rem"}}/>
+              </IconButton>
               <CardContent>
                 <Box textAlign="center">
                   <Typography variant="h4" gutterBottom>
@@ -262,9 +278,7 @@ const handleLikeClick = async () => {
                     </Typography>
                   </Box>
                 </Box>
-                <Box>
-                  {contentLines}
-                </Box>
+                <Box>{contentLines}</Box>
                 <Box my={2}>
                   {/* 게시물 이미지를 보여줄 경우 */}
                   {boardImage && (
@@ -296,9 +310,8 @@ const handleLikeClick = async () => {
                   )}
                   {/* 게시물 파일을 다운로드 링크로 보여줄 경우 */}
                   {boardFile && (
-                    <Typography
-                      variant="body1"
-                      color="primary"
+                    <IconButton
+                      color="secondary"
                       sx={{
                         cursor: "pointer",
                         "&:hover": {
@@ -307,8 +320,8 @@ const handleLikeClick = async () => {
                       }}
                       onClick={() => handleDownloadClick(boardFile)}
                     >
-                      게시물 파일 다운로드
-                    </Typography>
+                      <DownloadIcon />
+                    </IconButton>
                   )}
                 </Box>
                 <Typography variant="body2" gutterBottom>
@@ -381,14 +394,6 @@ const handleLikeClick = async () => {
             margin: "10px auto",
           }}
         >
-          <Button
-            variant="contained"
-            color="inherit"
-            sx={{ backgroundColor: "#ffffff", color: "#000000" }}
-            onClick={onMainClick}
-          >
-            이전
-          </Button>
         </Box>
       </Card>
     </>

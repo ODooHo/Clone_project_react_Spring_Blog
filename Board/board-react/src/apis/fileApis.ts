@@ -1,14 +1,13 @@
 import axios, { AxiosError } from "axios";
 import { getAccessTokenApi } from "./authApis";
-import { useCookies } from "react-cookie";
 
 
-
-const defaultUrl = 'http://localhost:4000'
+const testUrl = 'http://localhost:8080'
+const defaultUrl = 'http://15.165.24.146:8080'
 
 
 export const profileUploadApi = async (token: string | null, refreshToken: string | null, data: any) => {
-    const url = `${defaultUrl}/api/upload/profile`;
+    const url = `${testUrl}/api/upload/profile`;
     
     try {
         const response = await axios.post(url, data, {
@@ -61,19 +60,20 @@ export const profileUploadApi = async (token: string | null, refreshToken: strin
 
 
 export const getProfileApi = async (token: string | null, refreshToken: string | null, imageName: string | number) => {
-    const url = `${defaultUrl}/api/images/${imageName}.jpg/profile`;
+    const url = `${testUrl}/api/images/${imageName}/profile`;
     
     try {
         const response = await axios.get(url, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
-
-            responseType: 'blob'
         });
 
-        const imageUrl = URL.createObjectURL(response.data);
-        return imageUrl;
+        if(response.data) {
+            const imageUrl = response.data.data;
+            displayImage(imageUrl);
+            return imageUrl;
+        }
     } catch (error) {
         const axiosError = error as AxiosError;
         if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
@@ -88,11 +88,12 @@ export const getProfileApi = async (token: string | null, refreshToken: string |
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
-                        responseType: 'blob'
                     });
-                    const imageUrl = URL.createObjectURL(newResponse.data);
-                    localStorage.setItem('token',token);
-                    return imageUrl;
+                    if(newResponse.data) {
+                        const imageUrl = newResponse.data.data;
+                        displayImage(imageUrl);
+                        return imageUrl;
+                    }
                 } else {
                     // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
                     console.error("Refresh token is expired or invalid");
@@ -110,10 +111,11 @@ export const getProfileApi = async (token: string | null, refreshToken: string |
         console.error("Error refreshing access token:", axiosError);
         return null;
     }
+
 };
 
 export const getImageApi = async (token: string | null, refreshToken: string | null, imageName: string | number) => {
-    const url = `${defaultUrl}/api/images/${imageName}`;
+    const url = `${testUrl}/api/images/${imageName}`;
     
     try {
         const response = await axios.get(url, {
@@ -121,11 +123,13 @@ export const getImageApi = async (token: string | null, refreshToken: string | n
                 Authorization: `Bearer ${token}`,
             },
 
-            responseType: 'blob'
         });
 
-        const imageUrl = URL.createObjectURL(response.data);
-        return imageUrl;
+        if(response.data) {
+            const imageUrl = response.data.data;
+            displayImage(imageUrl);
+            return imageUrl;
+        }
     } catch (error) {
         const axiosError = error as AxiosError;
         if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
@@ -140,11 +144,12 @@ export const getImageApi = async (token: string | null, refreshToken: string | n
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
-                        responseType: 'blob'
                     });
-                    const imageUrl = URL.createObjectURL(newResponse.data);
-                    localStorage.setItem('token',token);
-                    return imageUrl;
+                    if(newResponse.data) {
+                        const imageUrl = newResponse.data.data;
+                        displayImage(imageUrl);
+                        return imageUrl;
+                    }
                 } else {
                     // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
                     console.error("Refresh token is expired or invalid");
@@ -166,7 +171,7 @@ export const getImageApi = async (token: string | null, refreshToken: string | n
 
 
 export const getVideoApi = async (token: string | null, refreshToken: string | null, videoName: string | number) => {
-    const url = `${defaultUrl}/api/videos/${videoName}`;
+    const url = `${testUrl}/api/videos/${videoName}`;
     
     try {
         const response = await axios.get(url, {
@@ -174,11 +179,14 @@ export const getVideoApi = async (token: string | null, refreshToken: string | n
                 Authorization: `Bearer ${token}`,
             },
 
-            responseType: "blob",
         });
 
-        const videoUrl = URL.createObjectURL(response.data);
-        return videoUrl;
+        if(response.data) {
+            const videoUrl = response.data.data;
+            displayVideo(videoUrl);
+            return videoUrl;
+        }
+
     } catch (error) {
         const axiosError = error as AxiosError;
         //403 -> 토큰 만료시 에러, 500 -> 토큰 만료시 userEntity 찾지 못하는 에러 
@@ -197,9 +205,11 @@ export const getVideoApi = async (token: string | null, refreshToken: string | n
                         responseType: 'blob'
                     });
 
-                    const videoUrl = URL.createObjectURL(newResponse.data);
-                    localStorage.setItem('token',token);
-                    return videoUrl;
+                    if(newResponse.data) {
+                        const videoUrl = newResponse.data.data;
+                        displayVideo(videoUrl);
+                        return videoUrl;
+                    }
                 } else {
                     // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
                     console.error("Refresh token is expired or invalid");
@@ -217,18 +227,16 @@ export const getVideoApi = async (token: string | null, refreshToken: string | n
 };
 
 export const fileDownloadApi = async (token: string | null, refreshToken: string | null, fileName: string) => {
-    const url = `${defaultUrl}/api/files/${fileName}`
+    const url = `${testUrl}/api/files/${fileName}`
     
-
     try {
         const response = await axios.get(url, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
 
-            responseType: 'blob'
         })
-        const result = response.data;
+        const result = response.data.data;
         return result
     } catch (error) {
         const axiosError = error as AxiosError;
@@ -244,11 +252,11 @@ export const fileDownloadApi = async (token: string | null, refreshToken: string
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
-                        responseType: 'blob'
+
                     });
                     
 
-                    const result = newResponse.data;
+                    const result = newResponse.data.data;
                     localStorage.setItem('token',token);
                     
                     return result;
@@ -268,4 +276,25 @@ export const fileDownloadApi = async (token: string | null, refreshToken: string
     }
 
 
+    
+
+}
+
+function displayImage(imageUrl: string) {
+    const imgElement = document.createElement('img');
+    imgElement.src = imageUrl;
+    // Assuming you have a div with id "imageContainer" to display the image
+    const imageContainer = document.getElementById('imageContainer');
+    imageContainer?.appendChild(imgElement);
+}
+
+function displayVideo(videoUrl: string) {
+    const videoElement = document.createElement('video');
+    videoElement.src = videoUrl;
+    videoElement.controls = true; // Show video controls (play, pause, etc.)
+    videoElement.setAttribute('width', '640'); // Set video width
+    videoElement.setAttribute('height', '480'); // Set video height
+
+    const videoContainer = document.getElementById('videoContainer');
+    videoContainer?.appendChild(videoElement);
 }

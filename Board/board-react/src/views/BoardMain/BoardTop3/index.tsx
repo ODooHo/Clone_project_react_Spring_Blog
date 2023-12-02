@@ -44,7 +44,7 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
           const imageUrl = await getProfileApi(
             token,
             refreshToken,
-            board.boardWriterEmail
+            board.boardWriterProfile
           );
           return { [board.boardNumber]: imageUrl };
         });
@@ -79,7 +79,7 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
         alignItems="center"
       >
         <Typography variant="h5" align="center" gutterBottom>
-          주간 Top3 게시글
+          연간 Top3 게시글
         </Typography>
         <Divider />
 

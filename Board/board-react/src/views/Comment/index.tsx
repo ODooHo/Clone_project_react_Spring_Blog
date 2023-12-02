@@ -1,15 +1,15 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Comment } from "/Users/oduho/Desktop/Clone_SpringBoot-react-aws_Blog/Board/board-react/src/interfaces";
 import { useCookies } from "react-cookie";
 import { useUserStore } from "../../stores";
+import { Comment } from "../../interfaces";
 import {
   CommentListApi,
   CommentRegisterApi,
   deleteCommentApi,
   editCommentApi,
 } from "../../apis/commentApis";
-import { getImageApi, getProfileApi } from "../../apis/fileApis";
+import {getProfileApi } from "../../apis/fileApis";
 
 interface CommentMainProps {
   boardNumber: number;
@@ -26,8 +26,8 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
     [key: string]: string | null;
   }>({});
 
-  const token = localStorage.getItem('token');;
-  const refreshToken = localStorage.getItem('refreshToken');;
+  const token = localStorage.getItem("token");
+  const refreshToken = localStorage.getItem("refreshToken");
 
   // 페이지가 변경될 때마다 API를 호출하도록 useEffect 사용
   useEffect(() => {
@@ -47,13 +47,12 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
   useEffect(() => {
     async function fetchCommentImages() {
       try {
-
         // Fetch profile images for all comments
         const imagePromises = comments.map(async (comment) => {
           const imageUrl = await getProfileApi(
             token,
             refreshToken,
-            comment.userEmail
+            comment.commentUserProfile
           );
           return { [comment.commentId]: imageUrl };
         });
@@ -99,7 +98,8 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
       alert("댓글 작성에 실패했습니다.");
       return;
     }
-    alert("댓글 작성에 성공했습니다!");
+
+    setCommentContent(""); // 댓글 등록에 성공하면 입력한 내용을 초기화
 
     handleRefresh();
   };
@@ -121,7 +121,6 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
       );
       console.log(response);
       if (response) {
-        alert("댓글이 삭제되었습니다.");
         setComments((prevComments) =>
           prevComments.filter((comment) => comment.commentId !== commentId)
         );
@@ -138,7 +137,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
     editedContent: string
   ) => {
     try {
-      const token = localStorage.getItem('token');;
+      const token = localStorage.getItem("token");
       const data = {
         commentContent: editedContent,
         commentWriteDate: new Date().toISOString(),
@@ -183,6 +182,8 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
           variant="outlined"
           fullWidth
           onChange={(e) => setCommentContent(e.target.value)}
+          defaultValue={commentContent}
+          value={commentContent}
         />
 
         <Box
@@ -198,7 +199,9 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
             variant="contained"
             color="primary"
             sx={{ marginBottom: "50px" }}
-            onClick={CommentRegisterHandler}
+            onClick={() => {
+              CommentRegisterHandler();
+            }}
           >
             댓글 작성
           </Button>
@@ -231,9 +234,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
               mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
             >
               <img
-                src={
-                  profileImages[comment.commentId] || defaultImage
-                }
+                src={profileImages[comment.commentId] || defaultImage}
                 width="100%"
                 height="100%"
               />
@@ -247,7 +248,6 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
                 <Typography
                   variant="body1"
                   gutterBottom
-                  marginTop={"20px"}
                   marginBottom="2px"
                 >
                   {comment.commentUserNickname}

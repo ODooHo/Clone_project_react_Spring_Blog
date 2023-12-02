@@ -10,7 +10,7 @@ import { useCookies } from "react-cookie";
 import { SearchBoardApi } from "../../../apis/searchApis";
 import PopularSearch from "../PolularSearch";
 import { Grid } from "@mui/material";
-import { getImageApi } from "../../../apis/fileApis";
+import { getProfileApi } from "../../../apis/fileApis";
 
 interface SearchMainProps {
   onDetailClick: (boardId: number) => void;
@@ -37,10 +37,10 @@ export default function SearchMain({
       try {
         // Fetch profile images for all boards
         const imagePromises = searchResults.map(async (board) => {
-          const imageUrl = await getImageApi(
+          const imageUrl = await getProfileApi(
             token,
             refreshToken,
-            board.boardWriterEmail
+            board.boardWriterProfile,
           );
           return { [board.boardNumber]: imageUrl };
         });
@@ -64,7 +64,6 @@ export default function SearchMain({
 
   const handleSearch = async () => {
     const token = localStorage.getItem('token');;
-    const count = 1;
     const data = {
       popularTerm: searchQuery,
     };
@@ -104,6 +103,7 @@ export default function SearchMain({
       setSearchResults([]);
     }
   };
+  const defaultImage = "default-image.png"
 
   return (
     <>
@@ -176,7 +176,7 @@ export default function SearchMain({
                                       <img
                                         src={
                                           profileImages[board.boardNumber] ||
-                                          "default-image-url.jpg"
+                                          defaultImage
                                         }
                                         width="100%"
                                         height="100%"
@@ -215,9 +215,9 @@ export default function SearchMain({
                                 <Typography
                                   variant="body1"
                                   color="text.secondary"
-                                  sx={{ mt: 1 }}
+                                  sx={{ mt: 1 ,textAlign: "left"}}
                                 >
-                                  {board.boardContent.substr(0, 80)}
+                                  {board.boardContent.slice(0, 80)}
                                 </Typography>
                                 <Typography
                                   variant="body2"

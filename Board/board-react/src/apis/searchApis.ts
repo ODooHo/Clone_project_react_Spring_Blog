@@ -2,11 +2,11 @@ import axios, { AxiosError } from "axios";
 import { getAccessTokenApi } from "./authApis";
 
 
-
-const defaultUrl = 'http://localhost:4000'
+const testUrl = 'http://localhost:8080'
+const defaultUrl = 'http://15.165.24.146:8080'
 
 export const SearchBoardApi = async (token: string | null, refreshToken: string | null, data: any) => {
-    const url = `${defaultUrl}/api/search`;
+    const url = `${testUrl}/api/search`;
     try {
         const response = await axios.post(url, data, {
             headers: {
@@ -52,7 +52,7 @@ export const SearchBoardApi = async (token: string | null, refreshToken: string 
 }
 
 export const PopularSearchApi = async (token: string | null, refreshToken: string | null) => {
-    const url = `${defaultUrl}/api/search/popularSearchList`
+    const url = `${testUrl}/api/search/popularSearchList`
     try {
         const response = await axios.get(url, {
             headers: {
