@@ -104,7 +104,7 @@ public class FileService {
 
 
     public ResponseDto<String> setProfile(MultipartFile file, String userEmail) {
-        UserEntity user = userRepository.findByUserEmail(userEmail);
+        UserEntity user = userRepository.findById(userEmail).orElse(null);
 
         List<CommentEntity> commentEntity = commentRepository.findByUserEmail(userEmail);
         List<BoardEntity> boardEntity = boardRepository.findByBoardWriterEmail(userEmail);

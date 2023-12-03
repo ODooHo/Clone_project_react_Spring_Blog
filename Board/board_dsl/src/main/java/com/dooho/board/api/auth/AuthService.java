@@ -78,7 +78,7 @@ public class AuthService {
         UserEntity userEntity = null;
 
         try{
-            userEntity = userRepository.findByUserEmail(userEmail);
+            userEntity = userRepository.findById(userEmail).orElse(null);
             //잘못된 이메일
             if (userEntity == null)
                 return ResponseDto.setFailed("Sign in Failed");

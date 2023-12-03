@@ -32,10 +32,11 @@ public class WebSecurityConfig {
                 .sessionManagement((sessionManagement)
                         -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorizeHttpRequests)
-                        -> authorizeHttpRequests.requestMatchers("/", "/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/board/**").authenticated()
-                        .requestMatchers(HttpMethod.POST,"api/board/**").authenticated()
-                        .requestMatchers(HttpMethod.POST,"api/user/**").authenticated()
+                        ->authorizeHttpRequests
+//                        -> authorizeHttpRequests.requestMatchers("/", "/api/auth/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/api/board/**").authenticated()
+//                        .requestMatchers(HttpMethod.POST,"api/board/**").authenticated()
+//                        .requestMatchers(HttpMethod.POST,"api/user/**").authenticated()
                         .anyRequest().permitAll());
 
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
