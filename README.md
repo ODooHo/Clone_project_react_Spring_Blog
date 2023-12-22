@@ -1,9 +1,66 @@
-# 프로젝트 - 블로그 만들기
+# 두커(두호 커뮤니티)
 
-**프로젝트 개요:**
-이 프로젝트는 실무적인 경험을 쌓기 위해 진행하는 프로젝트로, 블로그 기능을 구현하는 것을 목표로 합니다. 프론트엔드에는 React를 사용하고, 백엔드에는 Spring Boot와 MariaDB를 활용합니다. 프로젝트의 주요 기능은 로그인 기능과 게시판 기능으로, 보안은 JWT 토큰을 이용하여 BEARER 방식으로 구현합니다. UX/UI 디자인은 제외하고 진행되며, 프로젝트 진행 상황은 아래와 같습니다:
+<p align="center">
+  <br>
+  <img src="./images/common/main.png">
+  <br>
+</p>
 
-## 진행 과정:
+
+## 프로젝트 소개
+
+<p align="justify">
+프로젝트 개요/동기
+</p>
+- CRUD 기능을 구현한 커뮤니티 프로젝트
+- 첫 개인 프로젝트로 FE - BE 간의 통신과 기본 지식을 얻고자 진행한 프로젝트
+- 풀스택 개발
+<p align="center">
+<img src="./images/common/tree.png">
+</p>
+
+<br>
+
+## 기술 스택
+
+### Tools
+
+|Java | Kotlin | Spring Boot |  React   |  MySQL   |
+| :--------: | :--------: | :--------: | :------: | :-----: |
+|   ![java]    |  ![kotlin]    | ![spring]    | ![react] | ![mysql] |
+
+### etc
+|Amazon EC2 | Amazon RDS |  Amazon S3 |
+| :--------: | :--------: | :------: | 
+|   ![js]    |   ![ts]    | ![react] | 
+
+<br>
+
+## 구현 기능
+
+### 게시글/댓글 CRUD, 검색, 좋아요 기능 구현
+
+### 연간 Top3게시글 추천, 최신 게시물 페이징 처리, 인기 검색어 기능 로직 구현
+
+### Spring Data JPA + QueryDSL을 활용한 데이터 접근 기술 구현
+
+### Java to Kotlin 리팩토링 진행
+
+<br>
+
+## 배운 점 & 아쉬운 점
+
+<p align="justify">
+
+</p>
+
+<br>
+
+## 개발 일정
+
+<details>
+<summary>개발 일정</summary>
+
 
 ### 2023-07-01
 - 요구사항 정리 및 SQL 작성
@@ -106,3 +163,15 @@
 
 ## 2023-11-13
 - Spring Data JPA + QueryDSL 활용 * 긴 쿼리의 가독성 해결
+</details>
+
+<!-- Stack Icon Refernces -->
+
+[java]: /images/stack/java.png
+[kotlin]: /images/stack/kotlin.svg
+[spring]: /images/stack/springboot.png
+[react]: /images/stack/react.png
+[mysql]: /images/stack/rds_mysql.png
+[ec2]: /images/stack/ec2.png
+[rds]: /images/stack/rds.png
+[s3]: /images/stack/s3.png
