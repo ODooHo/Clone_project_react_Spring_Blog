@@ -60,7 +60,7 @@ export default function Navigation({
           </IconButton>
 
           <Typography variant="h5" component="div" sx={{ flexGrow: 1 ,color : "black" }}>
-            Blog
+            Dooker
           </Typography>
           {user ? (
             <>
