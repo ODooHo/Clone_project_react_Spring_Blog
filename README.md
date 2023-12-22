@@ -12,9 +12,11 @@
 <p align="justify">
 프로젝트 개요/동기
 </p>
+
 - CRUD 기능을 구현한 커뮤니티 프로젝트
 - 첫 개인 프로젝트로 FE - BE 간의 통신과 기본 지식을 얻고자 진행한 프로젝트
 - 풀스택 개발
+
 <p align="center">
 <img src="./images/common/tree.png">
 </p>
