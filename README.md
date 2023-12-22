@@ -32,7 +32,7 @@
 ### etc
 |Amazon EC2 | Amazon RDS |  Amazon S3 |
 | :--------: | :--------: | :------: | 
-|   ![js]    |   ![ts]    | ![react] | 
+|   ![ec2]    |   ![rds]    | ![s3] | 
 
 <br>
 
