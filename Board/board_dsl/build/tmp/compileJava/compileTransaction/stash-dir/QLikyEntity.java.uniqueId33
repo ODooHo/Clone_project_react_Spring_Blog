@@ -1,0 +1,54 @@
+package com.dooho.board.api.board.liky;
+
+import static com.querydsl.core.types.PathMetadataFactory.*;
+
+import com.querydsl.core.types.dsl.*;
+
+import com.querydsl.core.types.PathMetadata;
+import javax.annotation.processing.Generated;
+import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
+
+
+/**
+ * QLikyEntity is a Querydsl query type for LikyEntity
+ */
+@Generated("com.querydsl.codegen.DefaultEntitySerializer")
+public class QLikyEntity extends EntityPathBase<LikyEntity> {
+
+    private static final long serialVersionUID = 1101287805L;
+
+    private static final PathInits INITS = PathInits.DIRECT2;
+
+    public static final QLikyEntity likyEntity = new QLikyEntity("likyEntity");
+
+    public final com.dooho.board.api.board.QBoardEntity board;
+
+    public final NumberPath<Integer> id = createNumber("id", Integer.class);
+
+    public final com.dooho.board.api.user.QUserEntity user;
+
+    public QLikyEntity(String variable) {
+        this(LikyEntity.class, forVariable(variable), INITS);
+    }
+
+    public QLikyEntity(Path<? extends LikyEntity> path) {
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
+    }
+
+    public QLikyEntity(PathMetadata metadata) {
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QLikyEntity(PathMetadata metadata, PathInits inits) {
+        this(LikyEntity.class, metadata, inits);
+    }
+
+    public QLikyEntity(Class<? extends LikyEntity> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.board = inits.isInitialized("board") ? new com.dooho.board.api.board.QBoardEntity(forProperty("board"), inits.get("board")) : null;
+        this.user = inits.isInitialized("user") ? new com.dooho.board.api.user.QUserEntity(forProperty("user")) : null;
+    }
+
+}
+

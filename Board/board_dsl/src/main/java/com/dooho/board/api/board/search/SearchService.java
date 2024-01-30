@@ -3,8 +3,8 @@ package com.dooho.board.api.board.search;
 import com.dooho.board.api.ResponseDto;
 import com.dooho.board.api.board.BoardEntity;
 import com.dooho.board.api.board.BoardRepository;
+import com.dooho.board.api.board.search.dto.SearchDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +20,6 @@ public class SearchService {
 
     private final SearchRepository searchRepository;
 
-    @Autowired
     public SearchService(BoardRepository boardRepository, SearchRepository searchRepository) {
         this.boardRepository = boardRepository;
         this.searchRepository = searchRepository;
@@ -28,7 +27,7 @@ public class SearchService {
 
     public ResponseDto<List<BoardEntity>> getSearchList(SearchDto dto){
         SearchEntity searchEntity = null;
-        String searchWord = dto.getPopularTerm();
+        String searchWord = dto.popularTerm();
         List<BoardEntity> boardList = new ArrayList<BoardEntity>();
         try{
             if(searchRepository.existsByPopularTerm(searchWord)){
@@ -37,7 +36,7 @@ public class SearchService {
                 searchEntity.setPopularSearchCount(count);
                 searchRepository.save(searchEntity);
             }else{
-                searchEntity = new SearchEntity(dto);
+                searchEntity = SearchEntity.of(dto.popularTerm(),dto.popularSearchCount());
                 searchEntity.setPopularSearchCount(1);
                 searchRepository.save(searchEntity);
             }

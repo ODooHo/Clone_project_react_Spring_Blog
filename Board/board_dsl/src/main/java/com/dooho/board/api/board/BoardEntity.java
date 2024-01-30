@@ -1,19 +1,21 @@
 package com.dooho.board.api.board;
 
+import com.dooho.board.api.board.liky.LikyEntity;
 import com.dooho.board.api.comment.CommentEntity;
 import com.dooho.board.api.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.mapping.Join;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity(name="Board")
 @Table(name="Board")
 //GeneratedValue(strategy = 전략) 기본 키를 자동으로 생성해주는 어노테이션, IDENTITY = AUTOINCREMENT
@@ -29,9 +31,6 @@ public class BoardEntity {
     private String file;
     private LocalDate boardWriteDate;
     private int clickCount;
-    private int likeCount;
-    private int commentCount;
-
     @ManyToOne
     @JoinColumn(name = "userEmail")
     private UserEntity user;
@@ -39,27 +38,48 @@ public class BoardEntity {
     @ToString.Exclude
     @OrderBy("commentWriteDate DESC")
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private final Set<CommentEntity> comments= new LinkedHashSet<>();
+    private final Set<CommentEntity> comments = new LinkedHashSet<>();
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private final Set<LikyEntity> likes = new LinkedHashSet<>();
 
-    public BoardEntity(BoardDto dto) {
-        this.id = dto.getId();
-        this.title = dto.getTitle();
-        this.content = dto.getContent();
-        this.image = dto.getImage();
-        this.video = dto.getVideo();
-        this.file = dto.getFile();
-        this.boardWriteDate = dto.getBoardWriteDate();
-        this.clickCount = dto.getClickCount();
-        this.likeCount = dto.getLikeCount();
-        this.commentCount = dto.getCommentCount();
-    }
-    public void setLikeCount(Integer likeCount) {
-        this.likeCount = likeCount;
+    protected BoardEntity(){
+
     }
 
-    public void setCommentCount(Integer commentCount){
-        this.commentCount = commentCount;
+    private BoardEntity(Integer id, String title, String content, String image, String video, String file, LocalDate boardWriteDate, int clickCount, UserEntity user) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.image = image;
+        this.video = video;
+        this.file = file;
+        this.boardWriteDate = boardWriteDate;
+        this.clickCount = clickCount;
+        this.user = user;
     }
 
+    public static BoardEntity of (Integer id, String title, String content, String image, String video, String file, LocalDate boardWriteDate, int clickCount, UserEntity user) {
+        return new BoardEntity(id,title,content,image,video,file,boardWriteDate,clickCount,user);
+    }
+
+
+
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        BoardEntity that = (BoardEntity) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
 }

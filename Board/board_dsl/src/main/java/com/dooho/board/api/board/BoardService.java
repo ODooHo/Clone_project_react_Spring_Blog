@@ -1,10 +1,15 @@
 package com.dooho.board.api.board;
 
 import com.dooho.board.api.ResponseDto;
+import com.dooho.board.api.board.dto.BoardDto;
+import com.dooho.board.api.board.dto.BoardWithCommentDto;
+import com.dooho.board.api.board.dto.PatchBoardDto;
+import com.dooho.board.api.board.dto.PatchBoardResponseDto;
 import com.dooho.board.api.file.FileService;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.dooho.board.api.user.dto.UserDto;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +30,6 @@ public class BoardService {
     private final UserRepository userRepository;
 
 
-    @Autowired
     public BoardService(BoardRepository boardRepository, FileService fileService,
                         UserRepository userRepository) {
         this.boardRepository = boardRepository;
@@ -35,52 +39,38 @@ public class BoardService {
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<BoardEntity> getBoard(Integer boardId) {
-        BoardEntity board = null;
-
-        try {
-            board = boardRepository.findById(boardId).orElse(null);
-        } catch (Exception e) {
-            return ResponseDto.setFailed("DataBase Error!");
-        }
-
-        return ResponseDto.setSuccess("Success", board);
+    public ResponseDto<BoardWithCommentDto> getBoard(Integer boardId) {
+        BoardWithCommentDto board = boardRepository.findById(boardId)
+                .map(BoardWithCommentDto::from)
+                .orElseThrow(() -> new EntityNotFoundException("게시글 없음"));
+        return ResponseDto.setSuccess("Success",board);
     }
 
     public ResponseDto<BoardEntity> register(
             String userEmail,
             String boardTitle,
             String boardContent,
-            String boardWriteDate,
             MultipartFile boardImage,
             MultipartFile boardVideo,
             MultipartFile boardFile) {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(boardWriteDate, formatter.withZone(ZoneId.of("UTC")));
-
-        LocalDate localDate = zonedDateTime.toLocalDate();
 
         if (boardRepository.existsByTitle(boardTitle)) {
             return ResponseDto.setFailed("Same Title already exist!");
         }
 
         UserEntity user = userRepository.getReferenceById(userEmail);
-        BoardEntity boardEntity = new BoardEntity();
-        boardEntity.setTitle(boardTitle);
-        boardEntity.setContent(boardContent);
-        boardEntity.setBoardWriteDate(localDate);
-        boardEntity.setUser(user);
-        boardRepository.save(boardEntity);
-
+        BoardDto boardDto = BoardDto.of(boardTitle, boardContent, null, null, null, LocalDate.now(), 0, UserDto.from(user), null);
+        BoardEntity board = boardDto.toEntity();
+        boardRepository.save(board);
         try {
-            fileService.uploadFile(boardImage, boardVideo, boardFile, boardEntity);
-            boardRepository.save(boardEntity);
+            fileService.uploadFile(boardImage, boardVideo, boardFile, boardDto);
+            boardRepository.save(board);
         } catch (Exception e) {
             return ResponseDto.setFailed("DataBase Error!");
 
         }
 
-        return ResponseDto.setSuccess("Register Success!", boardEntity);
+        return ResponseDto.setSuccess("Register Success!", board);
     }
 
     @Transactional(readOnly = true)

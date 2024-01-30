@@ -1,44 +1,37 @@
 package com.dooho.board.api.comment;
 
 
-import com.dooho.board.api.comment.CommentDto;
+import com.dooho.board.api.comment.dto.CommentDto;
 import com.dooho.board.api.ResponseDto;
-import com.dooho.board.api.comment.PatchCommentDto;
-import com.dooho.board.api.comment.PatchCommentResponseDto;
-import com.dooho.board.api.comment.CommentEntity;
-import com.dooho.board.api.comment.CommentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.dooho.board.api.comment.dto.PatchCommentDto;
+import com.dooho.board.api.comment.dto.PatchCommentResponseDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/board")
 public class CommentController {
     private final CommentService commentService;
 
-    @Autowired
-    public CommentController(CommentService commentService) {
-        this.commentService = commentService;
-    }
 
     @PostMapping("/{boardId}/comment/register")
-    public ResponseDto<?> register(@RequestBody CommentDto requestBody){
-        ResponseDto<?> result = commentService.register(requestBody);
-        return result;
+    public ResponseDto<?> register(@AuthenticationPrincipal String userEmail,@PathVariable Integer boardId ,@RequestBody CommentDto requestBody){
+        return commentService.register(userEmail,boardId,requestBody);
     }
 
 
     @GetMapping("/{boardId}/comment/list")
     public ResponseDto<List<CommentEntity>> getComment(@PathVariable Integer boardId){
-        ResponseDto<List<CommentEntity>> result = commentService.getComment(boardId);
-        return result;
+        return commentService.getComment(boardId);
     }
 
     @GetMapping("/{boardId}/comment/{commentId}/delete")
     public ResponseDto<?> deleteComment(@PathVariable Integer boardId, @PathVariable Integer commentId){
-        ResponseDto<?> result = commentService.deleteComment(boardId, commentId);
-        return result;
+        return commentService.deleteComment(boardId, commentId);
     }
 
     @CrossOrigin(origins = "*")
@@ -47,8 +40,7 @@ public class CommentController {
             @PathVariable Integer boardId,
             @PathVariable Integer commentId,
             @RequestBody PatchCommentDto requestBody){
-        ResponseDto<PatchCommentResponseDto> result = commentService.editComment(boardId,commentId,requestBody);
-        return result;
+        return commentService.editComment(boardId,commentId,requestBody);
     }
 
 

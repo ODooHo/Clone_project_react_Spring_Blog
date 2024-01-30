@@ -1,20 +1,17 @@
 package com.dooho.board.api.board.liky;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface LikyRepository extends JpaRepository<LikyEntity,Integer> {
 
-    Integer countByboardId(Integer boardId);
+    Integer countByBoard_Id(Integer boardId);
 
-    List<LikyEntity> findByboardId(Integer boardId);
+    List<LikyEntity> findByBoard_Id(Integer boardId);
 
-    void deleteByLikeUserNickname(String likeUserNickname);
+    void deleteByUser_UserEmail(String userEmail);
 
-    void deleteByLikeId(Integer likeId);
 
-    void deleteByboardIdAndLikeUserNickname(Integer boardId, String likeUserNickname);
+    void deleteByBoard_IdAndUser_UserEmail(Integer boardId, String userEmail);
 }

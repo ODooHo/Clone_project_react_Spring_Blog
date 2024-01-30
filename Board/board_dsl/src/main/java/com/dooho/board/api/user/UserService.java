@@ -3,10 +3,12 @@ package com.dooho.board.api.user;
 
 import com.dooho.board.api.ResponseDto;
 import com.dooho.board.api.board.BoardEntity;
-import com.dooho.board.api.comment.CommentEntity;
 import com.dooho.board.api.board.BoardRepository;
+import com.dooho.board.api.comment.CommentEntity;
 import com.dooho.board.api.comment.CommentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.dooho.board.api.user.dto.MyPageDto;
+import com.dooho.board.api.user.dto.PatchUserDto;
+import com.dooho.board.api.user.dto.PatchUserResponseDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +23,6 @@ public class UserService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
-    @Autowired
     public UserService(UserRepository userRepository, BoardRepository boardRepository, CommentRepository commentRepository) {
         this.userRepository = userRepository;
         this.boardRepository = boardRepository;
@@ -34,7 +35,6 @@ public class UserService {
 
         UserEntity user = null;
         List<BoardEntity> board = new ArrayList<>();
-
         try{
             user = userRepository.findById(userEmail).orElse(null);
             board = boardRepository.findByUser_UserEmail(userEmail);

@@ -1,28 +1,56 @@
 package com.dooho.board.api.board.liky;
 
+import com.dooho.board.api.board.BoardEntity;
+import com.dooho.board.api.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
-@Data
+import java.util.Objects;
+
+@Getter
+@Setter
+@ToString
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity(name = "Liky")
 @Table(name = "Liky")
 public class LikyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer likeId;
-    private Integer boardId;
-    private String userEmail;
-    private String likeUserProfile;
-    private String likeUserNickname;
+    private Integer id;
+    @ManyToOne
+    @JoinColumn(name = "boardId")
+    private BoardEntity board;
+    @ManyToOne
+    @JoinColumn(name = "userEmail")
+    private UserEntity user;
 
-    public LikyEntity(LikyDto dto) {
-        this.likeId = dto.getLikeId();
-        this.boardId = dto.getBoardId();
-        this.userEmail = dto.getUserEmail();
-        this.likeUserProfile = dto.getLikeUserProfile();
-        this.likeUserNickname = dto.getLikeUserNickname();
+    protected LikyEntity(){
+
+    }
+    private LikyEntity(Integer id, BoardEntity board, UserEntity user) {
+        this.id = id;
+        this.board = board;
+        this.user = user;
+    }
+
+    public static LikyEntity of(Integer id, BoardEntity board, UserEntity user){
+        return new LikyEntity(id,board,user);
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        LikyEntity that = (LikyEntity) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

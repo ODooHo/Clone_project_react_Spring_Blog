@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import com.dooho.board.api.ResponseDto;
 import com.dooho.board.api.board.BoardEntity;
+import com.dooho.board.api.board.dto.BoardDto;
 import com.dooho.board.api.comment.CommentEntity;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.board.BoardRepository;
@@ -61,8 +62,9 @@ public class FileService {
             MultipartFile boardImage,
             MultipartFile boardVideo,
             MultipartFile boardFile,
-            BoardEntity board) {
+            BoardDto boardDto) {
         try {
+            BoardEntity board = boardDto.toEntity();
             if (boardImage != null) {
                 String fileName = setFileName(boardImage, board);
                 String imagePath = uploadDir + "img/" + fileName;

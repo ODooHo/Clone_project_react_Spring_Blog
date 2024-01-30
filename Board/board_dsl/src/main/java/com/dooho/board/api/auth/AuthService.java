@@ -25,7 +25,6 @@ public class AuthService {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @Autowired
     public AuthService(UserRepository userRepository, TokenProvider tokenProvider) {
         this.userRepository = userRepository;
         this.tokenProvider = tokenProvider;
@@ -73,6 +72,7 @@ public class AuthService {
         return ResponseDto.setSuccess("Sign Up Success!",null);
     }
 
+    @Transactional(readOnly = true)
     public ResponseDto<SignInResponseDto> signIn(SignInDto dto){
         String userEmail = dto.getUserEmail();
         String userPassword = dto.getUserPassword();
@@ -84,9 +84,9 @@ public class AuthService {
             //잘못된 이메일
             if (userEntity == null)
                 return ResponseDto.setFailed("Sign in Failed");
-            //잘못된 패스워드
-            if (!passwordEncoder.matches(userPassword,userEntity.getUserPassword()))
-                return ResponseDto.setFailed("Sign in Failed");
+
+//            if (!passwordEncoder.matches(userPassword,userEntity.getUserPassword()))
+//                return ResponseDto.setFailed("Sign in Failed");
         }catch (Exception e){
             e.printStackTrace();
             ResponseDto.setFailed("DataBase Error!");
