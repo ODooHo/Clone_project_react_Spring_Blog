@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Service
 public class AuthService {
 
@@ -101,6 +103,7 @@ public class AuthService {
         return ResponseDto.setSuccess("Sign in Success",signInResponseDto);
     }
 
+    @Transactional(readOnly = true)
     public ResponseDto<RefreshResponseDto> getAccess(String refreshToken) {
         try {
             String accessToken = tokenProvider.createAccessTokenFromRefreshToken(refreshToken);

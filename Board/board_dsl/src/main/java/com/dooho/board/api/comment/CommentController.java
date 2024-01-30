@@ -22,32 +22,32 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping("/{boardNumber}/comment/register")
+    @PostMapping("/{boardId}/comment/register")
     public ResponseDto<?> register(@RequestBody CommentDto requestBody){
         ResponseDto<?> result = commentService.register(requestBody);
         return result;
     }
 
 
-    @GetMapping("/{boardNumber}/comment/list")
-    public ResponseDto<List<CommentEntity>> getComment(@PathVariable Integer boardNumber){
-        ResponseDto<List<CommentEntity>> result = commentService.getComment(boardNumber);
+    @GetMapping("/{boardId}/comment/list")
+    public ResponseDto<List<CommentEntity>> getComment(@PathVariable Integer boardId){
+        ResponseDto<List<CommentEntity>> result = commentService.getComment(boardId);
         return result;
     }
 
-    @GetMapping("/{boardNumber}/comment/{commentId}/delete")
-    public ResponseDto<?> deleteComment(@PathVariable Integer boardNumber, @PathVariable Integer commentId){
-        ResponseDto<?> result = commentService.deleteComment(boardNumber, commentId);
+    @GetMapping("/{boardId}/comment/{commentId}/delete")
+    public ResponseDto<?> deleteComment(@PathVariable Integer boardId, @PathVariable Integer commentId){
+        ResponseDto<?> result = commentService.deleteComment(boardId, commentId);
         return result;
     }
 
     @CrossOrigin(origins = "*")
-    @PatchMapping("{boardNumber}/comment/{commentId}/edit")
+    @PatchMapping("{boardId}/comment/{commentId}/edit")
     public ResponseDto<PatchCommentResponseDto> editComment(
-            @PathVariable Integer boardNumber,
+            @PathVariable Integer boardId,
             @PathVariable Integer commentId,
             @RequestBody PatchCommentDto requestBody){
-        ResponseDto<PatchCommentResponseDto> result = commentService.editComment(boardNumber,commentId,requestBody);
+        ResponseDto<PatchCommentResponseDto> result = commentService.editComment(boardId,commentId,requestBody);
         return result;
     }
 

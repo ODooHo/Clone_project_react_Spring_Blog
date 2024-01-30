@@ -1,0 +1,54 @@
+
+
+#spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+#spring.datasource.url=jdbc:mariadb://blog.c0kl1kkx7gnq.ap-northeast-2.rds.amazonaws.com/board?serverTimezone=UTC&characterEncoding=UTF-8
+#spring.datasource.username=admin
+#spring.datasource.password=dhwjdgh1102
+
+
+spring:
+    datasource:
+        url: ${DB_URL}
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+        open-in-view: false
+        defer-datasource-initialization: true
+        hibernate.ddl-auto: create
+        show-sql: true
+        properties:
+            hibernate.format_sql: true
+            hibernate.default_batch_fetch_size: 100
+    sql.init.mode: always
+    messages:
+        encoding: UTF-8
+
+    servlet:
+        multipart:
+            max-file-size: 100MB
+            max-request-size: 100MB
+
+cloud:
+    aws:
+        credentials:
+            accessKey: ${AWS_ACCESS_KEY}
+            secretKey: ${AWS_SECRET_KEY}
+
+        s3:
+            bucket: dhblogbucket
+        region:
+            static: ap-northeast-2
+        stack:
+            auto: false
+
+file:
+    upload-dir: blog/
+
+default:
+    image:
+        extension: .jpg
+    video:
+        extension: .mp4
+    file:
+        extension: .txt

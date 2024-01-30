@@ -6,8 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Repository
-@Transactional
+
 public interface SearchRepository extends JpaRepository<SearchEntity, String> ,CustomSearchRepository{
 
     boolean existsByPopularTerm(String search);

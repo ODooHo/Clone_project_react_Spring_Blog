@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LikyDto {
     private Integer likeId;
-    private Integer boardNumber;
+    private Integer boardId;
     private String userEmail;
     private String likeUserProfile;
     private String likeUserNickname;

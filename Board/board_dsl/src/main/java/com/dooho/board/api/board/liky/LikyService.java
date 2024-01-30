@@ -5,10 +5,12 @@ import com.dooho.board.api.board.BoardEntity;
 import com.dooho.board.api.board.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
 @Service
 public class LikyService {
 
@@ -27,9 +29,9 @@ public class LikyService {
         try{
 
             // 해당 게시글의 좋아요 개수 증가
-            BoardEntity board = boardRepository.findByBoardNumber(dto.getBoardNumber());
+            BoardEntity board = boardRepository.findById(dto.getBoardId()).orElse(null);
             if (board != null) {
-                board.setBoardLikeCount(board.getBoardLikeCount() + 1);
+                board.setLikeCount(board.getLikeCount() + 1);
                 boardRepository.save(board);
             }
         }catch (Exception e){
@@ -40,12 +42,13 @@ public class LikyService {
         return ResponseDto.setSuccess("Success",null);
     }
 
-    public ResponseDto<Integer> getLikyCount(Integer boardNumber){
-        BoardEntity boardEntity = boardRepository.findById(boardNumber).orElse(null);
+    @Transactional(readOnly = true)
+    public ResponseDto<Integer> getLikyCount(Integer boardId){
+        BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
         Integer temp = 0;
         try{
-            temp = likyRepository.countByBoardNumber(boardNumber);
-            boardEntity.setBoardLikeCount(temp);
+            temp = likyRepository.countByboardId(boardId);
+            boardEntity.setLikeCount(temp);
             boardRepository.save(boardEntity);
         }catch (Exception e){
             e.printStackTrace();
@@ -56,10 +59,10 @@ public class LikyService {
     }
 
 
-    public ResponseDto<List<LikyEntity>> getLiky(Integer boardNumber){
+    public ResponseDto<List<LikyEntity>> getLiky(Integer boardId){
         List<LikyEntity> likyEntity =  new ArrayList<>();
         try{
-            likyEntity = likyRepository.findByBoardNumber(boardNumber);
+            likyEntity = likyRepository.findByboardId(boardId);
         }catch (Exception e){
             e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error");
@@ -67,14 +70,14 @@ public class LikyService {
 
         return ResponseDto.setSuccess("Success",likyEntity);
     }
-    public ResponseDto<?> deleteLiky(Integer boardNumber, String likeUserNickname) {
+    public ResponseDto<?> deleteLiky(Integer boardId, String likeUserNickname) {
         try{
             // 데이터베이스에서 사용자의 닉네임과 게시글 번호에 해당하는 좋아요 삭제
-            likyRepository.deleteByBoardNumberAndLikeUserNickname(boardNumber, likeUserNickname);
+            likyRepository.deleteByboardIdAndLikeUserNickname(boardId, likeUserNickname);
             // 해당 게시글의 좋아요 개수 감소
-            BoardEntity board = boardRepository.findByBoardNumber(boardNumber);
+            BoardEntity board = boardRepository.findById(boardId).orElse(null);
             if (board != null) {
-                board.setBoardLikeCount(board.getBoardLikeCount() - 1);
+                board.setLikeCount(board.getLikeCount() - 1);
                 boardRepository.save(board);
             }
 

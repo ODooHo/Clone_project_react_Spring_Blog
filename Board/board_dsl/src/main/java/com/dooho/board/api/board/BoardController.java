@@ -6,6 +6,7 @@ import com.dooho.board.api.board.PatchBoardResponseDto;
 import com.dooho.board.api.board.BoardEntity;
 import com.dooho.board.api.board.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,17 +25,15 @@ public class BoardController {
 
     @PostMapping("/register")
     public ResponseDto<BoardEntity> register(
+            @AuthenticationPrincipal String userEmail,
             @RequestParam("boardTitle") String boardTitle,
             @RequestParam("boardContent") String boardContent,
-            @RequestParam("boardWriterEmail") String boardWriterEmail,
-            @RequestParam("boardWriterProfile") String boardWriterProfile,
-            @RequestParam("boardWriterNickname") String boardWriterNickname,
             @RequestParam("boardWriteDate") String boardWriteDate,
             @RequestParam(value = "boardImage", required = false) MultipartFile boardImage,
             @RequestParam(value = "boardVideo", required = false) MultipartFile boardVideo,
             @RequestParam(value = "boardFile", required = false) MultipartFile boardFile){
-        ResponseDto<BoardEntity> result = boardService.register(
-                boardTitle, boardContent,boardWriterEmail,boardWriterProfile,boardWriterNickname,boardWriteDate,
+        ResponseDto<BoardEntity> result = boardService.register(userEmail,
+                boardTitle, boardContent,boardWriteDate,
                 boardImage,boardVideo,boardFile);
         return result;
     }
@@ -54,31 +53,31 @@ public class BoardController {
 
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/{boardNumber}")
-    public ResponseDto<BoardEntity> getBoard(@PathVariable Integer boardNumber){
-        ResponseDto<BoardEntity> result = boardService.getBoard(boardNumber);
+    @GetMapping("/{boardId}")
+    public ResponseDto<BoardEntity> getBoard(@PathVariable Integer boardId){
+        ResponseDto<BoardEntity> result = boardService.getBoard(boardId);
         return result;
     }
 
-    @PostMapping("/{boardNumber}")
-    public ResponseDto<?>increaseView(@PathVariable Integer boardNumber, @RequestBody Integer requestBody){
-        ResponseDto<?> result = boardService.increaseView(boardNumber,requestBody);
+    @PostMapping("/{boardId}")
+    public ResponseDto<?>increaseView(@PathVariable Integer boardId, @RequestBody Integer requestBody){
+        ResponseDto<?> result = boardService.increaseView(boardId,requestBody);
         return result;
     }
 
 
-    @GetMapping  ("/{boardNumber}/delete")
-    public ResponseDto<?> deleteBoard(@PathVariable Integer boardNumber){
-        ResponseDto<?> result = boardService.deleteBoard(boardNumber);
+    @GetMapping  ("/{boardId}/delete")
+    public ResponseDto<?> deleteBoard(@PathVariable Integer boardId){
+        ResponseDto<?> result = boardService.deleteBoard(boardId);
         return result;
     }
 
     @CrossOrigin(origins = "*")
-    @PatchMapping("{boardNumber}/edit")
+    @PatchMapping("{boardId}/edit")
     public ResponseDto<PatchBoardResponseDto> editBoard(
-            @PathVariable Integer boardNumber,
+            @PathVariable Integer boardId,
             @RequestBody PatchBoardDto requestBody){
-        ResponseDto<PatchBoardResponseDto> result = boardService.editBoard(boardNumber,requestBody);
+        ResponseDto<PatchBoardResponseDto> result = boardService.editBoard(boardId,requestBody);
 
         return result;
     }

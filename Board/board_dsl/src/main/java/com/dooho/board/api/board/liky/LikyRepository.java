@@ -6,17 +6,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Repository
-@Transactional
 public interface LikyRepository extends JpaRepository<LikyEntity,Integer> {
 
-    Integer countByBoardNumber(Integer boardNumber);
+    Integer countByboardId(Integer boardId);
 
-    List<LikyEntity> findByBoardNumber(Integer boardNumber);
+    List<LikyEntity> findByboardId(Integer boardId);
 
     void deleteByLikeUserNickname(String likeUserNickname);
 
     void deleteByLikeId(Integer likeId);
 
-    void deleteByBoardNumberAndLikeUserNickname(Integer boardNumber, String likeUserNickname);
+    void deleteByboardIdAndLikeUserNickname(Integer boardId, String likeUserNickname);
 }

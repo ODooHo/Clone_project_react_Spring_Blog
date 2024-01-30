@@ -8,10 +8,12 @@ import com.dooho.board.api.board.BoardRepository;
 import com.dooho.board.api.comment.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
 @Service
 public class UserService {
 
@@ -27,6 +29,7 @@ public class UserService {
     }
 
 
+    @Transactional(readOnly = true)
     public ResponseDto<MyPageDto> myPage(String userEmail) {
 
         UserEntity user = null;
@@ -34,7 +37,7 @@ public class UserService {
 
         try{
             user = userRepository.findById(userEmail).orElse(null);
-            board = boardRepository.findByBoardWriterEmail(userEmail);
+            board = boardRepository.findByUser_UserEmail(userEmail);
         }catch (Exception e){
             return ResponseDto.setFailed("Does Not Exist User");
         }
@@ -62,26 +65,14 @@ public class UserService {
 
         try{
             userEntity = userRepository.findById(userEmail).orElse(null);
-            commentEntity = commentRepository.findByUserEmail(userEmail);
-            boardEntity = boardRepository.findByBoardWriterEmail(userEmail);
+            commentEntity = commentRepository.findByUser_UserEmail(userEmail);
+            boardEntity = boardRepository.findByUser_UserEmail(userEmail);
             if (userEntity == null){
                 return ResponseDto.setFailed("Does Not Exist User");
             }
             userEntity.setUserNickname(userNickname);
 
             userRepository.save(userEntity);
-
-
-            for (BoardEntity board : boardEntity){
-                board.setBoardWriterNickname(userNickname);
-                boardRepository.save(board);
-            }
-
-            for (CommentEntity comment : commentEntity){
-                comment.setCommentUserNickname(userNickname);
-                commentRepository.save(comment);
-            }
-
         }catch (Exception e){
             e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error!");

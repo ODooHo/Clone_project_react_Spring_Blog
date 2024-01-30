@@ -11,15 +11,10 @@ import java.util.List;
 @Transactional
 public interface BoardRepository extends JpaRepository<BoardEntity, Integer>, CustomBoardRepository {
 
-    List<BoardEntity> findByBoardTitleContains(String boardTitle);
+    List<BoardEntity> findByTitleContains(String boardTitle);
 
-    List<BoardEntity> findByBoardWriterEmail(String userEmail);
+    List<BoardEntity> findByUser_UserEmail(String userEmail);
 
-    boolean existsByBoardTitle(String boardTitle);
-
-    BoardEntity findByBoardNumber(Integer boardNumber);
-
-    void deleteBoardEntityByBoardNumber(Integer BoardNumber);
-
+    boolean existsByTitle(String boardTitle);
 
 }

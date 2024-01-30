@@ -29,7 +29,7 @@ public class CustomBoardRepositoryImpl implements CustomBoardRepository{
         return queryFactory
                 .selectFrom(qBoardEntity)
                 .where(qBoardEntity.boardWriteDate.after(boardWriteDate))
-                .orderBy(qBoardEntity.boardLikeCount.desc())
+                .orderBy(qBoardEntity.likeCount.desc())
                 .limit(3)
                 .fetch();
     }
@@ -39,7 +39,7 @@ public class CustomBoardRepositoryImpl implements CustomBoardRepository{
         return queryFactory
                 .selectFrom(qBoardEntity)
                 .orderBy(qBoardEntity.boardWriteDate.desc())
-                .orderBy(qBoardEntity.boardNumber.desc())
+                .orderBy(qBoardEntity.id.desc())
                 .fetch();
     }
 

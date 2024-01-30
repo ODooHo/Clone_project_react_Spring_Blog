@@ -1,10 +1,14 @@
 package com.dooho.board.api.board;
 
-import com.dooho.board.api.board.BoardDto;
+import com.dooho.board.api.comment.CommentEntity;
+import com.dooho.board.api.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.mapping.Join;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -17,44 +21,45 @@ import java.time.LocalDate;
 public class BoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer boardNumber;
-    private String boardTitle;
-    private String boardContent;
-    private String boardImage;
-    private String boardVideo;
-    private String boardFile;
-    private String boardWriterEmail;
-    private String boardWriterProfile;
-    private String boardWriterNickname;
+    private Integer id;
+    private String title;
+    private String content;
+    private String image;
+    private String video;
+    private String file;
     private LocalDate boardWriteDate;
-    private int boardClickCount;
-    private int boardLikeCount;
-    private int boardCommentCount;
+    private int clickCount;
+    private int likeCount;
+    private int commentCount;
+
+    @ManyToOne
+    @JoinColumn(name = "userEmail")
+    private UserEntity user;
+
+    @ToString.Exclude
+    @OrderBy("commentWriteDate DESC")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private final Set<CommentEntity> comments= new LinkedHashSet<>();
+
 
     public BoardEntity(BoardDto dto) {
-        this.boardNumber = dto.getBoardNumber();
-        this.boardTitle = dto.getBoardTitle();
-        this.boardContent = dto.getBoardContent();
-        this.boardImage = dto.getBoardImage();
-        this.boardVideo = dto.getBoardVideo();
-        this.boardFile = dto.getBoardFile();
-        this.boardWriterEmail = dto.getBoardWriterEmail();
-        this.boardWriterProfile = dto.getBoardWriterProfile();
-        this.boardWriterNickname = dto.getBoardWriterNickname();
+        this.id = dto.getId();
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
+        this.image = dto.getImage();
+        this.video = dto.getVideo();
+        this.file = dto.getFile();
         this.boardWriteDate = dto.getBoardWriteDate();
-        this.boardClickCount = dto.getBoardClickCount();
-        this.boardLikeCount = dto.getBoardLikeCount();
-        this.boardCommentCount = dto.getBoardCommentCount();
+        this.clickCount = dto.getClickCount();
+        this.likeCount = dto.getLikeCount();
+        this.commentCount = dto.getCommentCount();
     }
-    public void setBoardLikeCount(Integer boardLikeCount) {
-        this.boardLikeCount = boardLikeCount;
-    }
-
-    public void setBoardCommentCount(Integer boardCommentCount){
-        this.boardCommentCount = boardCommentCount;
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
     }
 
-    public void setClickCount(Integer boardClickCount){
-        this.boardClickCount = boardClickCount;
+    public void setCommentCount(Integer commentCount){
+        this.commentCount = commentCount;
     }
+
 }

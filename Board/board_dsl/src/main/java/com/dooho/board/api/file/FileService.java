@@ -13,8 +13,6 @@ import com.dooho.board.api.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -69,27 +67,27 @@ public class FileService {
                 String fileName = setFileName(boardImage, board);
                 String imagePath = uploadDir + "img/" + fileName;
                 uploadFileToS3(boardImage, imagePath);
-                board.setBoardImage(fileName);
+                board.setImage(fileName);
             } else {
-                board.setBoardImage(null);
+                board.setImage(null);
             }
 
             if (boardVideo != null) {
                 String fileName = setFileName(boardVideo, board);
                 String videoPath = uploadDir +"video/" + fileName;
                 uploadFileToS3(boardVideo, videoPath);
-                board.setBoardVideo(fileName);
+                board.setVideo(fileName);
             } else {
-                board.setBoardVideo(null);
+                board.setVideo(null);
             }
 
             if (boardFile != null) {
                 String fileName = setFileName(boardFile, board);
                 String filePath = uploadDir +"file/" + fileName;
                 uploadFileToS3(boardFile, filePath);
-                board.setBoardFile(fileName);
+                board.setFile(fileName);
             } else {
-                board.setBoardFile(null);
+                board.setFile(null);
             }
 
             boardRepository.save(board);
@@ -106,8 +104,8 @@ public class FileService {
     public ResponseDto<String> setProfile(MultipartFile file, String userEmail) {
         UserEntity user = userRepository.findById(userEmail).orElse(null);
 
-        List<CommentEntity> commentEntity = commentRepository.findByUserEmail(userEmail);
-        List<BoardEntity> boardEntity = boardRepository.findByBoardWriterEmail(userEmail);
+        List<CommentEntity> commentEntity = commentRepository.findByUser_UserEmail(userEmail);
+        List<BoardEntity> boardEntity = boardRepository.findByUser_UserEmail(userEmail);
 
         String fileName = user.getUserEmail() + "." + "jpg";
         try {
@@ -116,17 +114,6 @@ public class FileService {
 
             user.setUserProfile(fileName);
             userRepository.save(user);
-
-            for (CommentEntity comment : commentEntity) {
-                comment.setCommentUserProfile(fileName);
-                commentRepository.save(comment);
-            }
-
-            for (BoardEntity board : boardEntity) {
-                board.setBoardWriterProfile(fileName);
-                boardRepository.save(board);
-            }
-
             return ResponseDto.setSuccess("Success", fileName);
         } catch (Exception e) {
             e.printStackTrace();
@@ -260,7 +247,7 @@ public class FileService {
     private String setFileName(MultipartFile file, BoardEntity board) {
         String originalFileName = file.getOriginalFilename();
         String extension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
-        String fileName = board.getBoardNumber() + "." + extension;
+        String fileName = board.getId() + "." + extension;
         return fileName;
     }
 

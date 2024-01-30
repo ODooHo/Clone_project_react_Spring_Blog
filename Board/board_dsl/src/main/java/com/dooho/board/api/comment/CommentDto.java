@@ -1,5 +1,7 @@
 package com.dooho.board.api.comment;
 
+import com.dooho.board.api.board.BoardEntity;
+import com.dooho.board.api.user.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,11 +12,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentDto {
-            private Integer commentId;
-    private Integer boardNumber;
-    private String userEmail;
-    private String commentUserProfile;
-    private String commentUserNickname;
+    private BoardEntity board;
+    private UserEntity user;
     private LocalDate commentWriteDate;
     private String commentContent;
 }

@@ -1,5 +1,6 @@
 package com.dooho.board.api.board;
 
+import com.dooho.board.api.user.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,18 +11,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardDto {
-    private int boardNumber;
-    private String boardTitle;
-    private String boardContent;
-    private String boardImage;
-    private String boardVideo;
-    private String boardFile;
-    private String boardWriterEmail;
-    private String boardWriterProfile;
-    private String boardWriterNickname;
+    private int id;
+    private String title;
+    private String content;
+    private String image;
+    private String video;
+    private String file;
     private LocalDate boardWriteDate;
-    private int boardClickCount;
-    private int boardLikeCount;
-    private int boardCommentCount;
-
+    private int clickCount;
+    private int likeCount;
+    private int commentCount;
+    private UserEntity user;
 }

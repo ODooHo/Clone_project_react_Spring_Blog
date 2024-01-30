@@ -1,20 +1,17 @@
 package com.dooho.board.api.comment;
 
-import com.dooho.board.api.comment.CommentDto;
 import com.dooho.board.api.ResponseDto;
-import com.dooho.board.api.comment.PatchCommentDto;
-import com.dooho.board.api.comment.PatchCommentResponseDto;
 import com.dooho.board.api.board.BoardEntity;
-import com.dooho.board.api.comment.CommentEntity;
 import com.dooho.board.api.board.BoardRepository;
-import com.dooho.board.api.comment.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
 @Service
 public class CommentService {
 
@@ -44,17 +41,18 @@ public class CommentService {
 
     }
 
-    public ResponseDto<List<CommentEntity>> getComment(Integer boardNumber){
+    @Transactional(readOnly = true)
+    public ResponseDto<List<CommentEntity>> getComment(Integer boardId){
         List<CommentEntity> commentList = new ArrayList<>();
 
-        BoardEntity boardEntity = boardRepository.findById(boardNumber).orElse(null);
+        BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
         Integer commentCount = 0;
 
         try{
-            commentList = commentRepository.getComment(boardNumber);
-            commentCount = commentRepository.countByBoardNumber(boardNumber);
+            commentList = commentRepository.getComment(boardId);
+            commentCount = commentRepository.countByboardId(boardId);
 
-            boardEntity.setBoardCommentCount(commentCount);
+            boardEntity.setCommentCount(commentCount);
             boardRepository.save(boardEntity);
 
         }catch (Exception e){
@@ -67,7 +65,7 @@ public class CommentService {
 
     }
 
-    public ResponseDto<PatchCommentResponseDto> editComment(Integer boardNumber, Integer commentId, PatchCommentDto dto) {
+    public ResponseDto<PatchCommentResponseDto> editComment(Integer boardId, Integer commentId, PatchCommentDto dto) {
         CommentEntity comment = null;
         String commentContent = dto.getCommentContent();
         LocalDate commentWriteDate = dto.getCommentWriteDate();
@@ -90,12 +88,12 @@ public class CommentService {
 
 
 
-    public ResponseDto<?> deleteComment(Integer boardNumber, Integer commentId) {
-        BoardEntity boardEntity = boardRepository.findById(boardNumber).orElse(null);
+    public ResponseDto<?> deleteComment(Integer boardId, Integer commentId) {
+        BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
         try{
             commentRepository.deleteByCommentId(commentId);
-            Integer temp = boardEntity.getBoardCommentCount();
-            boardEntity.setBoardCommentCount(temp - 1);
+            Integer temp = boardEntity.getCommentCount();
+            boardEntity.setCommentCount(temp - 1);
             boardRepository.save(boardEntity);
         }catch (Exception e){
             e.printStackTrace();

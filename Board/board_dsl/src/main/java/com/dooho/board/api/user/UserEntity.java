@@ -1,6 +1,7 @@
 package com.dooho.board.api.user;
 
 import com.dooho.board.api.auth.SignUpDto;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -16,11 +17,17 @@ import lombok.*;
 //Table(name="") db에 있는 해당 테이블과 클래스를 매핑시킨다.
 public class UserEntity {
     @Id
+    @Column(nullable = false)
     private String userEmail;
+    @Column(nullable = false)
     private String userPassword;
+    @Column(nullable = false)
     private String userNickname;
+    @Column(nullable = false)
     private String userPhoneNumber;
+    @Column(nullable = false)
     private String userAddress;
+    @Column
     private String userProfile;
 
     public UserEntity(SignUpDto dto){

@@ -6,9 +6,12 @@ import com.dooho.board.api.board.BoardRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
+@Transactional(readOnly = true)
 @Slf4j
 @Service
 public class SearchService {
@@ -38,7 +41,7 @@ public class SearchService {
                 searchEntity.setPopularSearchCount(1);
                 searchRepository.save(searchEntity);
             }
-            boardList = boardRepository.findByBoardTitleContains(searchWord);
+            boardList = boardRepository.findByTitleContains(searchWord);
         }catch (Exception e){
             e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error!");

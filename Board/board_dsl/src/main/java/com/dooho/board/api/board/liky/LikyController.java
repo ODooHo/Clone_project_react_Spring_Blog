@@ -21,27 +21,27 @@ public class LikyController {
     }
 
 
-    @PostMapping("/{boardNumber}/liky/add")
+    @PostMapping("/{boardId}/liky/add")
     public ResponseDto<?>addLiky(@RequestBody LikyDto requestBody){
         ResponseDto<?> result = likyService.addLiky(requestBody);
         return result;
     }
 
-    @GetMapping("/{boardNumber}/liky/get")
-    public ResponseDto<List<LikyEntity>> getLiky(@PathVariable Integer boardNumber){
-        ResponseDto<List<LikyEntity>> result =  likyService.getLiky(boardNumber);
+    @GetMapping("/{boardId}/liky/get")
+    public ResponseDto<List<LikyEntity>> getLiky(@PathVariable Integer boardId){
+        ResponseDto<List<LikyEntity>> result =  likyService.getLiky(boardId);
         return result;
     }
 
-    @GetMapping("/{boardNumber}/liky/get/count")
-    public ResponseDto<Integer> getLikyCount(@PathVariable Integer boardNumber){
-        ResponseDto<Integer> result =  likyService.getLikyCount(boardNumber);
+    @GetMapping("/{boardId}/liky/get/count")
+    public ResponseDto<Integer> getLikyCount(@PathVariable Integer boardId){
+        ResponseDto<Integer> result =  likyService.getLikyCount(boardId);
         return result;
     }
 
-    @GetMapping("/{boardNumber}/liky/delete/{likeUserNickname}")
-    public ResponseDto<?> deleteLiky(@PathVariable Integer boardNumber,@PathVariable String likeUserNickname){
-        ResponseDto<?> result = likyService.deleteLiky(boardNumber,likeUserNickname);
+    @GetMapping("/{boardId}/liky/delete/{likeUserNickname}")
+    public ResponseDto<?> deleteLiky(@PathVariable Integer boardId,@PathVariable String likeUserNickname){
+        ResponseDto<?> result = likyService.deleteLiky(boardId,likeUserNickname);
         return result;
     }
 

@@ -21,10 +21,10 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository{
     }
 
     @Override
-    public List<CommentEntity> getComment(Integer boardNumber) {
+    public List<CommentEntity> getComment(Integer boardId) {
         return queryFactory
                 .selectFrom(qCommentEntity)
-                .where(qCommentEntity.boardNumber.eq(boardNumber))
+                .where(qCommentEntity.board.id.eq(boardId))
                 .orderBy(qCommentEntity.commentWriteDate.desc())
                 .fetch();
     }
