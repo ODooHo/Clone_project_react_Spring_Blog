@@ -9,7 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public record BoardWithCommentDto(
+public record BoardDetailDto(
         Integer id,
         String title,
         String content,
@@ -24,7 +24,7 @@ public record BoardWithCommentDto(
         Set<CommentDto> comments
 ) {
 
-    public static BoardWithCommentDto of(
+    public static BoardDetailDto of(
             String title,
             String content,
             String image,
@@ -37,9 +37,9 @@ public record BoardWithCommentDto(
             UserEntity user,
             Set<CommentDto> comments
     ) {
-        return new BoardWithCommentDto(null, title, content, image, video, file, boardWriteDate, clickCount, likeCount, commentCount, user, comments);
+        return new BoardDetailDto(null, title, content, image, video, file, boardWriteDate, clickCount, likeCount, commentCount, user, comments);
     }
-    public static BoardWithCommentDto of(
+    public static BoardDetailDto of(
             int id,
             String title,
             String content,
@@ -53,11 +53,11 @@ public record BoardWithCommentDto(
             UserEntity user,
             Set<CommentDto> comments
     ) {
-        return new BoardWithCommentDto(id, title, content, image, video, file, boardWriteDate, clickCount, likeCount, commentCount, user, comments);
+        return new BoardDetailDto(id, title, content, image, video, file, boardWriteDate, clickCount, likeCount, commentCount, user, comments);
     }
 
-    public static BoardWithCommentDto from(BoardEntity board) {
-        return new BoardWithCommentDto(
+    public static BoardDetailDto from(BoardEntity board) {
+        return new BoardDetailDto(
                 board.getId(),
                 board.getTitle(),
                 board.getContent(),

@@ -1,14 +1,9 @@
 package com.dooho.board.api.auth;
 
 import com.dooho.board.api.ResponseDto;
-import com.dooho.board.api.auth.RefreshResponseDto;
-import com.dooho.board.api.auth.SignInDto;
-import com.dooho.board.api.auth.SignInResponseDto;
-import com.dooho.board.api.auth.SignUpDto;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
 import com.dooho.board.global.security.TokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

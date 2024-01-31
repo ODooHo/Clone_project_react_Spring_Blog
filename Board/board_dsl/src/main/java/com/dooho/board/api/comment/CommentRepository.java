@@ -1,12 +1,11 @@
 package com.dooho.board.api.comment;
 
-import com.dooho.board.api.comment.querydsl.CustomCommentRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 
-public interface CommentRepository extends JpaRepository<CommentEntity, Integer> , CustomCommentRepository {
+public interface CommentRepository extends JpaRepository<CommentEntity, Integer>{
 
     Integer countByBoard_Id(Integer boardId);
 

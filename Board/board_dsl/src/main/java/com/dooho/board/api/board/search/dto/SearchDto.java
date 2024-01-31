@@ -1,9 +1,6 @@
 package com.dooho.board.api.board.search.dto;
 
 import com.dooho.board.api.board.search.SearchEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 
 public record SearchDto(
@@ -17,6 +14,13 @@ public record SearchDto(
 
     public static SearchDto from(SearchEntity search){
         return new SearchDto(search.getPopularTerm(),search.getPopularSearchCount());
+    }
+
+    public SearchEntity toEntity(){
+        return SearchEntity.of(
+                popularTerm,
+                popularSearchCount
+        );
     }
 
 }

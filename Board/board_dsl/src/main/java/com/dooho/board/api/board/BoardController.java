@@ -1,10 +1,9 @@
 package com.dooho.board.api.board;
 
 import com.dooho.board.api.ResponseDto;
+import com.dooho.board.api.board.dto.BoardDetailDto;
 import com.dooho.board.api.board.dto.BoardDto;
-import com.dooho.board.api.board.dto.BoardWithCommentDto;
 import com.dooho.board.api.board.dto.PatchBoardDto;
-import com.dooho.board.api.board.dto.PatchBoardResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,7 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/register")
-    public ResponseDto<BoardEntity> register(
+    public ResponseDto<String> register(
             @AuthenticationPrincipal String userEmail,
             @RequestParam("boardTitle") String boardTitle,
             @RequestParam("boardContent") String boardContent,
@@ -46,7 +45,7 @@ public class BoardController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/{boardId}")
-    public ResponseDto<BoardWithCommentDto> getBoardWithComments(@PathVariable Integer boardId){
+    public ResponseDto<BoardDetailDto> getBoardWithComments(@PathVariable Integer boardId){
         return boardService.getBoardWithComments(boardId);
     }
 

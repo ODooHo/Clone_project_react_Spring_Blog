@@ -9,7 +9,6 @@ import com.dooho.board.api.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
@@ -44,15 +43,7 @@ public class LikyService {
 
     @Transactional(readOnly = true)
     public ResponseDto<Integer> getLikyCount(Integer boardId){
-        BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
-        Integer temp = 0;
-        try{
-            temp = likyRepository.countByBoard_Id(boardId);
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error");
-        }
-
+        Integer temp = likyRepository.countByBoard_Id(boardId);
         return ResponseDto.setSuccess("Success",temp);
     }
 

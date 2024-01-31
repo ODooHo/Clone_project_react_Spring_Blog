@@ -1,7 +1,7 @@
 package com.dooho.board.api.board.liky;
 
-import com.dooho.board.api.board.liky.dto.LikyDto;
 import com.dooho.board.api.ResponseDto;
+import com.dooho.board.api.board.liky.dto.LikyDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

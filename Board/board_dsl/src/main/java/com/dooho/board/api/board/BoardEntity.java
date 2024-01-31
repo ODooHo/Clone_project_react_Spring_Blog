@@ -4,7 +4,10 @@ import com.dooho.board.api.board.liky.LikyEntity;
 import com.dooho.board.api.comment.CommentEntity;
 import com.dooho.board.api.user.UserEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDate;
@@ -31,6 +34,8 @@ public class BoardEntity {
     private String file;
     private LocalDate boardWriteDate;
     private int clickCount;
+    private int likesCount;
+    private int commentsCount;
     @ManyToOne
     @JoinColumn(name = "userEmail")
     private UserEntity user;
@@ -48,7 +53,7 @@ public class BoardEntity {
 
     }
 
-    private BoardEntity(Integer id, String title, String content, String image, String video, String file, LocalDate boardWriteDate, int clickCount, UserEntity user) {
+    private BoardEntity(Integer id, String title, String content, String image, String video, String file, LocalDate boardWriteDate, int clickCount,int likesCount,int commentsCount ,UserEntity user) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -57,11 +62,13 @@ public class BoardEntity {
         this.file = file;
         this.boardWriteDate = boardWriteDate;
         this.clickCount = clickCount;
+        this.likesCount = likesCount;
+        this.commentsCount = commentsCount;
         this.user = user;
     }
 
-    public static BoardEntity of (Integer id, String title, String content, String image, String video, String file, LocalDate boardWriteDate, int clickCount, UserEntity user) {
-        return new BoardEntity(id,title,content,image,video,file,boardWriteDate,clickCount,user);
+    public static BoardEntity of (Integer id, String title, String content, String image, String video, String file, LocalDate boardWriteDate, int clickCount, int likesCount, int commentsCount ,UserEntity user) {
+        return new BoardEntity(id,title,content,image,video,file,boardWriteDate,clickCount,likesCount,commentsCount,user);
     }
 
 

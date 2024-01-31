@@ -25,7 +25,7 @@ public class CommentController {
 
 
     @GetMapping("/{boardId}/comment/list")
-    public ResponseDto<List<CommentEntity>> getComment(@PathVariable Integer boardId){
+    public ResponseDto<List<CommentDto>> getComment(@PathVariable Integer boardId){
         return commentService.getComment(boardId);
     }
 

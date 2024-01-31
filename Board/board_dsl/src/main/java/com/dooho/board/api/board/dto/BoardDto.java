@@ -1,13 +1,9 @@
 package com.dooho.board.api.board.dto;
 
 import com.dooho.board.api.board.BoardEntity;
-import com.dooho.board.api.board.liky.dto.LikyDto;
-import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.dto.UserDto;
 
 import java.time.LocalDate;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 public record BoardDto(
@@ -19,17 +15,18 @@ public record BoardDto(
         String file,
         LocalDate boardWriteDate,
         int clickCount,
-        UserDto user,
-        Set<LikyDto> likes
+        int likesCount,
+        int commentsCount,
+        UserDto user
 
 ) {
 
-    public static BoardDto of( String title, String content, String image, String video, String file, LocalDate boardWriteDate, int clickCount, UserDto user, Set<LikyDto> likes) {
-        return new BoardDto(null, title, content, image, video, file, boardWriteDate, clickCount, user, likes);
+    public static BoardDto of( String title, String content, String image, String video, String file, LocalDate boardWriteDate, int clickCount,int likesCount,int commentsCount,UserDto user) {
+        return new BoardDto(null, title, content, image, video, file, boardWriteDate, clickCount,likesCount,commentsCount, user);
     }
 
-    public static BoardDto of(int id, String title, String content, String image, String video, String file, LocalDate boardWriteDate, int clickCount, UserDto user, Set<LikyDto> likes) {
-        return new BoardDto(id, title, content, image, video, file, boardWriteDate, clickCount, user, likes);
+    public static BoardDto of(int id, String title, String content, String image, String video, String file, LocalDate boardWriteDate, int clickCount,int likesCount,int commentsCount, UserDto user) {
+        return new BoardDto(id, title, content, image, video, file, boardWriteDate, clickCount, likesCount,commentsCount,user);
     }
 
     public static BoardDto from(BoardEntity board) {
@@ -42,14 +39,13 @@ public record BoardDto(
                 board.getFile(),
                 board.getBoardWriteDate(),
                 board.getClickCount(),
-                UserDto.from(board.getUser()),
-                board.getLikes().stream()
-                        .map(LikyDto::from)
-                        .collect(Collectors.toUnmodifiableSet())
+                board.getLikes().size(),
+                board.getComments().size(),
+                UserDto.from(board.getUser())
         );
     }
 
     public BoardEntity toEntity() {
-        return BoardEntity.of(id,title,content,image,video,file,boardWriteDate,clickCount, user.toEntity());
+        return BoardEntity.of(id,title,content,image,video,file,boardWriteDate,clickCount,likesCount,commentsCount,user.toEntity());
     }
 }

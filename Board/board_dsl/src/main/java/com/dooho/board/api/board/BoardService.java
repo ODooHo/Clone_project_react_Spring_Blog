@@ -1,10 +1,9 @@
 package com.dooho.board.api.board;
 
 import com.dooho.board.api.ResponseDto;
+import com.dooho.board.api.board.dto.BoardDetailDto;
 import com.dooho.board.api.board.dto.BoardDto;
-import com.dooho.board.api.board.dto.BoardWithCommentDto;
 import com.dooho.board.api.board.dto.PatchBoardDto;
-import com.dooho.board.api.board.dto.PatchBoardResponseDto;
 import com.dooho.board.api.file.FileService;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
@@ -15,10 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
@@ -38,7 +33,7 @@ public class BoardService {
     }
 
 
-    public ResponseDto<BoardEntity> register(
+    public ResponseDto<String> register(
             String userEmail,
             String boardTitle,
             String boardContent,
@@ -51,24 +46,23 @@ public class BoardService {
         }
 
         UserEntity user = userRepository.getReferenceById(userEmail);
-        BoardDto boardDto = BoardDto.of(boardTitle, boardContent, null, null, null, LocalDate.now(), 0, UserDto.from(user), null);
+        BoardDto boardDto = BoardDto.of(boardTitle, boardContent, null, null, null, LocalDate.now(),0,0,0, UserDto.from(user));
         BoardEntity board = boardDto.toEntity();
         boardRepository.save(board);
-        try {
-            fileService.uploadFile(boardImage, boardVideo, boardFile, boardDto);
-        } catch (Exception e) {
-            return ResponseDto.setFailed("DataBase Error!");
+        String message = fileService.uploadFile(boardImage, boardVideo, boardFile,board);
 
+        if(message.equals("Failed")){
+            return ResponseDto.setFailed("failed");
         }
 
-        return ResponseDto.setSuccess("Register Success!", board);
+        return ResponseDto.setSuccess("Success","Success");
     }
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<BoardWithCommentDto> getBoardWithComments(Integer boardId) {
-        BoardWithCommentDto board = boardRepository.findById(boardId)
-                .map(BoardWithCommentDto::from)
+    public ResponseDto<BoardDetailDto> getBoardWithComments(Integer boardId) {
+        BoardDetailDto board = boardRepository.findById(boardId)
+                .map(BoardDetailDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("게시글 없음"));
         return ResponseDto.setSuccess("Success",board);
     }

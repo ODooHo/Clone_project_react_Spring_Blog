@@ -48,15 +48,11 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<CommentEntity>> getComment(Integer boardId) {
-        List<CommentEntity> commentList = new ArrayList<>();
-        System.out.println(commentList);
-        try {
-            commentList = commentRepository.findAllByBoard_Id(boardId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
-        }
+    public ResponseDto<List<CommentDto>> getComment(Integer boardId) {
+        List<CommentDto> commentList = commentRepository.findAllByBoard_Id(boardId)
+                .stream()
+                .map(CommentDto::from)
+                .toList();
         return ResponseDto.setSuccess("Success", commentList);
     }
 

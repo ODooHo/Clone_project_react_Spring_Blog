@@ -6,13 +6,11 @@ import com.amazonaws.util.IOUtils;
 import com.dooho.board.api.ResponseDto;
 import com.dooho.board.api.board.BoardEntity;
 import com.dooho.board.api.board.dto.BoardDto;
-import com.dooho.board.api.comment.CommentEntity;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.board.BoardRepository;
 import com.dooho.board.api.comment.CommentRepository;
 import com.dooho.board.api.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,7 +22,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -50,7 +47,6 @@ public class FileService {
     private String defaultFileExtension;
 
 
-    @Autowired
     public FileService(UserRepository userRepository, BoardRepository boardRepository, CommentRepository commentRepository, AmazonS3 amazonS3) {
         this.userRepository = userRepository;
         this.boardRepository = boardRepository;
@@ -58,13 +54,12 @@ public class FileService {
         this.amazonS3 = amazonS3;
     }
 
-    public ResponseDto<String> uploadFile(
+    public String uploadFile(
             MultipartFile boardImage,
             MultipartFile boardVideo,
             MultipartFile boardFile,
-            BoardDto boardDto) {
+            BoardEntity board) {
         try {
-            BoardEntity board = boardDto.toEntity();
             if (boardImage != null) {
                 String fileName = setFileName(boardImage, board);
                 String imagePath = uploadDir + "img/" + fileName;
@@ -95,23 +90,18 @@ public class FileService {
             boardRepository.save(board);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
+            return "Failed";
         }
-
-        return ResponseDto.setSuccess("Success", null);
-
+        return "Success";
     }
 
 
     public ResponseDto<String> setProfile(MultipartFile file, String userEmail) {
         UserEntity user = userRepository.findById(userEmail).orElse(null);
-
-
         String fileName = user.getUserEmail() + "." + "jpg";
         try {
             // S3 버킷에 파일 업로드
             uploadFileToS3(file, uploadDir + "img/"+fileName);
-
             user.setUserProfile(fileName);
             userRepository.save(user);
             return ResponseDto.setSuccess("Success", fileName);
@@ -247,8 +237,7 @@ public class FileService {
     private String setFileName(MultipartFile file, BoardEntity board) {
         String originalFileName = file.getOriginalFilename();
         String extension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
-        String fileName = board.getId() + "." + extension;
-        return fileName;
+        return board.getId() + "." + extension;
     }
 
 }
