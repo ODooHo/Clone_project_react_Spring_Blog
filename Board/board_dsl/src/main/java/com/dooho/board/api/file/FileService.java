@@ -106,8 +106,6 @@ public class FileService {
     public ResponseDto<String> setProfile(MultipartFile file, String userEmail) {
         UserEntity user = userRepository.findById(userEmail).orElse(null);
 
-        List<CommentEntity> commentEntity = commentRepository.findByUser_UserEmail(userEmail);
-        List<BoardEntity> boardEntity = boardRepository.findByUser_UserEmail(userEmail);
 
         String fileName = user.getUserEmail() + "." + "jpg";
         try {

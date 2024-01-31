@@ -2,6 +2,7 @@ package com.dooho.board.api.board.liky;
 
 import com.dooho.board.api.board.BoardEntity;
 import com.dooho.board.api.user.UserEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -18,10 +19,14 @@ public class LikyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "boardId")
     private BoardEntity board;
+
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "userEmail")
     private UserEntity user;
 

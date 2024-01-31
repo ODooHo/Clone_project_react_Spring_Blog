@@ -38,14 +38,6 @@ public class BoardService {
     }
 
 
-    @Transactional(readOnly = true)
-    public ResponseDto<BoardWithCommentDto> getBoard(Integer boardId) {
-        BoardWithCommentDto board = boardRepository.findById(boardId)
-                .map(BoardWithCommentDto::from)
-                .orElseThrow(() -> new EntityNotFoundException("게시글 없음"));
-        return ResponseDto.setSuccess("Success",board);
-    }
-
     public ResponseDto<BoardEntity> register(
             String userEmail,
             String boardTitle,
@@ -64,7 +56,6 @@ public class BoardService {
         boardRepository.save(board);
         try {
             fileService.uploadFile(boardImage, boardVideo, boardFile, boardDto);
-            boardRepository.save(board);
         } catch (Exception e) {
             return ResponseDto.setFailed("DataBase Error!");
 
@@ -73,39 +64,39 @@ public class BoardService {
         return ResponseDto.setSuccess("Register Success!", board);
     }
 
-    @Transactional(readOnly = true)
-    public ResponseDto<List<BoardEntity>> getTop3() {
-        List<BoardEntity> boardList = new ArrayList<BoardEntity>();
-        LocalDate date = LocalDate.now().minusDays(365);
-        try {
-            boardList = boardRepository.findTop3(date);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error");
-        }
+    @Transactional(readOnly = true)
+    public ResponseDto<BoardWithCommentDto> getBoardWithComments(Integer boardId) {
+        BoardWithCommentDto board = boardRepository.findById(boardId)
+                .map(BoardWithCommentDto::from)
+                .orElseThrow(() -> new EntityNotFoundException("게시글 없음"));
+        return ResponseDto.setSuccess("Success",board);
+    }
+
+
+    @Transactional(readOnly = true)
+    public ResponseDto<List<BoardDto>> getTop3() {
+        LocalDate date = LocalDate.now().minusDays(365);
+        List<BoardDto> boardList = boardRepository.findTop3(date)
+                .stream()
+                .map(BoardDto::from)
+                .toList();
 
         return ResponseDto.setSuccess("Success", boardList);
     }
 
-    public ResponseDto<List<BoardEntity>> getList() {
-        List<BoardEntity> boardList = new ArrayList<>();
-
-        try {
-            boardList = boardRepository.findList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error");
-        }
-
+    @Transactional(readOnly = true)
+    public ResponseDto<List<BoardDto>> getList() {
+        List<BoardDto> boardList = boardRepository.findList()
+                .stream()
+                .map(BoardDto::from)
+                .toList();
         return ResponseDto.setSuccess("Success", boardList);
     }
 
 
     public ResponseDto<?> deleteBoard(Integer boardId) {
-
         try {
-            System.out.println("boardId = " + boardId);
             boardRepository.deleteById(boardId);
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,26 +118,14 @@ public class BoardService {
         return ResponseDto.setSuccess("Success", null);
     }
 
-    public ResponseDto<PatchBoardResponseDto> editBoard(Integer boardId, PatchBoardDto dto) {
-        BoardEntity board = null;
-        String boardTitle = dto.getBoardTitle();
-        String boardContent = dto.getBoardContent();
-        LocalDate boardWriteDate = dto.getBoardWriteDate();
-        try {
-            board = boardRepository.findById(boardId).orElse(null);
-            board.setTitle(boardTitle);
-            board.setContent(boardContent);
-            board.setBoardWriteDate(boardWriteDate);
-
-            boardRepository.save(board);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
-        }
-
-        PatchBoardResponseDto patchBoardResponseDto = new PatchBoardResponseDto(board);
-
-        return ResponseDto.setSuccess("Success!", patchBoardResponseDto);
+    public ResponseDto<BoardDto> editBoard(Integer boardId, PatchBoardDto dto) {
+        String boardTitle = dto.boardTitle();
+        String boardContent = dto.boardContent();
+        BoardEntity board = boardRepository.getReferenceById(boardId);
+        board.setTitle(boardTitle);
+        board.setContent(boardContent);
+        boardRepository.save(board);
+        BoardDto response = BoardDto.from(board);
+        return ResponseDto.setSuccess("Success!", response);
     }
 }

@@ -7,22 +7,22 @@ import com.dooho.board.api.user.dto.UserDto;
 
 public record LikyDto(
         Integer id,
-        BoardDto board,
-        UserDto user
+        Integer boardId,
+        String userEmail
 ) {
-    public static LikyDto of(BoardDto board, UserDto user) {
-        return new LikyDto(null, board, user);
+    public static LikyDto of(Integer boardId, String userEmail) {
+        return new LikyDto(null, boardId, userEmail);
     }
 
-    public static LikyDto of(Integer id, BoardDto board, UserDto user) {
-        return new LikyDto(id, board, user);
+    public static LikyDto of(Integer id, Integer boardId , String userEmail) {
+        return new LikyDto(id, boardId, userEmail);
     }
 
     public static LikyDto from(LikyEntity liky) {
         return new LikyDto(
                 liky.getId(),
-                BoardDto.from(liky.getBoard()),
-                UserDto.from(liky.getUser())
+                liky.getBoard().getId(),
+                liky.getUser().getUserEmail()
         );
     }
 

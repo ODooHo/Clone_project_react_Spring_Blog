@@ -1,6 +1,7 @@
 package com.dooho.board.api.board;
 
 import com.dooho.board.api.ResponseDto;
+import com.dooho.board.api.board.dto.BoardDto;
 import com.dooho.board.api.board.dto.BoardWithCommentDto;
 import com.dooho.board.api.board.dto.PatchBoardDto;
 import com.dooho.board.api.board.dto.PatchBoardResponseDto;
@@ -32,21 +33,21 @@ public class BoardController {
     }
 
     @GetMapping("/top3")
-    public ResponseDto<List<BoardEntity>> getTop3(){
+    public ResponseDto<List<BoardDto>> getTop3(){
         return boardService.getTop3();
     }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/list")
-    public ResponseDto<List<BoardEntity>> getList(){
+    public ResponseDto<List<BoardDto>> getList(){
         return boardService.getList();
     }
 
 
     @CrossOrigin(origins = "*")
     @GetMapping("/{boardId}")
-    public ResponseDto<BoardWithCommentDto> getBoard(@PathVariable Integer boardId){
-        return boardService.getBoard(boardId);
+    public ResponseDto<BoardWithCommentDto> getBoardWithComments(@PathVariable Integer boardId){
+        return boardService.getBoardWithComments(boardId);
     }
 
     @PostMapping("/{boardId}")
@@ -62,7 +63,7 @@ public class BoardController {
 
     @CrossOrigin(origins = "*")
     @PatchMapping("{boardId}/edit")
-    public ResponseDto<PatchBoardResponseDto> editBoard(
+    public ResponseDto<BoardDto> editBoard(
             @PathVariable Integer boardId,
             @RequestBody PatchBoardDto requestBody){
         return boardService.editBoard(boardId,requestBody);
