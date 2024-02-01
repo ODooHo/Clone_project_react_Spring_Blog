@@ -1,10 +1,9 @@
 package com.dooho.board.api.comment;
 
 
-import com.dooho.board.api.comment.dto.CommentDto;
 import com.dooho.board.api.ResponseDto;
+import com.dooho.board.api.comment.dto.CommentDto;
 import com.dooho.board.api.comment.dto.PatchCommentDto;
-import com.dooho.board.api.comment.dto.PatchCommentResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +35,7 @@ public class CommentController {
 
     @CrossOrigin(origins = "*")
     @PatchMapping("{boardId}/comment/{commentId}/edit")
-    public ResponseDto<PatchCommentResponseDto> editComment(
+    public ResponseDto<CommentDto> editComment(
             @PathVariable Integer boardId,
             @PathVariable Integer commentId,
             @RequestBody PatchCommentDto requestBody){

@@ -44,9 +44,9 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
           const imageUrl = await getProfileApi(
             token,
             refreshToken,
-            board.boardWriterProfile
+            board.user.userProfile
           );
-          return { [board.boardNumber]: imageUrl };
+          return { [board.id]: imageUrl };
         });
 
         // Wait for all image promises to resolve
@@ -92,7 +92,7 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
         >
           {boardData.slice(0,3).map((board,index) => (
             <Button
-              key={board.boardNumber}
+              key={board.id}
               variant="outlined"
               sx={{
                 width: "300px",
@@ -107,7 +107,7 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
                 padding: 2,
                 cursor: "pointer",
               }}
-              onClick={() => onDetailClick(board.boardNumber)}
+              onClick={() => onDetailClick(board.id)}
             >
                   <Box display="flex" width="100%" justifyContent="flex-start">
                     <Box display="flex" alignItems="flex-start">
@@ -119,7 +119,7 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
                         mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
                       >
                         <img
-                          src={profileImages[board.boardNumber] || defaultImage}
+                          src={profileImages[board.id] || defaultImage}
                           width="100%"
                           height="100%"
                         />
@@ -135,7 +135,7 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
                           marginBottom="3px"
                           color="white"
                         >
-                          {board.boardWriterNickname}
+                          {board.user.userNickname}
                         </Typography>
                         <Typography
                           variant="body2"
@@ -159,22 +159,22 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
                         color:"white"
                       }}
                     >
-                      {board.boardTitle}
+                      {board.title}
                     </Typography>
                     <Typography
                       variant="body1"
                       color="#A4A4A4"
                       sx={{ mt: 1 ,textAlign: "left" }}
                     >
-                      {board.boardContent.slice(0, 80)}
+                      {board.content.slice(0, 80)}
                     </Typography>
                     <Typography
                       variant="body2"
                       color="#A4A4A4"
                       sx={{ mt: 1 }}
                     >
-                      조회수: {board.boardClickCount} 좋아요:{" "}
-                      {board.boardLikeCount} 댓글: {board.boardCommentCount}
+                      조회수: {board.clickCount} 좋아요:{" "}
+                      {board.likesCount} 댓글: {board.commentCount}
                     </Typography>
                   </Box>
             </Button>

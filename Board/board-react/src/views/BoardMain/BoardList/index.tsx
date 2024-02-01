@@ -55,9 +55,9 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
           const imageUrl = await getProfileApi(
             token,
             refreshToken,
-            board.boardWriterProfile
+            board.user.userProfile
           );
-          return { [board.boardNumber]: imageUrl };
+          return { [board.id]: imageUrl };
         });
 
         // Wait for all image promises to resolve
@@ -145,7 +145,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
         >
           <Box flex="1" overflow="auto">
             {pageData.map((board) => (
-              <div key={board.boardNumber}>
+              <div key={board.id}>
                 <Button
                   fullWidth
                   variant="outlined"
@@ -158,7 +158,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
                     padding: 2,
                     backgroundColor: "white",
                   }}
-                  onClick={() => onDetailClick(board.boardNumber)}
+                  onClick={() => onDetailClick(board.id)}
                 >
                   <Box display="flex" width="100%" justifyContent="flex-start">
                     <Box display="flex" alignItems="flex-start">
@@ -170,7 +170,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
                         mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
                       >
                         <img
-                          src={profileImages[board.boardNumber] || defaultImage}
+                          src={profileImages[board.id] || defaultImage}
                           width="100%"
                           height="100%"
                         />
@@ -185,7 +185,7 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
                           gutterBottom
                           marginBottom="3px"
                         >
-                          {board.boardWriterNickname}
+                          {board.user.userNickname }
                         </Typography>
                         <Typography
                           variant="body2"
@@ -208,22 +208,22 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
                         fontSize: "1.2rem", // 원하는 글꼴 크기 설정 (예: 1.2rem)
                       }}
                     >
-                      {board.boardTitle}
+                      {board.title}
                     </Typography>
                     <Typography
                       variant="body1"
                       color="text.secondary"
                       sx={{ mt: 1, textAlign: "left" }}
                     >
-                      {board.boardContent.slice(0, 80)}
+                      {board.content.slice(0, 80)}
                     </Typography>
                     <Typography
                       variant="body2"
                       color="text.secondary"
                       sx={{ mt: 1 }}
                     >
-                      조회수: {board.boardClickCount} 좋아요:{" "}
-                      {board.boardLikeCount} 댓글: {board.boardCommentCount}
+                      조회수: {board.clickCount} 좋아요:{" "}
+                      {board.likesCount} 댓글: {board.commentCount}
                     </Typography>
                   </Box>
                 </Button>

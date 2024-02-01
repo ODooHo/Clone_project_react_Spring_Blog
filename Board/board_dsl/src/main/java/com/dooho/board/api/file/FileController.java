@@ -38,7 +38,7 @@ public class FileController {
 
 
     @GetMapping("/videos/{videoName}")
-    public ResponseDto<String> getVideo(@PathVariable String videoName) throws IOException {
+    public ResponseDto<String> getVideo(@PathVariable String videoName) {
         return fileService.getVideo(videoName);
     }
 

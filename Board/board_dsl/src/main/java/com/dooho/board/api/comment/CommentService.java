@@ -5,15 +5,12 @@ import com.dooho.board.api.board.BoardEntity;
 import com.dooho.board.api.board.BoardRepository;
 import com.dooho.board.api.comment.dto.CommentDto;
 import com.dooho.board.api.comment.dto.PatchCommentDto;
-import com.dooho.board.api.comment.dto.PatchCommentResponseDto;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
@@ -52,10 +49,10 @@ public class CommentService {
         return ResponseDto.setSuccess("Success", commentList);
     }
 
-    public ResponseDto<PatchCommentResponseDto> editComment(Integer boardId, Integer commentId, PatchCommentDto dto) {
+    public ResponseDto<CommentDto> editComment(Integer boardId, Integer commentId, PatchCommentDto dto) {
         CommentEntity comment = null;
-        String commentContent = dto.getCommentContent();
-        LocalDate commentWriteDate = dto.getCommentWriteDate();
+        String commentContent = dto.commentContent();
+        LocalDate commentWriteDate = dto.commentWriteDate();
 
         comment = commentRepository.findById(commentId).orElse(null);
         comment.setCommentContent(commentContent);
@@ -63,9 +60,8 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        PatchCommentResponseDto patchCommentResponseDto = new PatchCommentResponseDto(comment);
-
-        return ResponseDto.setSuccess("Success!", patchCommentResponseDto);
+        CommentDto response = CommentDto.from(comment);
+        return ResponseDto.setSuccess("Success!", response);
     }
 
 

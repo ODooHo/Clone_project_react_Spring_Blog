@@ -17,8 +17,7 @@ import {
 } from "../../../apis/boardApis";
 import {
   LikyApi,
-  LikyRegisterApi,
-  deleteLikyApi,
+  likyControlApi,
   getLikyCountApi,
 } from "../../../apis/likyApis";
 
@@ -31,20 +30,20 @@ import {
   getVideoApi,
 } from "../../../apis/fileApis";
 import DownloadIcon from "@mui/icons-material/Download";
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 
 interface BoardDetailProps {
   onMainClick: () => void;
   onEditClick: (boardId: number) => void;
   currentPage: string;
-  boardNumber: number; // 게시물 ID를 받아오도록 추가
+  boardId: number; // 게시물 ID를 받아오도록 추가
 }
 
 export default function BoardDetail({
   onMainClick,
   onEditClick,
   currentPage,
-  boardNumber,
+  boardId,
 }: BoardDetailProps) {
   const [boardData, setBoardData] = useState<Board | undefined>(undefined);
   const [liked, setLiked] = useState<boolean>(false);
@@ -66,29 +65,22 @@ export default function BoardDetail({
     async function fetchData() {
       try {
         if (isInitialMount) {
-          await BoardIncreaseApi(token, refreshToken, boardNumber);
+          await BoardIncreaseApi(token, refreshToken, boardId);
           setIsInitialMount(false); // 최초 마운트 이후에는 다시 실행되지 않도록 상태 변경
         }
 
         const [boardResponse, likyResponse] = await Promise.all([
-          BoardApi(token, refreshToken, boardNumber),
-          LikyApi(token, refreshToken, boardNumber),
+          BoardApi(token, refreshToken, boardId),
+          LikyApi(token, refreshToken, boardId),
         ]);
         const data = boardResponse.data;
         setBoardData(data);
-        setLiked(data.boardLikeCount);
+        setLiked(data.likesCount);
         const likyData = likyResponse.data;
         const userLiked = likyData.some(
-          (like: Liky) => like.userEmail === user?.userEmail
+          (like: Liky) => likyData.userEmail === user?.userEmail
         );
         setLiked(userLiked);
-
-        const likyCount = await getLikyCountApi(
-          token,
-          refreshToken,
-          boardNumber
-        );
-        setLikyCount(likyCount.data);
       } catch (error) {
         console.error("게시글 가져오기 실패:", error);
         setBoardData(undefined);
@@ -104,12 +96,12 @@ export default function BoardDetail({
         if (!boardData) return; // Return early if boardData is not available yet
 
         const [profileUrl, imageUrl, videoUrl] = await Promise.all([
-          getProfileApi(token, refreshToken, boardData.boardWriterProfile),
+          getProfileApi(token, refreshToken, boardData.user.userProfile),
           getImageApi(token, refreshToken, boardImage),
           getVideoApi(token, refreshToken, boardVideo),
         ]);
-        setProfileImages({ [boardData.boardNumber]: profileUrl });
-        setBoardImages({ [boardData.boardNumber]: imageUrl });
+        setProfileImages({ [boardData.id]: profileUrl });
+        setBoardImages({ [boardData.id]: imageUrl });
 
         setVideoUrl(videoUrl || undefined);
       } catch (error) {
@@ -120,17 +112,17 @@ export default function BoardDetail({
       }
     }
     fetchMedia();
-  }, [boardData?.boardContent, boardData?.boardCommentCount, token]);
+  }, [boardData?.content, boardData?.commentCount, token]);
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
   };
 
-  const isCurrentUserPost = boardData?.boardWriterEmail === user?.userEmail;
+  const isCurrentUserPost = boardData?.user.userEmail === user?.userEmail;
 
   const handleDeleteClick = async () => {
     try {
-      const response = await BoardDeleteApi(token, refreshToken, boardNumber);
+      const response = await BoardDeleteApi(token, refreshToken, boardId);
       if (response) {
         alert("게시물이 삭제되었습니다.");
         onMainClick();
@@ -144,27 +136,9 @@ export default function BoardDetail({
 
   const handleLikeClick = async () => {
     try {
-      const userLiked = liked;
+      await likyControlApi(token, refreshToken, boardId);
+      console.log(likyCount);
 
-      if (!userLiked) {
-        const likeUserdata = {
-          boardNumber,
-          userEmail: user.userEmail,
-          likeUserProfile: user.userProfile,
-          likeUserNickname: user.userNickname,
-        };
-        await LikyRegisterApi(token, refreshToken, boardNumber, likeUserdata);
-        console.log(likyCount);
-      } else {
-        await deleteLikyApi(
-          token,
-          refreshToken,
-          boardNumber,
-          user.userNickname
-        );
-      }
-
-      setLiked(!userLiked); // 좋아요 상태를 토글
       handleRefresh();
     } catch (error) {
       console.error("좋아요 처리 실패:", error);
@@ -194,8 +168,8 @@ export default function BoardDetail({
   };
 
   const handleEditClick = () => {
-    // boardData.boardNumber를 전달하여 게시글 수정 페이지로 이동
-    onEditClick(boardNumber);
+    // boardData.boardId를 전달하여 게시글 수정 페이지로 이동
+    onEditClick(boardId);
   };
 
   if (!boardData) {
@@ -203,17 +177,15 @@ export default function BoardDetail({
   }
 
   const {
-    boardTitle,
-    boardContent,
-    boardImage,
-    boardVideo,
-    boardFile,
-    boardWriterProfile,
-    boardWriterNickname,
+    title: boardTitle,
+    content: boardContent,
+    image: boardImage,
+    video: boardVideo,
+    file: boardFile,
     boardWriteDate,
-    boardClickCount,
-    boardLikeCount,
-    boardCommentCount,
+    clickCount: boardClickCount,
+    likesCount: boardLikeCount,
+    commentCount: boardCommentCount
   } = boardData;
 
   const defaultImage = "default-image.png";
@@ -239,10 +211,10 @@ export default function BoardDetail({
             <Card>
               <IconButton
                 color="inherit"
-                sx={{ backgroundColor: "#ffffff", color: "#000000"}}
+                sx={{ backgroundColor: "#ffffff", color: "#000000" }}
                 onClick={onMainClick}
               >
-                <NavigateBeforeIcon sx={{fontSize : "2rem"}}/>
+                <NavigateBeforeIcon sx={{ fontSize: "2rem" }} />
               </IconButton>
               <CardContent>
                 <Box textAlign="center">
@@ -259,7 +231,7 @@ export default function BoardDetail({
                     mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
                   >
                     <img
-                      src={profileImages[boardData.boardNumber] || defaultImage}
+                      src={profileImages[boardData.id] || defaultImage}
                       width="100%"
                       height="100%"
                     />
@@ -271,7 +243,7 @@ export default function BoardDetail({
                       marginTop={"20px"}
                       marginBottom="2px"
                     >
-                      {boardWriterNickname}
+                      {boardData.user.userNickname}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       {boardWriteDate}
@@ -285,7 +257,7 @@ export default function BoardDetail({
                     <CardMedia
                       component="img"
                       height="auto"
-                      image={boardImages[boardData.boardNumber] || undefined}
+                      image={boardImages[boardData.id] || undefined}
                       alt="게시물 이미지"
                       sx={{
                         display: "block", // Center align the image
@@ -384,7 +356,7 @@ export default function BoardDetail({
             </Card>
           </Box>
         </Box>
-        <CommentMain boardNumber={boardNumber} />
+        <CommentMain boardId={boardId} />
         <Box
           display="flex"
           justifyContent="flex-end"
@@ -393,8 +365,7 @@ export default function BoardDetail({
             width: "100%",
             margin: "10px auto",
           }}
-        >
-        </Box>
+        ></Box>
       </Card>
     </>
   );

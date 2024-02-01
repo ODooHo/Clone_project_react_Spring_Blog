@@ -1,20 +1,17 @@
 package com.dooho.board.api.user.dto;
 
-import com.dooho.board.api.board.BoardEntity;
 import com.dooho.board.api.board.dto.BoardDto;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class MyPageDto {
-    private String userEmail;
-    private String userNickname;
-    private String userProfile;
-    private List<BoardDto> userBoard;
 
+public record MyPageDto(
+        String userEmail,
+        String userNickname,
+        String userProfile,
+        List<BoardDto> userBoard
+){
+    public static MyPageDto of(String userEmail, String userNickname, String userProfile, List<BoardDto> userBoard) {
+        return new MyPageDto(userEmail, userNickname, userProfile, userBoard);
+    }
 }

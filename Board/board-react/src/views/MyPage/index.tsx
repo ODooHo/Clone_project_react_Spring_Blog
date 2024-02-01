@@ -52,14 +52,14 @@ export default function MyPage() {
           onMainClick={handleMainClick}
           onEditClick={handleEditClick}
           currentPage={currentPage}
-          boardNumber={currentBoardId}
+          boardId={currentBoardId}
         />
       ) : currentPage === "Edit" ? (
         <BoardEdit
           onMainClick={handleMainClick}
           onDetailClick={handleDetailClick}
           currentPage={currentPage}
-          boardNumber={currentBoardId}
+          boardId={currentBoardId}
         />
       ) : currentPage === "Profile" ? (
         <ProfileChange

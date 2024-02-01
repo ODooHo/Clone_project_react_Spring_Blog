@@ -1,14 +1,7 @@
 package com.dooho.board.api.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class PatchUserDto {
-    private String userNickname;
-    private String userProfile;
-
+public record PatchUserDto(
+        String userNickname,
+        String userProfile
+) {
 }

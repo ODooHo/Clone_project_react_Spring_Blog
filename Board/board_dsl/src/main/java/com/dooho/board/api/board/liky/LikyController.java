@@ -16,7 +16,7 @@ public class LikyController {
     private final LikyService likyService;
 
 
-    @PostMapping("/{boardId}/liky")
+    @GetMapping("/{boardId}/liky")
     public ResponseDto<String> like(@AuthenticationPrincipal String userEmail, @PathVariable Integer boardId){
         return likyService.like(userEmail,boardId);
     }

@@ -16,13 +16,13 @@ import { Board } from "../../../interfaces";
     onMainClick:() => void;
     onDetailClick: (boardId:number) => void;
     currentPage: string;
-    boardNumber : number;
+    boardId : number;
   }
   export default function BoardEdit({
     onMainClick,
     onDetailClick,
     currentPage,
-    boardNumber
+    boardId
   }: BoardEditProps) {
     const [boardData, setBoardData] = useState<Board | undefined>(undefined);
     const [boardTitle, setBoardTitle] = useState<string>("");
@@ -36,7 +36,7 @@ import { Board } from "../../../interfaces";
     useEffect(() => {
       async function fetchBoardData() {
         try {
-          const response =await BoardApi(token, refreshToken,boardNumber);
+          const response =await BoardApi(token, refreshToken,boardId);
           const data = response.data;
           setBoardData(data);
           setBoardTitle(data.boardTitle);
@@ -46,7 +46,7 @@ import { Board } from "../../../interfaces";
         }
       }
       fetchBoardData();
-    }, [boardNumber, cookies.token]);
+    }, [boardId, cookies.token]);
   
     const registerHandler = async () => {
         const token = localStorage.getItem('token');;
@@ -56,7 +56,7 @@ import { Board } from "../../../interfaces";
             boardWriteDate : new Date().toISOString(),
         }
       
-      const response = await boardEditApi(token, refreshToken, boardNumber,data);
+      const response = await boardEditApi(token, refreshToken, boardId,data);
   
   
       if (!response) {
@@ -66,7 +66,7 @@ import { Board } from "../../../interfaces";
   
       alert("게시글 작성에 성공했습니다!");
   
-      onDetailClick(boardNumber);
+      onDetailClick(boardId);
       
     };
   

@@ -12,10 +12,10 @@ import {
 import {getProfileApi } from "../../apis/fileApis";
 
 interface CommentMainProps {
-  boardNumber: number;
+  boardId: number;
 }
 
-export default function CommentMain({ boardNumber }: CommentMainProps) {
+export default function CommentMain({ boardId }: CommentMainProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentContent, setCommentContent] = useState<string>("");
   const [cookies, setCookies] = useCookies();
@@ -33,7 +33,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await CommentListApi(token, refreshToken, boardNumber);
+        const response = await CommentListApi(token, refreshToken, boardId);
         const data = response.data;
         setComments(data);
       } catch (error) {
@@ -52,9 +52,9 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
           const imageUrl = await getProfileApi(
             token,
             refreshToken,
-            comment.commentUserProfile
+            comment.user.userProfile
           );
-          return { [comment.commentId]: imageUrl };
+          return { [comment.id]: imageUrl };
         });
 
         // Wait for all image promises to resolve
@@ -80,7 +80,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
 
   const CommentRegisterHandler = async () => {
     const registerData = {
-      boardNumber,
+      boardId,
       commentContent,
       userEmail: user.userEmail,
       commentUserProfile: user.userProfile,
@@ -91,7 +91,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
     const response = await CommentRegisterApi(
       token,
       refreshToken,
-      boardNumber,
+      boardId,
       registerData
     );
     if (!response) {
@@ -116,13 +116,13 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
       const response = await deleteCommentApi(
         token,
         refreshToken,
-        boardNumber,
+        boardId,
         commentId
       );
       console.log(response);
       if (response) {
         setComments((prevComments) =>
-          prevComments.filter((comment) => comment.commentId !== commentId)
+          prevComments.filter((comment) => comment.id !== commentId)
         );
       } else {
         alert("댓글 삭제에 실패했습니다.");
@@ -145,7 +145,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
       const response = await editCommentApi(
         token,
         refreshToken,
-        boardNumber,
+        boardId,
         commentId,
         data
       );
@@ -209,7 +209,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
       </Box>
       {comments.map((comment) => (
         <Box
-          key={comment.commentId}
+          key={comment.id}
           mt={2}
           p={2}
           border="1px solid #ddd"
@@ -234,7 +234,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
               mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
             >
               <img
-                src={profileImages[comment.commentId] || defaultImage}
+                src={profileImages[comment.id] || defaultImage}
                 width="100%"
                 height="100%"
               />
@@ -250,9 +250,9 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
                   gutterBottom
                   marginBottom="2px"
                 >
-                  {comment.commentUserNickname}
+                  {comment.user.userNickname}
                 </Typography>
-                {comment.userEmail === user?.userEmail && ( // Only show delete button if the logged-in user wrote the comment
+                {comment.user.userEmail=== user?.userEmail && ( // Only show delete button if the logged-in user wrote the comment
                   <>
                     <Box display="flex" alignItems="center">
                       <Typography
@@ -266,7 +266,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
                             textDecoration: "underline", // Add underline effect on hover
                           },
                         }}
-                        onClick={() => handleEditClick(comment.commentId)}
+                        onClick={() => handleEditClick(comment.id)}
                       >
                         수정
                       </Typography>
@@ -280,7 +280,7 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
                             textDecoration: "underline", // Add underline effect on hover
                           },
                         }}
-                        onClick={() => handleDeleteClick(comment.commentId)}
+                        onClick={() => handleDeleteClick(comment.id)}
                       >
                         삭제
                       </Typography>
@@ -294,10 +294,10 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
             </Box>
           </Box>
           <Typography variant="body1" marginTop={"10px"}>
-            {editStates[comment.commentId] ? (
+            {editStates[comment.id] ? (
               <>
                 <TextField
-                  id={`comment-${comment.commentId}`}
+                  id={`comment-${comment.id}`}
                   label="댓글 수정"
                   variant="outlined"
                   fullWidth
@@ -310,10 +310,10 @@ export default function CommentMain({ boardNumber }: CommentMainProps) {
                   onClick={() => {
                     const editedContent = (
                       document.getElementById(
-                        `comment-${comment.commentId}`
+                        `comment-${comment.id}`
                       ) as HTMLInputElement
                     )?.value;
-                    handleEditHandler(comment.commentId, editedContent);
+                    handleEditHandler(comment.id, editedContent);
                   }}
                 >
                   수정 완료

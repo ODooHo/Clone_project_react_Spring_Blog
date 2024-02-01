@@ -2,20 +2,15 @@ package com.dooho.board.api.user;
 
 
 import com.dooho.board.api.ResponseDto;
-import com.dooho.board.api.board.BoardEntity;
 import com.dooho.board.api.board.BoardRepository;
 import com.dooho.board.api.board.dto.BoardDto;
-import com.dooho.board.api.comment.CommentEntity;
-import com.dooho.board.api.comment.CommentRepository;
 import com.dooho.board.api.user.dto.MyPageDto;
 import com.dooho.board.api.user.dto.PatchUserDto;
-import com.dooho.board.api.user.dto.PatchUserResponseDto;
-import org.springframework.http.HttpStatus;
+import com.dooho.board.api.user.dto.UserDto;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
@@ -24,12 +19,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
-    private final CommentRepository commentRepository;
 
-    public UserService(UserRepository userRepository, BoardRepository boardRepository, CommentRepository commentRepository) {
+    public UserService(UserRepository userRepository, BoardRepository boardRepository) {
         this.userRepository = userRepository;
         this.boardRepository = boardRepository;
-        this.commentRepository = commentRepository;
     }
 
 
@@ -44,19 +37,15 @@ public class UserService {
                 .stream()
                 .map(BoardDto::from)
                 .toList();
-        MyPageDto dto = new MyPageDto();
-        dto.setUserEmail(userEmail);
-        dto.setUserNickname(user.getUserNickname());
-        dto.setUserProfile(user.getUserProfile());
-        dto.setUserBoard(board);
+        MyPageDto dto = MyPageDto.of(userEmail,user.getUserNickname(),user.getUserProfile(),board);
 
         return ResponseDto.setSuccess("Success", dto);
     }
 
-    public ResponseDto<PatchUserResponseDto> patchUser(PatchUserDto requestBody, String userEmail) {
+    public ResponseDto<UserDto> patchUser(PatchUserDto requestBody, String userEmail) {
 
         UserEntity userEntity = null;
-        String userNickname = requestBody.getUserNickname();
+        String userNickname = requestBody.userNickname();
 
         userEntity = userRepository.findById(userEmail).orElse(null);
         if (userEntity == null) {
@@ -68,10 +57,9 @@ public class UserService {
 
         userEntity.setUserPassword("");
 
-        PatchUserResponseDto patchUserResponseDto = new PatchUserResponseDto(userEntity);
+        UserDto response = UserDto.from(userEntity);
 
-
-        return ResponseDto.setSuccess("Success", patchUserResponseDto);
+        return ResponseDto.setSuccess("Success", response);
     }
 
 }

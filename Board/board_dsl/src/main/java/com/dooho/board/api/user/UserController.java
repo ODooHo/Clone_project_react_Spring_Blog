@@ -3,7 +3,7 @@ package com.dooho.board.api.user;
 import com.dooho.board.api.ResponseDto;
 import com.dooho.board.api.user.dto.MyPageDto;
 import com.dooho.board.api.user.dto.PatchUserDto;
-import com.dooho.board.api.user.dto.PatchUserResponseDto;
+import com.dooho.board.api.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ public class UserController {
 
     @CrossOrigin(origins = "*")
     @PatchMapping("/edit")
-    public ResponseDto<PatchUserResponseDto> patchUser(@RequestBody PatchUserDto requestBody, @AuthenticationPrincipal String userEmail){
+    public ResponseDto<UserDto> patchUser(@RequestBody PatchUserDto requestBody, @AuthenticationPrincipal String userEmail){
         return userService.patchUser(requestBody,userEmail);
     }
 

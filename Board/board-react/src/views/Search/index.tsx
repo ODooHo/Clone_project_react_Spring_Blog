@@ -28,7 +28,7 @@ export default function Search() {
           <SearchMain
             onDetailClick={handleDetailClick}
             currentPage={currentPage}
-            boardNumber={currentBoardId}
+            boardId={currentBoardId}
           />
         </Box>
       ) : (
@@ -36,7 +36,7 @@ export default function Search() {
           onMainClick={handleMainClick}
           onEditClick={handleEditClick}
           currentPage={currentPage}
-          boardNumber={currentBoardId}
+          boardId={currentBoardId}
         />
       )}
     </>

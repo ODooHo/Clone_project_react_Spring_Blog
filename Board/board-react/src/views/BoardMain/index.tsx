@@ -50,7 +50,7 @@ export default function BoardMain() {
       onMainClick={handleMainClick}
       onDetailClick={handleDetailClick}
       currentPage={currentPage}
-      boardNumber={currentBoardId}
+      boardId={currentBoardId}
       />
     )
     : (
@@ -58,7 +58,7 @@ export default function BoardMain() {
           onMainClick={handleMainClick}
           onEditClick = {handleEditClick}
           currentPage={currentPage}
-          boardNumber={currentBoardId}
+          boardId={currentBoardId}
           />)
     }
     </>

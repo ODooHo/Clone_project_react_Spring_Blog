@@ -1,15 +1,9 @@
 package com.dooho.board.api.comment.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class PatchCommentDto {
-    private String commentContent;
-    private LocalDate commentWriteDate;
-}
+
+public record PatchCommentDto (
+    String commentContent,
+    LocalDate commentWriteDate
+){}

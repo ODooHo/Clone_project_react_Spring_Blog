@@ -166,7 +166,7 @@ export default function Main({
                   </Typography>
                 ) : (
                   boardData.map((board) => (
-                    <div key={board.boardNumber}>
+                    <div key={board.id}>
                       <Button
                         fullWidth
                         variant="outlined"
@@ -179,7 +179,7 @@ export default function Main({
                           padding: 2,
                           backgroundColor: 'white',
                         }}
-                        onClick={() => onDetailClick(board.boardNumber)}
+                        onClick={() => onDetailClick(board.id)}
                       >
                         <Box
                           display="flex"
@@ -210,7 +210,7 @@ export default function Main({
                                 gutterBottom
                                 marginBottom="2px"
                               >
-                                {board.boardWriterNickname}
+                                {board.user.userNickname}
                               </Typography>
                               <Typography
                                 variant="body2"
@@ -228,22 +228,22 @@ export default function Main({
                             fontSize: "1.2rem", // 원하는 글꼴 크기 설정 (예: 1.2rem)
                           }}
                         >
-                          {board.boardTitle}
+                          {board.title}
                         </Typography>
                         <Typography
                           variant="body1"
                           color="text.secondary"
                           sx={{ mt: 1 ,textAlign: "left"}}
                         >
-                          {board.boardContent.slice(0, 80)}
+                          {board.content.slice(0, 80)}
                         </Typography>
                         <Typography
                           variant="body2"
                           color="text.secondary"
                           sx={{ mt: 1 }}
                         >
-                          조회수: {board.boardClickCount} 좋아요:{" "}
-                          {board.boardLikeCount} 댓글: {board.boardCommentCount}
+                          조회수: {board.clickCount} 좋아요:{" "}
+                          {board.likesCount} 댓글: {board.commentCount}
                         </Typography>
                       </Button>
                     </div>

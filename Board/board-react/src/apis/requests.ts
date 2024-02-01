@@ -20,7 +20,7 @@ export async function sendRequest<T>(
     } catch (error) {
       const axiosError = error as AxiosError;
   
-      if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
+      if (axiosError.response && axiosError.response.status === 401 && refreshToken) {
         try {
           const token = await getAccessTokenApi(refreshToken);
   

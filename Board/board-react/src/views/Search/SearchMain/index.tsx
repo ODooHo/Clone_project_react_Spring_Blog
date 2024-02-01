@@ -15,13 +15,13 @@ import { getProfileApi } from "../../../apis/fileApis";
 interface SearchMainProps {
   onDetailClick: (boardId: number) => void;
   currentPage: string;
-  boardNumber: number;
+  boardId: number;
 }
 
 export default function SearchMain({
   onDetailClick,
   currentPage,
-  boardNumber,
+  boardId,
 }: SearchMainProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Board[]>([]);
@@ -40,9 +40,9 @@ export default function SearchMain({
           const imageUrl = await getProfileApi(
             token,
             refreshToken,
-            board.boardWriterProfile,
+            board.user.userProfile,
           );
-          return { [board.boardNumber]: imageUrl };
+          return { [board.id]: imageUrl };
         });
 
         // Wait for all image promises to resolve
@@ -145,7 +145,7 @@ export default function SearchMain({
                       >
                         <Box flex="1" overflow="auto">
                           {searchResults.map((board) => (
-                            <div key={board.boardNumber}>
+                            <div key={board.id}>
                               <Button
                                 fullWidth
                                 variant="outlined"
@@ -158,7 +158,7 @@ export default function SearchMain({
                                   padding: 2,
                                   backgroundColor:"white",
                                 }}
-                                onClick={() => onDetailClick(board.boardNumber)}
+                                onClick={() => onDetailClick(board.id)}
                               >
                                 <Box
                                   display="flex"
@@ -175,7 +175,7 @@ export default function SearchMain({
                                     >
                                       <img
                                         src={
-                                          profileImages[board.boardNumber] ||
+                                          profileImages[board.id] ||
                                           defaultImage
                                         }
                                         width="100%"
@@ -192,7 +192,7 @@ export default function SearchMain({
                                         gutterBottom
                                         marginBottom="3px"
                                       >
-                                        {board.boardWriterNickname}
+                                        {board.user.userNickname}
                                       </Typography>
                                       <Typography
                                         variant="body2"
@@ -210,23 +210,23 @@ export default function SearchMain({
                                     fontSize: "1.2rem", // 원하는 글꼴 크기 설정 (예: 1.2rem)
                                   }}
                                 >
-                                  {board.boardTitle}
+                                  {board.title}
                                 </Typography>
                                 <Typography
                                   variant="body1"
                                   color="text.secondary"
                                   sx={{ mt: 1 ,textAlign: "left"}}
                                 >
-                                  {board.boardContent.slice(0, 80)}
+                                  {board.content.slice(0, 80)}
                                 </Typography>
                                 <Typography
                                   variant="body2"
                                   color="text.secondary"
                                   sx={{ mt: 1 }}
                                 >
-                                  조회수: {board.boardClickCount} 좋아요:{" "}
-                                  {board.boardLikeCount} 댓글:{" "}
-                                  {board.boardCommentCount}
+                                  조회수: {board.clickCount} 좋아요:{" "}
+                                  {board.likesCount} 댓글:{" "}
+                                  {board.commentCount}
                                 </Typography>
                               </Button>
                             </div>

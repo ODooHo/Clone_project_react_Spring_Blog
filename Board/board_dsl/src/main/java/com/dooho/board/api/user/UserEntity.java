@@ -1,6 +1,6 @@
 package com.dooho.board.api.user;
 
-import com.dooho.board.api.auth.SignUpDto;
+import com.dooho.board.api.auth.dto.SignUpDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -34,12 +34,12 @@ public class UserEntity {
     private String userProfile;
 
     public UserEntity(SignUpDto dto){
-        this.userEmail = dto.getUserEmail();
-        this.userPassword = dto.getUserPassword();
-        this.userNickname = dto.getUserNickname();
-        this.userPhoneNumber = dto.getUserPhoneNumber();
-        this.userAddress = dto.getUserAddress();
-        this.userProfile = dto.getUserProfile();
+        this.userEmail = dto.userEmail();
+        this.userPassword = dto.userPassword();
+        this.userNickname = dto.userNickname();
+        this.userPhoneNumber = dto.userPhoneNumber();
+        this.userAddress = dto.userAddress();
+        this.userProfile = dto.userProfile();
     }
 
     protected UserEntity(){

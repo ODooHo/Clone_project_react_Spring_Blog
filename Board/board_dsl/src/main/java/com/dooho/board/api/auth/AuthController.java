@@ -1,6 +1,10 @@
 package com.dooho.board.api.auth;
 
 import com.dooho.board.api.ResponseDto;
+import com.dooho.board.api.auth.dto.RefreshResponseDto;
+import com.dooho.board.api.auth.dto.SignInDto;
+import com.dooho.board.api.auth.dto.SignInResponseDto;
+import com.dooho.board.api.auth.dto.SignUpDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

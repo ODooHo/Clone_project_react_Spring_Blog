@@ -1,17 +1,17 @@
 export interface Board {
-    boardNumber: number;
-    boardTitle: string;
-    boardContent: string;
-    boardImage: string;
-    boardVideo: string;
-    boardFile: string;
-    boardWriterEmail: string;
-    boardWriterProfile: string;
-    boardWriterNickname: string;
+    id: number;
+    title: string;
+    content: string;
+    image: string;
+    video: string;
+    file: string;
     boardWriteDate: string;
-    boardClickCount: number;
-    boardLikeCount: number;
-    boardCommentCount: number;
+    clickCount: number;
+    likesCount: number;
+    commentCount: number;
+    user: User;
+    comments:Comment;
+    likes : Liky;
   }
 
   export interface BoardItemProps {
@@ -21,24 +21,30 @@ export interface Board {
 
 
   export interface Comment{
-    commentId : number;
-    boardNumber: number;
-    userEmail : string;
-    commentUserProfile: string;
-    commentUserNickname: string;
+    id : number;
     commentWriteDate: string;
     commentContent: string;
+    board : Board;
+    user : User;
   }
 
   export interface Liky{
-    likyId : number;
-    boardNumber : number;
-    userEmail : string;
-    likeUserProfile : string;
-    likeUserNickname : string;
+    id : number;
+    board : Board;
+    user : User;
   }
 
   export interface PopularSearchList{
     popularTerm : string;
     popularSearchCount : number;
+  }
+
+
+  export interface User{
+    userEmail : string;
+    userPassword : string;
+    userNickname : string;
+    userPhoneNumber : string;
+    userAddress : string;
+    userProfile : string;
   }

@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { getAccessTokenApi } from "./authApis";
 
 
@@ -8,128 +8,38 @@ const defaultUrl = 'http://15.165.24.146:8080'
 
 export const LikyApi = async (token: string | null, refreshToken : string| null ,index: number) => {
     const url = `${testUrl}/api/board/${index}/liky/get`
-    
-    try {
-        const response = await axios.get(url, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        const result = response.data;
-        return result;
-    } catch (error) {
-        const axiosError = error as AxiosError;
-        if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
-            try {
-                // 액세스 토큰 만료로 인한 에러 발생 시, refreshToken을 사용하여 새로운 액세스 토큰 발급
-                const refreshResponse = await getAccessTokenApi(refreshToken)
-
-                if (refreshResponse.data) {
-                    const token = refreshResponse.data.token;
-                    // 새로 발급된 액세스 토큰으로 다시 요청 보내기
-                    const newResponse = await axios.get(url, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    const result = newResponse.data;
-                    localStorage.setItem('token',token);
-                    return result;
-                } else {
-                    // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
-                    console.error("Refresh token is expired or invalid");
-                    return null;
-                }
-            } catch (refreshError) {
-                console.error("Error refreshing access token:", refreshError);
-                return null;
-            }
-
-        }
-        console.error("Error refreshing access token:", axiosError);
-        return null;
-    }
+    const config = { method: 'get', url };
+    const response = await axiosRequest(config, token, refreshToken);
+    return response?.data || null;
 };
 
 export const getLikyCountApi = async (token: string | null, refreshToken : string| null , index: number) => {
     const url = `${testUrl}/api/board/${index}/liky/get/count`
     
-    try {
-        const response = await axios.get(url, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
 
-        const result = response.data;
-        return result;
-    } catch (error) {
-        const axiosError = error as AxiosError;
-        if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
-            try {
-                // 액세스 토큰 만료로 인한 에러 발생 시, refreshToken을 사용하여 새로운 액세스 토큰 발급
-                const refreshResponse = await getAccessTokenApi(refreshToken)
+}
 
-                if (refreshResponse.data) {
-                    const token = refreshResponse.data.token;
-                    // 새로 발급된 액세스 토큰으로 다시 요청 보내기
-                    const newResponse = await axios.get(url, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    const result = newResponse.data;
-                    localStorage.setItem('token',token);
-                    return result;
-                } else {
-                    // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
-                    console.error("Refresh token is expired or invalid");
-                    return null;
-                }
-            } catch (refreshError) {
-                console.error("Error refreshing access token:", refreshError);
-                return null;
-            }
-
-        }
-        console.error("Error refreshing access token:", axiosError);
-        return null;
-    }
+export const likyControlApi = async (token: string | null, refreshToken : string| null , boardId: number) => {
+    const url = `${testUrl}/api/board/${boardId}/liky`
+    const config = { method: 'get', url };
+    const response = await axiosRequest(config, token, refreshToken);
+    return response?.data || null;
 };
 
-export const LikyRegisterApi = async ( token: string | null, refreshToken : string| null , index: number , data: any,) => { 
-    const url = `${testUrl}/api/board/${index}/liky/add`
-    
+const axiosRequest = async (config: AxiosRequestConfig, token: string | null, refreshToken: string | null) => {
     try {
-        const response = await axios.post(url, data, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        const result = response.data;
-        return result;
+        return await axios({ ...config, headers: { ...config.headers, Authorization: `Bearer ${token}` } });
     } catch (error) {
         const axiosError = error as AxiosError;
-        if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
+        if (axiosError.response && axiosError.response.status === 401 && refreshToken) {
             try {
-                // 액세스 토큰 만료로 인한 에러 발생 시, refreshToken을 사용하여 새로운 액세스 토큰 발급
-                const refreshResponse = await getAccessTokenApi(refreshToken)
+                const refreshResponse = await getAccessTokenApi(refreshToken);
 
                 if (refreshResponse.data) {
-                    const token = refreshResponse.data.token;
-                    // 새로 발급된 액세스 토큰으로 다시 요청 보내기
-                    const newResponse = await axios.post(url, data,{
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    const result = newResponse.data;
-                    localStorage.setItem('token',token);
-                    return result;
+                    const newToken = refreshResponse.data.token;
+                    const newConfig = { ...config, headers: { ...config.headers, Authorization: `Bearer ${newToken}` } };
+                    return await axios(newConfig);
                 } else {
-                    // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
                     console.error("Refresh token is expired or invalid");
                     return null;
                 }
@@ -137,55 +47,8 @@ export const LikyRegisterApi = async ( token: string | null, refreshToken : stri
                 console.error("Error refreshing access token:", refreshError);
                 return null;
             }
-
         }
         console.error("Error refreshing access token:", axiosError);
         return null;
     }
 }
-
-export const deleteLikyApi = async (token: string | null, refreshToken : string| null , boardNumber: number , likeUserNickname : string) => {
-    const url = `${testUrl}/api/board/${boardNumber}/liky/delete/${likeUserNickname}`
-    
-    try {
-        const response = await axios.get(url, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        const result = response.data;
-        return result;
-    } catch (error) {
-        const axiosError = error as AxiosError;
-        if (axiosError.response && axiosError.response.status === 403 && refreshToken) {
-            try {
-                // 액세스 토큰 만료로 인한 에러 발생 시, refreshToken을 사용하여 새로운 액세스 토큰 발급
-                const refreshResponse = await getAccessTokenApi(refreshToken)
-
-                if (refreshResponse.data) {
-                    const token = refreshResponse.data.token;
-                    // 새로 발급된 액세스 토큰으로 다시 요청 보내기
-                    const newResponse = await axios.get(url, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    const result = newResponse.data;
-                    localStorage.setItem('token',token);
-                    return result;
-                } else {
-                    // 리프레시 토큰도 만료된 경우 또는 다른 이유로 실패한 경우
-                    console.error("Refresh token is expired or invalid");
-                    return null;
-                }
-            } catch (refreshError) {
-                console.error("Error refreshing access token:", refreshError);
-                return null;
-            }
-
-        }
-        console.error("Error refreshing access token:", axiosError);
-        return null;
-    }
-};
