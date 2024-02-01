@@ -1,6 +1,7 @@
 package com.dooho.board.global.config;
 
 import com.dooho.board.global.filter.JwtAuthenticationFilter;
+import com.dooho.board.global.filter.JwtExceptionFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,10 +18,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
-    @Autowired
-    public WebSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public WebSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, JwtExceptionFilter jwtExceptionFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.jwtExceptionFilter = jwtExceptionFilter;
     }
 
     @Bean
@@ -40,6 +42,7 @@ public class WebSecurityConfig {
                         .anyRequest().permitAll());
 
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
 
         return httpSecurity.build();
     }

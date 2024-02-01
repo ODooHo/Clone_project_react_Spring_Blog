@@ -13,6 +13,7 @@ import com.dooho.board.api.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -58,8 +59,7 @@ public class FileService {
             MultipartFile boardImage,
             MultipartFile boardVideo,
             MultipartFile boardFile,
-            BoardEntity board) {
-        try {
+            BoardEntity board) throws IOException {
             if (boardImage != null) {
                 String fileName = setFileName(boardImage, board);
                 String imagePath = uploadDir + "img/" + fileName;
@@ -88,63 +88,41 @@ public class FileService {
             }
 
             boardRepository.save(board);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Failed";
-        }
+
         return "Success";
     }
 
 
-    public ResponseDto<String> setProfile(MultipartFile file, String userEmail) {
+    public ResponseDto<String> setProfile(MultipartFile file, String userEmail) throws IOException {
         UserEntity user = userRepository.findById(userEmail).orElse(null);
         String fileName = user.getUserEmail() + "." + "jpg";
-        try {
             // S3 버킷에 파일 업로드
             uploadFileToS3(file, uploadDir + "img/"+fileName);
             user.setUserProfile(fileName);
             userRepository.save(user);
             return ResponseDto.setSuccess("Success", fileName);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("Database or S3 Error");
-        }
     }
 
 
     public ResponseDto<String> getProfileImage(String imageName){
-        try {
-            String extension = getExtension("", imageName); // 확장자 추출 로직 그대로 사용
-            String fileName = imageName + extension;
+        String extension = getExtension("", imageName); // 확장자 추출 로직 그대로 사용
+        String fileName = imageName + extension;
 
-            String imageUrl = amazonS3.getUrl(bucketName, uploadDir+"img/"+ fileName).toString();
+        String imageUrl = amazonS3.getUrl(bucketName, uploadDir+"img/"+ fileName).toString();
 
-            return ResponseDto.setSuccess("Success",imageUrl);
-        } catch (AmazonS3Exception e) {
-            return ResponseDto.setFailed("Cloud Error!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error");
-        }
+        return ResponseDto.setSuccess("Success",imageUrl);
     }
 
 
 
 
     public ResponseDto<String> getImage(String imageName){
-        try {
-            String extension = getExtension("", imageName); // 확장자 추출 로직 그대로 사용
-            String fileName = imageName + extension;
+        String extension = getExtension("", imageName); // 확장자 추출 로직 그대로 사용
+        String fileName = imageName + extension;
 
-            String imageUrl = amazonS3.getUrl(bucketName, uploadDir+"img/"+ fileName).toString();
+        String imageUrl = amazonS3.getUrl(bucketName, uploadDir+"img/"+ fileName).toString();
 
-            return ResponseDto.setSuccess("Success",imageUrl);
-        } catch (AmazonS3Exception e) {
-            return ResponseDto.setFailed("Cloud Error!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error");
-        }
+        return ResponseDto.setSuccess("Success",imageUrl);
     }
 
 
@@ -152,22 +130,15 @@ public class FileService {
 
 
     public ResponseDto<String> getVideo(String videoName){
-        try {
-            String extension = getExtension("", videoName); // 확장자 추출 로직 그대로 사용
-            String fileName = videoName + extension;
+        String extension = getExtension("", videoName); // 확장자 추출 로직 그대로 사용
+        String fileName = videoName + extension;
 
-            String imageUrl = amazonS3.getUrl(bucketName, uploadDir+"video/"+ fileName).toString();
+        String imageUrl = amazonS3.getUrl(bucketName, uploadDir+"video/"+ fileName).toString();
 
-            return ResponseDto.setSuccess("Success",imageUrl);
-        } catch (AmazonS3Exception e) {
-            return ResponseDto.setFailed("Cloud Error!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error");
-        }
+        return ResponseDto.setSuccess("Success",imageUrl);
     }
 
-    public ResponseEntity<byte[]> getFile(String fileId) throws IOException {
+    public ResponseEntity<byte[]> getFile(String fileId) {
         if(fileId.equals("null")){
             return ResponseEntity.ok().body(null);
         }
@@ -192,17 +163,10 @@ public class FileService {
 
 
 
-    private String getExtension(String fileDirectory, String fileId) throws IOException {
+    private String getExtension(String fileDirectory, String fileId) {
         File folder = new File(fileDirectory);
 
-        FilenameFilter filter = (dir, name) -> {
-            try{
-                return name.startsWith(fileId);
-            }catch(Exception e){
-                e.printStackTrace();
-                return false;
-            }
-        };
+        FilenameFilter filter = (dir, name) -> name.startsWith(fileId);
 
         String[] files = folder.list(filter);
 
@@ -223,15 +187,11 @@ public class FileService {
     }
 
 
-    private void uploadFileToS3(MultipartFile file, String s3Key) {
-        try {
+    private void uploadFileToS3(MultipartFile file, String s3Key) throws IOException,AmazonS3Exception{
             InputStream inputStream = file.getInputStream();
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
             amazonS3.putObject(new PutObjectRequest(bucketName, s3Key, inputStream, metadata));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private String setFileName(MultipartFile file, BoardEntity board) {

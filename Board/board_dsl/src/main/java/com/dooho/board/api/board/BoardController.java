@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -25,7 +26,7 @@ public class BoardController {
             @RequestParam("boardContent") String boardContent,
             @RequestParam(value = "boardImage", required = false) MultipartFile boardImage,
             @RequestParam(value = "boardVideo", required = false) MultipartFile boardVideo,
-            @RequestParam(value = "boardFile", required = false) MultipartFile boardFile){
+            @RequestParam(value = "boardFile", required = false) MultipartFile boardFile) throws IOException {
         return boardService.register(userEmail,
                 boardTitle, boardContent,
                 boardImage,boardVideo,boardFile);
@@ -50,13 +51,13 @@ public class BoardController {
     }
 
     @PostMapping("/{boardId}")
-    public ResponseDto<?>increaseView(@PathVariable Integer boardId, @RequestBody Integer requestBody){
-        return boardService.increaseView(boardId,requestBody);
+    public void increaseView(@PathVariable Integer boardId, @RequestBody Integer requestBody){
+        boardService.increaseView(boardId,requestBody);
     }
 
 
     @GetMapping  ("/{boardId}/delete")
-    public ResponseDto<?> deleteBoard(@PathVariable Integer boardId){
+    public ResponseDto<String> deleteBoard(@PathVariable Integer boardId){
         return boardService.deleteBoard(boardId);
     }
 

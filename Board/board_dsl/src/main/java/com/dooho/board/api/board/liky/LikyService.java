@@ -26,7 +26,7 @@ public class LikyService {
         this.userRepository = userRepository;
     }
 
-    public ResponseDto<?> like(String userEmail, Integer boardId){
+    public ResponseDto<String> like(String userEmail, Integer boardId){
         LikyEntity check = likyRepository.findByBoard_IdAndUser_UserEmail(boardId, userEmail);
         if(check == null){
             UserEntity user = userRepository.getReferenceById(userEmail);
@@ -34,10 +34,10 @@ public class LikyService {
             LikyEntity liky = LikyEntity.of(null,board, user);
             LikyDto response = LikyDto.from(liky);
             likyRepository.save(liky);
-            return ResponseDto.setSuccess("Success", response);
+            return ResponseDto.setSuccess("Success", "Add Like Success");
         }else{
             likyRepository.deleteById(check.getId());
-            return ResponseDto.setSuccess("Success", "Delete Like");
+            return ResponseDto.setSuccess("Success", "Delete Like Success");
         }
     }
 

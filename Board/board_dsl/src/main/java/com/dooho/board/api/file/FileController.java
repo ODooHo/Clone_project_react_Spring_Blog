@@ -20,12 +20,12 @@ public class FileController {
 
 
     @PostMapping("/upload/profile")
-    public ResponseDto<String> setProfile(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal String userEmail){
+    public ResponseDto<String> setProfile(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal String userEmail) throws IOException {
         return fileService.setProfile(file, userEmail);
     }
 
     @GetMapping("/images/{imageName}/profile")
-    public ResponseDto<String> getProfileImage(@PathVariable String imageName)throws IOException{
+    public ResponseDto<String> getProfileImage(@PathVariable String imageName){
         return fileService.getProfileImage(imageName);
     }
 

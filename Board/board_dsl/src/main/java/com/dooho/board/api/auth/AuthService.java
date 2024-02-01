@@ -4,6 +4,8 @@ import com.dooho.board.api.ResponseDto;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
 import com.dooho.board.global.security.TokenProvider;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class AuthService {
         this.tokenProvider = tokenProvider;
     }
 
-    public ResponseDto<?> signUp(SignUpDto dto){
+    public ResponseDto<String> signUp(SignUpDto dto) {
         String userEmail = dto.getUserEmail();
         String userPassword = dto.getUserPassword();
         String userPasswordCheck = dto.getUserPasswordCheck();
@@ -33,21 +35,16 @@ public class AuthService {
 
 
         //이메일 중복 확인
-        try{
-            if (userRepository.existsById(userEmail)){
-                return ResponseDto.setFailed("Email already exist!");
-            }
-            if (userRepository.existsByUserNickname(userNickname)){
-                return ResponseDto.setFailed("Nickname already exist!");
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
+        if (userRepository.existsById(userEmail)) {
+            throw new IllegalArgumentException("Already Exists email");
+        }
+        if (userRepository.existsByUserNickname(userNickname)) {
+            throw new IllegalArgumentException("Already Exists Nickname");
         }
 
         // 비밀번호가 다르면 failed response
-        if (!userPassword.equals(userPasswordCheck)){
-            return ResponseDto.setFailed("password does not matched!");
+        if (!userPassword.equals(userPasswordCheck)) {
+            throw new IllegalArgumentException("Different Password");
         }
 
         // userEntity 생성,
@@ -57,35 +54,26 @@ public class AuthService {
         userEntity.setUserPassword(encodedPassword);
 
         //repository(db)에 저장
-        try{
-            userRepository.save(userEntity);
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
-        }
-
-        return ResponseDto.setSuccess("Sign Up Success!",null);
+        userRepository.save(userEntity);
+        return ResponseDto.setSuccess("Success", "SignUp Success");
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<SignInResponseDto> signIn(SignInDto dto){
+    public ResponseDto<SignInResponseDto> signIn(SignInDto dto) {
         String userEmail = dto.getUserEmail();
         String userPassword = dto.getUserPassword();
 
         UserEntity userEntity = null;
 
-        try{
-            userEntity = userRepository.findById(userEmail).orElse(null);
-            //잘못된 이메일
-            if (userEntity == null)
-                return ResponseDto.setFailed("Sign in Failed");
+        userEntity = userRepository.findById(userEmail).orElse(null);
+        //잘못된 이메일
+        if (userEntity == null){
+            throw new BadCredentialsException("Wrong email or password");
+        }
+
 
 //            if (!passwordEncoder.matches(userPassword,userEntity.getUserPassword()))
 //                return ResponseDto.setFailed("Sign in Failed");
-        }catch (Exception e){
-            e.printStackTrace();
-            ResponseDto.setFailed("DataBase Error!");
-        }
         userEntity.setUserPassword("");
 
         String token = tokenProvider.createAccessToken(userEmail);
@@ -94,23 +82,18 @@ public class AuthService {
         String refreshToken = tokenProvider.createRefreshToken(userEmail);
         Integer refreshExprTime = 360000000;
 
-        SignInResponseDto signInResponseDto = new SignInResponseDto(token,exprTime,refreshToken,refreshExprTime,userEntity);
-        return ResponseDto.setSuccess("Sign in Success",signInResponseDto);
+        SignInResponseDto signInResponseDto = new SignInResponseDto(token, exprTime, refreshToken, refreshExprTime, userEntity);
+        return ResponseDto.setSuccess("Sign in Success", signInResponseDto);
     }
 
     @Transactional(readOnly = true)
     public ResponseDto<RefreshResponseDto> getAccess(String refreshToken) {
-        try {
-            String accessToken = tokenProvider.createAccessTokenFromRefreshToken(refreshToken);
+        String accessToken = tokenProvider.createAccessTokenFromRefreshToken(refreshToken);
 
-            Integer exprTime = 1800000;
+        Integer exprTime = 1800000;
 
-            RefreshResponseDto refreshResponseDto = new RefreshResponseDto(accessToken, exprTime);
+        RefreshResponseDto refreshResponseDto = new RefreshResponseDto(accessToken, exprTime);
 
-            return ResponseDto.setSuccess("Success", refreshResponseDto);
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
-        }
+        return ResponseDto.setSuccess("Success", refreshResponseDto);
     }
 }

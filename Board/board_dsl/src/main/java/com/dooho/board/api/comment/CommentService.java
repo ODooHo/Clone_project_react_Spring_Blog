@@ -8,6 +8,7 @@ import com.dooho.board.api.comment.dto.PatchCommentDto;
 import com.dooho.board.api.comment.dto.PatchCommentResponseDto;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,19 +32,14 @@ public class CommentService {
     }
 
 
-    public ResponseDto<?> register(String userEmail, Integer boardId, CommentDto dto) {
+    public ResponseDto<String> register(String userEmail, Integer boardId, CommentDto dto) {
         UserEntity user = userRepository.getReferenceById(userEmail);
         BoardEntity board = boardRepository.getReferenceById(boardId);
-        CommentEntity commentEntity = CommentEntity.of(null,LocalDate.now(),dto.commentContent(),board,user);
-        try {
-            commentRepository.save(commentEntity);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
-        }
+        CommentEntity commentEntity = CommentEntity.of(null, LocalDate.now(), dto.commentContent(), board, user);
+        commentRepository.save(commentEntity);
 
 
-        return ResponseDto.setSuccess("Success", null);
+        return ResponseDto.setSuccess("Success", "Success");
 
     }
 
@@ -61,16 +57,11 @@ public class CommentService {
         String commentContent = dto.getCommentContent();
         LocalDate commentWriteDate = dto.getCommentWriteDate();
 
-        try {
-            comment = commentRepository.findById(commentId).orElse(null);
-            comment.setCommentContent(commentContent);
-            comment.setCommentWriteDate(commentWriteDate);
+        comment = commentRepository.findById(commentId).orElse(null);
+        comment.setCommentContent(commentContent);
+        comment.setCommentWriteDate(commentWriteDate);
 
-            commentRepository.save(comment);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
-        }
+        commentRepository.save(comment);
 
         PatchCommentResponseDto patchCommentResponseDto = new PatchCommentResponseDto(comment);
 
@@ -78,15 +69,9 @@ public class CommentService {
     }
 
 
-    public ResponseDto<?> deleteComment(Integer boardId, Integer commentId) {
-        BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
-        try {
-            commentRepository.deleteById(commentId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
-        }
-        return ResponseDto.setSuccess("Success", null);
+    public ResponseDto<String> deleteComment(Integer commentId) {
+        commentRepository.deleteById(commentId);
+        return ResponseDto.setSuccess("Success", "Delete Comment Success");
     }
 
 

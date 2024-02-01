@@ -19,7 +19,7 @@ public class CommentController {
 
 
     @PostMapping("/{boardId}/comment/register")
-    public ResponseDto<?> register(@AuthenticationPrincipal String userEmail,@PathVariable Integer boardId ,@RequestBody CommentDto requestBody){
+    public ResponseDto<String> register(@AuthenticationPrincipal String userEmail,@PathVariable Integer boardId ,@RequestBody CommentDto requestBody){
         return commentService.register(userEmail,boardId,requestBody);
     }
 
@@ -29,9 +29,9 @@ public class CommentController {
         return commentService.getComment(boardId);
     }
 
-    @GetMapping("/{boardId}/comment/{commentId}/delete")
-    public ResponseDto<?> deleteComment(@PathVariable Integer boardId, @PathVariable Integer commentId){
-        return commentService.deleteComment(boardId, commentId);
+    @GetMapping("/comment/{commentId}/delete")
+    public ResponseDto<String> deleteComment(@PathVariable Integer commentId){
+        return commentService.deleteComment(commentId);
     }
 
     @CrossOrigin(origins = "*")

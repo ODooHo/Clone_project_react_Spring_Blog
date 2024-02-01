@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -39,23 +40,23 @@ public class BoardService {
             String boardContent,
             MultipartFile boardImage,
             MultipartFile boardVideo,
-            MultipartFile boardFile) {
+            MultipartFile boardFile) throws IOException {
 
         if (boardRepository.existsByTitle(boardTitle)) {
-            return ResponseDto.setFailed("Same Title already exist!");
+            throw new IllegalArgumentException("BoardTitle Already Exists");
         }
 
         UserEntity user = userRepository.getReferenceById(userEmail);
-        BoardDto boardDto = BoardDto.of(boardTitle, boardContent, null, null, null, LocalDate.now(),0,0,0, UserDto.from(user));
+        BoardDto boardDto = BoardDto.of(boardTitle, boardContent, null, null, null, LocalDate.now(), 0, 0, 0, UserDto.from(user));
         BoardEntity board = boardDto.toEntity();
         boardRepository.save(board);
-        String message = fileService.uploadFile(boardImage, boardVideo, boardFile,board);
+        String message = fileService.uploadFile(boardImage, boardVideo, boardFile, board);
 
-        if(message.equals("Failed")){
-            return ResponseDto.setFailed("failed");
+        if (message.equals("Failed")) {
+            throw new RuntimeException("Error Occurred in file save");
         }
 
-        return ResponseDto.setSuccess("Success","Success");
+        return ResponseDto.setSuccess("Success", "Success");
     }
 
 
@@ -64,7 +65,7 @@ public class BoardService {
         BoardDetailDto board = boardRepository.findById(boardId)
                 .map(BoardDetailDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("게시글 없음"));
-        return ResponseDto.setSuccess("Success",board);
+        return ResponseDto.setSuccess("Success", board);
     }
 
 
@@ -89,27 +90,16 @@ public class BoardService {
     }
 
 
-    public ResponseDto<?> deleteBoard(Integer boardId) {
-        try {
-            boardRepository.deleteById(boardId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
-        }
-        return ResponseDto.setSuccess("Success", null);
+    public ResponseDto<String> deleteBoard(Integer boardId) {
+        boardRepository.deleteById(boardId);
+        return ResponseDto.setSuccess("Success", "Delete Board Success");
     }
 
-    public ResponseDto<?> increaseView(Integer boardId, Integer increase) {
+    public void increaseView(Integer boardId, Integer increase) {
         BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
         Integer boardClick = boardEntity.getClickCount();
-        try {
-            boardEntity.setClickCount(boardClick + increase);
-            boardRepository.save(boardEntity);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.setFailed("DataBase Error!");
-        }
-        return ResponseDto.setSuccess("Success", null);
+        boardEntity.setClickCount(boardClick + increase);
+        boardRepository.save(boardEntity);
     }
 
     public ResponseDto<BoardDto> editBoard(Integer boardId, PatchBoardDto dto) {
