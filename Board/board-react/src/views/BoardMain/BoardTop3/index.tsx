@@ -174,7 +174,7 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
                       sx={{ mt: 1 }}
                     >
                       조회수: {board.clickCount} 좋아요:{" "}
-                      {board.likesCount} 댓글: {board.commentCount}
+                      {board.likesCount} 댓글: {board.commentsCount}
                     </Typography>
                   </Box>
             </Button>

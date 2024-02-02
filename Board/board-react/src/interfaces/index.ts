@@ -8,7 +8,7 @@ export interface Board {
     boardWriteDate: string;
     clickCount: number;
     likesCount: number;
-    commentCount: number;
+    commentsCount: number;
     user: User;
     comments:Comment;
     likes : Liky;
@@ -30,8 +30,8 @@ export interface Board {
 
   export interface Liky{
     id : number;
-    board : Board;
-    user : User;
+    boardId : number;
+    userEmail : string;
   }
 
   export interface PopularSearchList{

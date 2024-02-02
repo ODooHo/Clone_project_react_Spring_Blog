@@ -24,26 +24,6 @@ public class FileController {
         return fileService.setProfile(file, userEmail);
     }
 
-    @GetMapping("/images/{imageName}/profile")
-    public ResponseDto<String> getProfileImage(@PathVariable String imageName){
-        return fileService.getProfileImage(imageName);
-    }
-
-
-    @GetMapping("/images/{imageName}")
-    public ResponseDto<String> getImage(@PathVariable String imageName){
-        return fileService.getImage(imageName);
-    }
-
-
-
-    @GetMapping("/videos/{videoName}")
-    public ResponseDto<String> getVideo(@PathVariable String videoName) {
-        return fileService.getVideo(videoName);
-    }
-
-
-
     @GetMapping("/files/{fileName}")
     public ResponseEntity<byte[]> getFile(@PathVariable String fileName) throws IOException {
         return fileService.getFile(fileName);

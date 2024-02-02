@@ -36,7 +36,7 @@ import { Board } from "../../../interfaces";
     useEffect(() => {
       async function fetchBoardData() {
         try {
-          const response =await BoardApi(token, refreshToken,boardId);
+          const response = await BoardApi(token, refreshToken,boardId);
           const data = response.data;
           setBoardData(data);
           setBoardTitle(data.boardTitle);
@@ -71,7 +71,7 @@ import { Board } from "../../../interfaces";
     };
   
   
-  
+   
     return (
       <>
         <Card sx={{ padding: 5, marginTop: "50px" }}>

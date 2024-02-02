@@ -65,7 +65,7 @@ export default function SearchMain({
   const handleSearch = async () => {
     const token = localStorage.getItem('token');;
     const data = {
-      popularTerm: searchQuery,
+      searchWord: searchQuery,
     };
     try {
       const response = await SearchBoardApi(token, refreshToken, data);
@@ -84,7 +84,7 @@ export default function SearchMain({
   const handleSearchClick = async (searchTerm: string) => {
 
     const data = {
-      popularTerm: searchTerm,
+      searchWord: searchTerm,
     };
     try {
       // 검색 결과를 가져오는 API를 호출하고, 검색어를 파라미터로 전달합니다.
@@ -226,7 +226,7 @@ export default function SearchMain({
                                 >
                                   조회수: {board.clickCount} 좋아요:{" "}
                                   {board.likesCount} 댓글:{" "}
-                                  {board.commentCount}
+                                  {board.commentsCount}
                                 </Typography>
                               </Button>
                             </div>
@@ -244,7 +244,7 @@ export default function SearchMain({
               <>
                 <Box display="flex" justifyContent={"space-between"}>
                   <Typography variant="body1" sx={{ mt: 2 }}>
-                    검색 결과가 없습니다.
+                  {searchResults === null ? "검색 중 오류가 발생했습니다." : "검색 결과가 없습니다."}
                   </Typography>
                   <PopularSearch onSearchClick={handleSearchClick} />
                 </Box>

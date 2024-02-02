@@ -15,20 +15,10 @@ import {
   BoardIncreaseApi,
   BoardDeleteApi,
 } from "../../../apis/boardApis";
-import {
-  LikyApi,
-  likyControlApi,
-  getLikyCountApi,
-} from "../../../apis/likyApis";
-
+import { likyControlApi } from "../../../apis/likyApis";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
-import {
-  fileDownloadApi,
-  getImageApi,
-  getProfileApi,
-  getVideoApi,
-} from "../../../apis/fileApis";
+import { fileDownloadApi, getVideoApi } from "../../../apis/fileApis";
 import DownloadIcon from "@mui/icons-material/Download";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 
@@ -50,16 +40,11 @@ export default function BoardDetail({
   const [profileImages, setProfileImages] = useState<{
     [key: number]: string | null;
   }>({});
-  const [boardImages, setBoardImages] = useState<{
-    [key: number]: string | null;
-  }>({});
   const { user } = useUserStore();
   const token = localStorage.getItem("token");
   const refreshToken = localStorage.getItem("refreshToken");
   const [refresh, setRefresh] = useState(1);
   const [isInitialMount, setIsInitialMount] = useState(true);
-  const [likyCount, setLikyCount] = useState<number | undefined>(undefined);
-  const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     async function fetchData() {
@@ -68,19 +53,26 @@ export default function BoardDetail({
           await BoardIncreaseApi(token, refreshToken, boardId);
           setIsInitialMount(false); // 최초 마운트 이후에는 다시 실행되지 않도록 상태 변경
         }
-
-        const [boardResponse, likyResponse] = await Promise.all([
+        const [boardResponse] = await Promise.all([
           BoardApi(token, refreshToken, boardId),
-          LikyApi(token, refreshToken, boardId),
         ]);
         const data = boardResponse.data;
         setBoardData(data);
         setLiked(data.likesCount);
-        const likyData = likyResponse.data;
+        const likyData = data.likes;
         const userLiked = likyData.some(
-          (like: Liky) => likyData.userEmail === user?.userEmail
+          (like: Liky) => like.userEmail === user?.userEmail
         );
         setLiked(userLiked);
+        
+        const videoElement = document.createElement('video');
+        videoElement.src = data.boardVideo;
+        videoElement.controls = true; // Show video controls (play, pause, etc.)
+        videoElement.setAttribute('width', '640'); // Set video width
+        videoElement.setAttribute('height', '480'); // Set video height
+  
+        const videoContainer = document.getElementById('videoContainer');
+        videoContainer?.appendChild(videoElement);
       } catch (error) {
         console.error("게시글 가져오기 실패:", error);
         setBoardData(undefined);
@@ -89,30 +81,6 @@ export default function BoardDetail({
     }
     fetchData();
   }, [refresh]); // Run only once on component mount
-
-  useEffect(() => {
-    async function fetchMedia() {
-      try {
-        if (!boardData) return; // Return early if boardData is not available yet
-
-        const [profileUrl, imageUrl, videoUrl] = await Promise.all([
-          getProfileApi(token, refreshToken, boardData.user.userProfile),
-          getImageApi(token, refreshToken, boardImage),
-          getVideoApi(token, refreshToken, boardVideo),
-        ]);
-        setProfileImages({ [boardData.id]: profileUrl });
-        setBoardImages({ [boardData.id]: imageUrl });
-
-        setVideoUrl(videoUrl || undefined);
-      } catch (error) {
-        console.error("게시글 가져오기 실패:", error);
-        setProfileImages([null]);
-        setBoardImages([null]);
-        setVideoUrl(undefined);
-      }
-    }
-    fetchMedia();
-  }, [boardData?.content, boardData?.commentCount, token]);
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
@@ -137,8 +105,6 @@ export default function BoardDetail({
   const handleLikeClick = async () => {
     try {
       await likyControlApi(token, refreshToken, boardId);
-      console.log(likyCount);
-
       handleRefresh();
     } catch (error) {
       console.error("좋아요 처리 실패:", error);
@@ -185,7 +151,7 @@ export default function BoardDetail({
     boardWriteDate,
     clickCount: boardClickCount,
     likesCount: boardLikeCount,
-    commentCount: boardCommentCount
+    commentsCount: boardCommentCount,
   } = boardData;
 
   const defaultImage = "default-image.png";
@@ -202,6 +168,7 @@ export default function BoardDetail({
       {line}
     </Typography>
   ));
+
 
   return (
     <>
@@ -231,7 +198,7 @@ export default function BoardDetail({
                     mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
                   >
                     <img
-                      src={profileImages[boardData.id] || defaultImage}
+                      src={boardData.user.userProfile || defaultImage}
                       width="100%"
                       height="100%"
                     />
@@ -257,7 +224,7 @@ export default function BoardDetail({
                     <CardMedia
                       component="img"
                       height="auto"
-                      image={boardImages[boardData.id] || undefined}
+                      image={boardImage || undefined}
                       alt="게시물 이미지"
                       sx={{
                         display: "block", // Center align the image
@@ -271,14 +238,17 @@ export default function BoardDetail({
                   {/* 게시물 동영상을 보여줄 경우 */}
                   {boardVideo && (
                     <video
-                      width="60%"
                       controls
+                      width="60%"
                       style={{
-                        display: "block", // Center align the video
-                        margin: "0 auto", // Center align the video
+                        display: "block",
+                        margin: "0 auto",
                       }}
-                      src={videoUrl || undefined}
-                    ></video>
+//https://pantaley.com/blog/Handle-HTTP-range-requests-with-status-code-206-Partial-Content/ 참고 ㄱ
+                    >
+                      <source src={boardVideo} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
                   )}
                   {/* 게시물 파일을 다운로드 링크로 보여줄 경우 */}
                   {boardFile && (
@@ -297,8 +267,8 @@ export default function BoardDetail({
                   )}
                 </Box>
                 <Typography variant="body2" gutterBottom>
-                  조회수: {boardClickCount} | 좋아요: {boardLikeCount} | 댓글
-                  수: {boardCommentCount}
+                  조회수: {boardClickCount} | 좋아요: {boardLikeCount} | 댓글:{" "}
+                  {boardCommentCount}
                 </Typography>
                 <Box
                   display="flex"

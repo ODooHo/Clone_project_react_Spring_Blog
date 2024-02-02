@@ -1,6 +1,7 @@
 package com.dooho.board.api.board.dto;
 
 import com.dooho.board.api.board.BoardEntity;
+import com.dooho.board.api.board.liky.dto.LikyDto;
 import com.dooho.board.api.comment.dto.CommentDto;
 import com.dooho.board.api.user.UserEntity;
 
@@ -18,10 +19,11 @@ public record BoardDetailDto(
         String file,
         LocalDate boardWriteDate,
         int clickCount,
-        int likeCount,
-        int commentCount,
+        int likesCount,
+        int commentsCount,
         UserEntity user,
-        Set<CommentDto> comments
+        Set<CommentDto> comments,
+        Set<LikyDto> likes
 ) {
 
     public static BoardDetailDto of(
@@ -32,13 +34,15 @@ public record BoardDetailDto(
             String file,
             LocalDate boardWriteDate,
             int clickCount,
-            int likeCount,
-            int commentCount,
+            int likesCount,
+            int commentsCount,
             UserEntity user,
-            Set<CommentDto> comments
+            Set<CommentDto> comments,
+            Set<LikyDto> likes
     ) {
-        return new BoardDetailDto(null, title, content, image, video, file, boardWriteDate, clickCount, likeCount, commentCount, user, comments);
+        return new BoardDetailDto(null, title, content, image, video, file, boardWriteDate, clickCount, likesCount, commentsCount, user, comments, likes);
     }
+
     public static BoardDetailDto of(
             int id,
             String title,
@@ -48,12 +52,13 @@ public record BoardDetailDto(
             String file,
             LocalDate boardWriteDate,
             int clickCount,
-            int likeCount,
-            int commentCount,
+            int likesCount,
+            int commentsCount,
             UserEntity user,
-            Set<CommentDto> comments
+            Set<CommentDto> comments,
+            Set<LikyDto> likes
     ) {
-        return new BoardDetailDto(id, title, content, image, video, file, boardWriteDate, clickCount, likeCount, commentCount, user, comments);
+        return new BoardDetailDto(id, title, content, image, video, file, boardWriteDate, clickCount, likesCount, commentsCount, user, comments, likes);
     }
 
     public static BoardDetailDto from(BoardEntity board) {
@@ -71,7 +76,10 @@ public record BoardDetailDto(
                 board.getUser(),
                 board.getComments().stream()
                         .map(CommentDto::from)
+                        .collect(Collectors.toCollection(LinkedHashSet::new)),
+                board.getLikes().stream()
+                        .map(LikyDto::from)
                         .collect(Collectors.toCollection(LinkedHashSet::new))
-                );
+        );
     }
 }

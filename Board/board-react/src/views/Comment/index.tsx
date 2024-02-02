@@ -116,7 +116,6 @@ export default function CommentMain({ boardId }: CommentMainProps) {
       const response = await deleteCommentApi(
         token,
         refreshToken,
-        boardId,
         commentId
       );
       console.log(response);

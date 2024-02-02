@@ -35,11 +35,7 @@ export const getImageApi = async (token: string | null, refreshToken: string | n
 };
 
 
-export const getVideoApi = async (token: string | null, refreshToken: string | null, videoName: string | number) => {
-    const url = `${testUrl}/api/videos/${videoName}`;
-    const config = { method: 'get', url };
-    const response = await axiosRequest(config, token, refreshToken);
-    const videoUrl =  response?.data.data || null;
+export const getVideoApi = async (videoUrl: string) => {
     displayVideo(videoUrl);
     return videoUrl;
 };

@@ -19,8 +19,8 @@ export const CommentListApi = async (token: string | null, refreshToken: string 
     return response?.data || null;
 };
 
-export const deleteCommentApi = async (token: string | null, refreshToken: string | null, boardId: number, commentId: number) => {
-    const url = `${testUrl}/api/board/${boardId}/comment/${commentId}/delete`
+export const deleteCommentApi = async (token: string | null, refreshToken: string | null, commentId: number) => {
+    const url = `${testUrl}/api/board/comment/${commentId}/delete`
     const config = { method: 'get', url };
     const response = await axiosRequest(config, token, refreshToken);
     return response?.data || null;

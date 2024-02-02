@@ -47,7 +47,7 @@ public class BoardController {
     @CrossOrigin(origins = "*")
     @GetMapping("/{boardId}")
     public ResponseDto<BoardDetailDto> getBoardWithComments(@PathVariable Integer boardId){
-        return boardService.getBoardWithComments(boardId);
+        return boardService.getBoardDetail(boardId);
     }
 
     @PostMapping("/{boardId}")

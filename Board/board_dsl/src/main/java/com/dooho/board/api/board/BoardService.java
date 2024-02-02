@@ -61,7 +61,7 @@ public class BoardService {
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<BoardDetailDto> getBoardWithComments(Integer boardId) {
+    public ResponseDto<BoardDetailDto> getBoardDetail(Integer boardId) {
         BoardDetailDto board = boardRepository.findById(boardId)
                 .map(BoardDetailDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("게시글 없음"));

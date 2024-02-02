@@ -75,8 +75,8 @@ public class FileService {
         if (boardFile != null) {
             String fileName = setFileName(boardFile, board);
             String filePath = uploadDir + "file/" + fileName;
-            String fileUrl = uploadFileToS3(boardFile, filePath);
-            board.setFile(fileUrl);
+            uploadFileToS3(boardFile, filePath);
+            board.setFile(fileName);
         } else {
             board.setFile(null);
         }
@@ -91,40 +91,10 @@ public class FileService {
         UserEntity user = userRepository.findById(userEmail).orElse(null);
         String fileName = user.getUserEmail() + "." + "jpg";
         // S3 버킷에 파일 업로드
-        uploadFileToS3(file, uploadDir + "img/" + fileName);
-        user.setUserProfile(fileName);
+        String url = uploadFileToS3(file, uploadDir + "img/" + fileName);
+        user.setUserProfile(url);
         userRepository.save(user);
         return ResponseDto.setSuccess("Success", fileName);
-    }
-
-
-    public ResponseDto<String> getProfileImage(String imageName) {
-        String extension = getExtension("", imageName); // 확장자 추출 로직 그대로 사용
-        String fileName = imageName + extension;
-
-        String imageUrl = amazonS3.getUrl(bucketName, uploadDir + "img/" + fileName).toString();
-
-        return ResponseDto.setSuccess("Success", imageUrl);
-    }
-
-
-    public ResponseDto<String> getImage(String imageName) {
-        String extension = getExtension("", imageName); // 확장자 추출 로직 그대로 사용
-        String fileName = imageName + extension;
-
-        String imageUrl = amazonS3.getUrl(bucketName, uploadDir + "img/" + fileName).toString();
-
-        return ResponseDto.setSuccess("Success", imageUrl);
-    }
-
-
-    public ResponseDto<String> getVideo(String videoName) {
-        String extension = getExtension("", videoName); // 확장자 추출 로직 그대로 사용
-        String fileName = videoName + extension;
-
-        String imageUrl = amazonS3.getUrl(bucketName, uploadDir + "video/" + fileName).toString();
-
-        return ResponseDto.setSuccess("Success", imageUrl);
     }
 
     public ResponseEntity<byte[]> getFile(String fileId) throws IOException {
@@ -177,9 +147,10 @@ public class FileService {
         metadata.setContentLength(file.getSize());
         String url = amazonS3.getUrl(bucketName, s3Key).toString();
         amazonS3.putObject(new PutObjectRequest(bucketName, s3Key, inputStream, metadata));
-
         return url;
     }
+
+
 
     private String setFileName(MultipartFile file, BoardEntity board) {
         String originalFileName = file.getOriginalFilename();

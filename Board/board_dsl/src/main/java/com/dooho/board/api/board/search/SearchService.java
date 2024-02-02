@@ -3,6 +3,7 @@ package com.dooho.board.api.board.search;
 import com.dooho.board.api.ResponseDto;
 import com.dooho.board.api.board.BoardRepository;
 import com.dooho.board.api.board.dto.BoardDto;
+import com.dooho.board.api.board.search.dto.PopularSearchDto;
 import com.dooho.board.api.board.search.dto.SearchDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,8 @@ public class SearchService {
         this.searchRepository = searchRepository;
     }
 
-    public ResponseDto<List<BoardDto>> getSearchList(String searchWord){
+    public ResponseDto<List<BoardDto>> getSearchList(SearchDto dto){
+        String searchWord = dto.searchWord();
         SearchEntity searchEntity = searchRepository.findById(searchWord).orElse(null);
 
         if(searchEntity != null){
@@ -32,7 +34,7 @@ public class SearchService {
             searchEntity.setPopularSearchCount(count+1);
             searchRepository.save(searchEntity);
         }else{
-            SearchDto searchDto = SearchDto.of(searchWord, 1);
+            PopularSearchDto searchDto = PopularSearchDto.of(searchWord, 1);
             searchRepository.save(searchDto.toEntity());
         }
         List<BoardDto> boardList = boardRepository.findByTitleContains(searchWord)
@@ -44,10 +46,10 @@ public class SearchService {
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<SearchDto>> getPopularSearchList(){
-        List<SearchDto> searchList = searchRepository.findTop10()
+    public ResponseDto<List<PopularSearchDto>> getPopularSearchList(){
+        List<PopularSearchDto> searchList = searchRepository.findTop10()
                 .stream()
-                .map(SearchDto::from)
+                .map(PopularSearchDto::from)
                 .toList();
         return ResponseDto.setSuccess("Success",searchList);
     }

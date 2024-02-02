@@ -3,7 +3,6 @@ import { Box, Button, Card, IconButton, Typography } from "@mui/material";
 import { Board } from "../../../interfaces";
 import { useCookies } from "react-cookie";
 import { MyPageApi } from "../../../apis/userApis";
-import { getProfileApi } from "../../../apis/fileApis";
 import EditIcon from "@mui/icons-material/Edit";
 import PersonIcon from "@mui/icons-material/Person";
 // 인터페이스를 정의합니다.
@@ -29,30 +28,21 @@ export default function Main({
   const [userProfile, setUserProfile] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
   const [cookies] = useCookies();
-  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const token = localStorage.getItem("token");
   const refreshToken = localStorage.getItem("refreshToken");
   useEffect(() => {
     async function fetchData() {
       try {
         const response = await MyPageApi(token, refreshToken);
-        const Nickname = response.data.userNickname;
-        const Profile = response.data.userProfile;
+        const nickname = response.data.userNickname;
+        const profile = response.data.userProfile;
         const data = response.data.userBoard;
         const Email = response.data.userEmail;
         if (data) {
           setUserEmail(userEmail);
           setBoardData(data);
-          setUserNickname(Nickname);
-          setUserProfile(Profile);
-
-          // 프로필 이미지를 가져와서 상태에 저장합니다.
-          const profileImageUrl = await getProfileApi(
-            token,
-            refreshToken,
-            Profile,
-          );
-          setProfileImageUrl(profileImageUrl);
+          setUserNickname(nickname);
+          setUserProfile(profile);
         } else {
           setUserEmail("");
           setBoardData([]);
@@ -95,7 +85,7 @@ export default function Main({
               marginRight="18px"
             >
               <img
-                src={profileImageUrl || defaultImage}
+                src={userProfile|| defaultImage}
                 width="100%"
                 height="100%"
               />
@@ -195,7 +185,7 @@ export default function Main({
                               mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
                             >
                               <img
-                                src={profileImageUrl || defaultImage}
+                                src={userProfile|| defaultImage}
                                 width="100%"
                                 height="100%"
                               />
@@ -243,7 +233,7 @@ export default function Main({
                           sx={{ mt: 1 }}
                         >
                           조회수: {board.clickCount} 좋아요:{" "}
-                          {board.likesCount} 댓글: {board.commentCount}
+                          {board.likesCount} 댓글: {board.commentsCount}
                         </Typography>
                       </Button>
                     </div>
