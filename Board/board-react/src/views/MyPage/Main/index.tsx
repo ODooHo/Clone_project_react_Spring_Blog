@@ -37,7 +37,6 @@ export default function Main({
         const nickname = response.data.userNickname;
         const profile = response.data.userProfile;
         const data = response.data.userBoard;
-        const Email = response.data.userEmail;
         if (data) {
           setUserEmail(userEmail);
           setBoardData(data);

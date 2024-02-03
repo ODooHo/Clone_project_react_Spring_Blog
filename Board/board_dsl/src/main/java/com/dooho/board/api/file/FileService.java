@@ -97,23 +97,22 @@ public class FileService {
         return ResponseDto.setSuccess("Success", fileName);
     }
 
-    public ResponseEntity<byte[]> getFile(String fileId) throws IOException {
-        if (fileId.equals("null")) {
+    public ResponseEntity<byte[]> getFile(String fileName) throws IOException {
+        if (fileName.equals("null")) {
             return ResponseEntity.ok().body(null);
         }
-        S3Object s3Object = amazonS3.getObject(bucketName, uploadDir + "file/" + fileId);
+        S3Object s3Object = amazonS3.getObject(bucketName, uploadDir + "file/" + fileName);
         S3ObjectInputStream objectInputStream = s3Object.getObjectContent();
 
         byte[] fileData = IOUtils.toByteArray(objectInputStream);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", fileId);
+        headers.setContentDispositionFormData("attachment", fileName);
 
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(fileData);
-
     }
 
 

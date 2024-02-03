@@ -44,7 +44,8 @@ export const fileDownloadApi = async (token: string | null, refreshToken: string
     const url = `${testUrl}/api/files/${fileName}`
     const config = { method: 'get', url };
     const response = await axiosRequest(config, token, refreshToken);
-    return response?.data.data || null;
+    console.log(response)
+    return response?.data || null;
 
 }
 

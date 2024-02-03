@@ -32,35 +32,6 @@ export default function SearchMain({
   const token = localStorage.getItem('token');;
   const refreshToken = localStorage.getItem('refreshToken');;
 
-  useEffect(() => {
-    async function fetchImages() {
-      try {
-        // Fetch profile images for all boards
-        const imagePromises = searchResults.map(async (board) => {
-          const imageUrl = await getProfileApi(
-            token,
-            refreshToken,
-            board.user.userProfile,
-          );
-          return { [board.id]: imageUrl };
-        });
-
-        // Wait for all image promises to resolve
-        const imageResults = await Promise.all(imagePromises);
-
-        // Combine all image URLs into a single object
-        const images = imageResults.reduce((acc, image) => {
-          return { ...acc, ...image };
-        }, {});
-
-        setProfileImages(images);
-      } catch (error) {
-        console.error("Error fetching profile images:", error);
-      }
-    }
-
-    fetchImages();
-  }, [searchResults, cookies.token]);
 
   const handleSearch = async () => {
     const token = localStorage.getItem('token');;
@@ -175,7 +146,7 @@ export default function SearchMain({
                                     >
                                       <img
                                         src={
-                                          profileImages[board.id] ||
+                                          board.user.userProfile ||
                                           defaultImage
                                         }
                                         width="100%"

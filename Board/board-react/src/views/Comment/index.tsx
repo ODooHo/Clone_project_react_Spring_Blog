@@ -44,35 +44,6 @@ export default function CommentMain({ boardId }: CommentMainProps) {
     fetchData();
   }, [refresh]);
 
-  useEffect(() => {
-    async function fetchCommentImages() {
-      try {
-        // Fetch profile images for all comments
-        const imagePromises = comments.map(async (comment) => {
-          const imageUrl = await getProfileApi(
-            token,
-            refreshToken,
-            comment.user.userProfile
-          );
-          return { [comment.id]: imageUrl };
-        });
-
-        // Wait for all image promises to resolve
-        const imageResults = await Promise.all(imagePromises);
-
-        // Combine all image URLs into a single object
-        const images = imageResults.reduce((acc, image) => {
-          return { ...acc, ...image };
-        }, {});
-
-        setProfileImages(images);
-      } catch (error) {
-        console.error("Error fetching profile images for comments:", error);
-      }
-    }
-
-    fetchCommentImages();
-  }, [comments, cookies.token]);
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
@@ -118,7 +89,6 @@ export default function CommentMain({ boardId }: CommentMainProps) {
         refreshToken,
         commentId
       );
-      console.log(response);
       if (response) {
         setComments((prevComments) =>
           prevComments.filter((comment) => comment.id !== commentId)
@@ -233,7 +203,7 @@ export default function CommentMain({ boardId }: CommentMainProps) {
               mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
             >
               <img
-                src={profileImages[comment.id] || defaultImage}
+                src={comment.user.userProfile || defaultImage}
                 width="100%"
                 height="100%"
               />

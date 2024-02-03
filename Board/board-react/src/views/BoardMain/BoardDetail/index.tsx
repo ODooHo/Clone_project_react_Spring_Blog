@@ -37,14 +37,13 @@ export default function BoardDetail({
 }: BoardDetailProps) {
   const [boardData, setBoardData] = useState<Board | undefined>(undefined);
   const [liked, setLiked] = useState<boolean>(false);
-  const [profileImages, setProfileImages] = useState<{
-    [key: number]: string | null;
-  }>({});
   const { user } = useUserStore();
   const token = localStorage.getItem("token");
   const refreshToken = localStorage.getItem("refreshToken");
   const [refresh, setRefresh] = useState(1);
   const [isInitialMount, setIsInitialMount] = useState(true);
+  const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
+
 
   useEffect(() => {
     async function fetchData() {
@@ -64,15 +63,6 @@ export default function BoardDetail({
           (like: Liky) => like.userEmail === user?.userEmail
         );
         setLiked(userLiked);
-        
-        const videoElement = document.createElement('video');
-        videoElement.src = data.boardVideo;
-        videoElement.controls = true; // Show video controls (play, pause, etc.)
-        videoElement.setAttribute('width', '640'); // Set video width
-        videoElement.setAttribute('height', '480'); // Set video height
-  
-        const videoContainer = document.getElementById('videoContainer');
-        videoContainer?.appendChild(videoElement);
       } catch (error) {
         console.error("게시글 가져오기 실패:", error);
         setBoardData(undefined);
@@ -81,6 +71,22 @@ export default function BoardDetail({
     }
     fetchData();
   }, [refresh]); // Run only once on component mount
+
+
+  useEffect(() => {
+    async function fetchMedia() {
+      try {
+        if (!boardData || boardData.video === null) return; // Return early if boardData is not available yet
+        const videoUrl = await getVideoApi(boardData.video)
+        console.log(videoUrl)
+        setVideoUrl(videoUrl || undefined);
+      } catch (error) {
+        console.error("게시글 가져오기 실패:", error);
+        setVideoUrl(undefined);
+      }
+    }
+    fetchMedia();
+  }, [boardData?.content, boardData?.commentsCount, token]);
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
@@ -114,25 +120,33 @@ export default function BoardDetail({
   const handleDownloadClick = async (fileName: string) => {
     try {
       const response = await fileDownloadApi(token, refreshToken, fileName);
-
-      const contentType = response.type;
-
-      const fileUrl = URL.createObjectURL(response);
-
-      const link = document.createElement("a");
-      link.setAttribute("href", fileUrl);
-
-      link.setAttribute("download", fileName.toString());
-
-      document.body.appendChild(link);
-      link.click();
-
-      document.body.removeChild(link);
+  
+      if (response.headers && response.headers['content-type']) {
+        // 파일 다운로드를 위한 Blob 생성
+        const blob = new Blob([response.data], { type: response.headers['content-type'] });
+  
+        // Blob을 URL로 변환
+        const fileUrl = URL.createObjectURL(blob);
+  
+        // 다운로드 링크 생성
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.download = fileName;
+  
+        // 링크를 body에 추가하고 클릭
+        document.body.appendChild(link);
+        link.click();
+  
+        // 링크와 Blob URL 제거
+        document.body.removeChild(link);
+        URL.revokeObjectURL(fileUrl);
+      } else {
+        console.error("File download failed: Content type not found in response headers");
+      }
     } catch (error) {
       console.error("File download failed:", error);
     }
   };
-
   const handleEditClick = () => {
     // boardData.boardId를 전달하여 게시글 수정 페이지로 이동
     onEditClick(boardId);
@@ -236,19 +250,16 @@ export default function BoardDetail({
                     />
                   )}
                   {/* 게시물 동영상을 보여줄 경우 */}
-                  {boardVideo && (
+                   {boardVideo && (
                     <video
-                      controls
                       width="60%"
+                      controls
                       style={{
-                        display: "block",
-                        margin: "0 auto",
+                        display: "block", // Center align the video
+                        margin: "0 auto", // Center align the video
                       }}
-//https://pantaley.com/blog/Handle-HTTP-range-requests-with-status-code-206-Partial-Content/ 참고 ㄱ
-                    >
-                      <source src={boardVideo} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
+                      src={videoUrl || undefined}
+                    ></video>
                   )}
                   {/* 게시물 파일을 다운로드 링크로 보여줄 경우 */}
                   {boardFile && (
@@ -260,7 +271,8 @@ export default function BoardDetail({
                           textDecoration: "underline", // Add underline effect on hover
                         },
                       }}
-                      onClick={() => handleDownloadClick(boardFile)}
+                      onClick={() => 
+                        handleDownloadClick(boardFile)}
                     >
                       <DownloadIcon />
                     </IconButton>

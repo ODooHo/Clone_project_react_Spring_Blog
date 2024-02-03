@@ -29,9 +29,6 @@ public class AuthService {
     }
 
     public ResponseDto<String> signUp(SignUpDto dto) {
-
-
-
         //이메일 중복 확인
         if (userRepository.existsById(dto.userEmail())) {
             throw new IllegalArgumentException("Already Exists email");

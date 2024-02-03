@@ -36,36 +36,6 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
     fetchData();
   }, [cookies.token]); // Run only when cookies.token changes
 
-  useEffect(() => {
-    async function fetchImages() {
-      try {
-        // Fetch profile images for all boards
-        const imagePromises = boardData.map(async (board) => {
-          const imageUrl = await getProfileApi(
-            token,
-            refreshToken,
-            board.user.userProfile
-          );
-          return { [board.id]: imageUrl };
-        });
-
-        // Wait for all image promises to resolve
-        const imageResults = await Promise.all(imagePromises);
-
-        // Combine all image URLs into a single object
-        const images = imageResults.reduce((acc, image) => {
-          return { ...acc, ...image };
-        }, {});
-
-        setProfileImages(images);
-      } catch (error) {
-        console.error("Error fetching profile images:", error);
-      }
-    }
-
-    fetchImages();
-  }, [boardData, cookies.token]);
-
   const defaultImage = "default-image.png";
   const images = ["1.jpg", "2.jpg", "3.jpg"]; // 이미지 파일 이름들
 
@@ -119,7 +89,7 @@ export default function BoardTop3({ onDetailClick }: BoardTop3Props) {
                         mr={1} // 이미지와 닉네임 사이의 간격을 설정합니다.
                       >
                         <img
-                          src={profileImages[board.id] || defaultImage}
+                          src={board.user.userProfile || defaultImage}
                           width="100%"
                           height="100%"
                         />
