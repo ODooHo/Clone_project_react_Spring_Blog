@@ -24,9 +24,4 @@ public class FileController {
         return fileService.setProfile(file, userEmail);
     }
 
-    @GetMapping("/files/{fileName}")
-    public ResponseEntity<byte[]> getFile(@PathVariable String fileName) throws IOException {
-        return fileService.getFile(fileName);
-    }
-
 }

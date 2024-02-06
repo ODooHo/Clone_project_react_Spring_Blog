@@ -14,60 +14,6 @@ export const profileUploadApi = async (token: string | null, refreshToken: strin
 }
 
 
-
-export const getProfileApi = async (token: string | null, refreshToken: string | null, imageName: string | number) => {
-    const url = `${testUrl}/api/images/${imageName}/profile`;
-    const config = { method: 'get', url };
-    const response = await axiosRequest(config, token, refreshToken);
-    const imageUrl =  response?.data.data || null;
-    displayImage(imageUrl);
-    return imageUrl;
-};
-
-export const getImageApi = async (token: string | null, refreshToken: string | null, imageName: string | number) => {
-    const url = `${testUrl}/api/images/${imageName}`;
-    const config = { method: 'get', url };
-    const response = await axiosRequest(config, token, refreshToken);
-    const imageUrl =  response?.data.data || null;
-    displayImage(imageUrl);
-    return imageUrl;
-
-};
-
-
-export const getVideoApi = async (videoUrl: string) => {
-    displayVideo(videoUrl);
-    return videoUrl;
-};
-
-export const fileDownloadApi = async (token: string | null, refreshToken: string | null, fileName: string) => {
-    const url = `${testUrl}/api/files/${fileName}`
-    const config = { method: 'get', url };
-    const response = await axiosRequest(config, token, refreshToken);
-    console.log(response)
-    return response?.data || null;
-
-}
-
-function displayImage(imageUrl: string) {
-    const imgElement = document.createElement('img');
-    imgElement.src = imageUrl;
-    // Assuming you have a div with id "imageContainer" to display the image
-    const imageContainer = document.getElementById('imageContainer');
-    imageContainer?.appendChild(imgElement);
-}
-
-function displayVideo(videoUrl: string) {
-    const videoElement = document.createElement('video');
-    videoElement.src = videoUrl;
-    videoElement.controls = true; // Show video controls (play, pause, etc.)
-    videoElement.setAttribute('width', '640'); // Set video width
-    videoElement.setAttribute('height', '480'); // Set video height
-
-    const videoContainer = document.getElementById('videoContainer');
-    videoContainer?.appendChild(videoElement);
-}
-
 const axiosRequest = async (config: AxiosRequestConfig, token: string | null, refreshToken: string | null) => {
     try {
         return await axios({ ...config, headers: { ...config.headers, Authorization: `Bearer ${token}` } });

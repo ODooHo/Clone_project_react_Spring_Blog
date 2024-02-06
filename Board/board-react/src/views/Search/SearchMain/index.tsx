@@ -10,7 +10,6 @@ import { useCookies } from "react-cookie";
 import { SearchBoardApi } from "../../../apis/searchApis";
 import PopularSearch from "../PolularSearch";
 import { Grid } from "@mui/material";
-import { getProfileApi } from "../../../apis/fileApis";
 
 interface SearchMainProps {
   onDetailClick: (boardId: number) => void;
@@ -26,9 +25,6 @@ export default function SearchMain({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Board[]>([]);
   const [cookies] = useCookies();
-  const [profileImages, setProfileImages] = useState<{
-    [key: number]: string | null;
-  }>({});
   const token = localStorage.getItem('token');;
   const refreshToken = localStorage.getItem('refreshToken');;
 

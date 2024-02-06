@@ -3,7 +3,6 @@ import { Box, Button, Card, Grid, Typography } from "@mui/material";
 import { useCookies } from "react-cookie";
 import { Board } from "../../../interfaces";
 import { BoardListApi } from "../../../apis/boardApis";
-import { getImageApi, getProfileApi } from "../../../apis/fileApis";
 
 // 인터페이스를 정의합니다.
 
@@ -18,9 +17,6 @@ export default function BoardList({ onDetailClick }: BoardListProps) {
   const [cookies] = useCookies();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 5; // 한 페이지에 보여줄 게시글 수
-  const [profileImages, setProfileImages] = useState<{
-    [key: number]: string | null;
-  }>({});
   const token = localStorage.getItem("token");
   const refreshToken = localStorage.getItem("refreshToken");
 

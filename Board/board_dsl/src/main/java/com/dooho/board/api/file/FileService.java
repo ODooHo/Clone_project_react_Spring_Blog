@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -32,16 +33,6 @@ public class FileService {
     private String bucketName;
     @Value("${file.upload-dir}")
     private String uploadDir;
-
-    @Value("${default.image.extension}")
-    private String defaultImageExtension;
-
-    @Value("${default.video.extension}")
-    private String defaultVideoExtension;
-
-    @Value("${default.file.extension}")
-    private String defaultFileExtension;
-
 
     public FileService(UserRepository userRepository, BoardRepository boardRepository, AmazonS3 amazonS3) {
         this.userRepository = userRepository;
@@ -75,8 +66,8 @@ public class FileService {
         if (boardFile != null) {
             String fileName = setFileName(boardFile, board);
             String filePath = uploadDir + "file/" + fileName;
-            uploadFileToS3(boardFile, filePath);
-            board.setFile(fileName);
+            String fileUrl = uploadFileToS3(boardFile, filePath);
+            board.setFile(fileUrl);
         } else {
             board.setFile(null);
         }
@@ -97,49 +88,6 @@ public class FileService {
         return ResponseDto.setSuccess("Success", fileName);
     }
 
-    public ResponseEntity<byte[]> getFile(String fileName) throws IOException {
-        if (fileName.equals("null")) {
-            return ResponseEntity.ok().body(null);
-        }
-        S3Object s3Object = amazonS3.getObject(bucketName, uploadDir + "file/" + fileName);
-        S3ObjectInputStream objectInputStream = s3Object.getObjectContent();
-
-        byte[] fileData = IOUtils.toByteArray(objectInputStream);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", fileName);
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(fileData);
-    }
-
-
-    private String getExtension(String fileDirectory, String fileId) {
-        File folder = new File(fileDirectory);
-
-        FilenameFilter filter = (dir, name) -> name.startsWith(fileId);
-
-        String[] files = folder.list(filter);
-
-        if (files == null || files.length == 0) {
-            return "";
-        }
-
-        String fileName = files[0];
-
-        // 확장자 추출
-        int dotIndex = fileName.lastIndexOf('.');
-        if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
-            return fileName.substring(dotIndex);
-        }
-        //파일이 없다면
-
-        return "";
-    }
-
-
     private String uploadFileToS3(MultipartFile file, String s3Key) throws IOException, AmazonS3Exception {
         InputStream inputStream = file.getInputStream();
         ObjectMetadata metadata = new ObjectMetadata();
@@ -156,5 +104,6 @@ public class FileService {
         String extension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
         return board.getId() + "." + extension;
     }
+
 
 }

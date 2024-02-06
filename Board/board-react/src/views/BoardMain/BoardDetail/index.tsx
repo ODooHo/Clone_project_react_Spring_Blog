@@ -18,7 +18,6 @@ import {
 import { likyControlApi } from "../../../apis/likyApis";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
-import { fileDownloadApi, getVideoApi } from "../../../apis/fileApis";
 import DownloadIcon from "@mui/icons-material/Download";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 
@@ -42,8 +41,6 @@ export default function BoardDetail({
   const refreshToken = localStorage.getItem("refreshToken");
   const [refresh, setRefresh] = useState(1);
   const [isInitialMount, setIsInitialMount] = useState(true);
-  const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
-
 
   useEffect(() => {
     async function fetchData() {
@@ -72,21 +69,6 @@ export default function BoardDetail({
     fetchData();
   }, [refresh]); // Run only once on component mount
 
-
-  useEffect(() => {
-    async function fetchMedia() {
-      try {
-        if (!boardData || boardData.video === null) return; // Return early if boardData is not available yet
-        const videoUrl = await getVideoApi(boardData.video)
-        console.log(videoUrl)
-        setVideoUrl(videoUrl || undefined);
-      } catch (error) {
-        console.error("게시글 가져오기 실패:", error);
-        setVideoUrl(undefined);
-      }
-    }
-    fetchMedia();
-  }, [boardData?.content, boardData?.commentsCount, token]);
 
   const handleRefresh = () => {
     setRefresh(refresh * -1); // refresh 값을 변경하여 컴포넌트를 새로고침
@@ -117,36 +99,25 @@ export default function BoardDetail({
     }
   };
 
-  const handleDownloadClick = async (fileName: string) => {
+  const handleDownloadClick = async (fileUrl: string) => {
     try {
-      const response = await fileDownloadApi(token, refreshToken, fileName);
+      console.log(fileUrl)
+      const url = new URL(fileUrl);
+      console.log(url)
+      const fileName = url.pathname.split('/').pop() || 'defaultFileName';
   
-      if (response.headers && response.headers['content-type']) {
-        // 파일 다운로드를 위한 Blob 생성
-        const blob = new Blob([response.data], { type: response.headers['content-type'] });
+      const downloadLink = document.createElement("a");
+      downloadLink.href = fileUrl;
+      downloadLink.download = fileName;
   
-        // Blob을 URL로 변환
-        const fileUrl = URL.createObjectURL(blob);
-  
-        // 다운로드 링크 생성
-        const link = document.createElement("a");
-        link.href = fileUrl;
-        link.download = fileName;
-  
-        // 링크를 body에 추가하고 클릭
-        document.body.appendChild(link);
-        link.click();
-  
-        // 링크와 Blob URL 제거
-        document.body.removeChild(link);
-        URL.revokeObjectURL(fileUrl);
-      } else {
-        console.error("File download failed: Content type not found in response headers");
-      }
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     } catch (error) {
-      console.error("File download failed:", error);
+      console.error("파일 다운로드 실패:", error);
     }
   };
+
   const handleEditClick = () => {
     // boardData.boardId를 전달하여 게시글 수정 페이지로 이동
     onEditClick(boardId);
@@ -182,7 +153,6 @@ export default function BoardDetail({
       {line}
     </Typography>
   ));
-
 
   return (
     <>
@@ -250,7 +220,7 @@ export default function BoardDetail({
                     />
                   )}
                   {/* 게시물 동영상을 보여줄 경우 */}
-                   {boardVideo && (
+                  {boardVideo && (
                     <video
                       width="60%"
                       controls
@@ -258,7 +228,7 @@ export default function BoardDetail({
                         display: "block", // Center align the video
                         margin: "0 auto", // Center align the video
                       }}
-                      src={videoUrl || undefined}
+                      src={boardVideo || undefined}
                     ></video>
                   )}
                   {/* 게시물 파일을 다운로드 링크로 보여줄 경우 */}
@@ -271,8 +241,7 @@ export default function BoardDetail({
                           textDecoration: "underline", // Add underline effect on hover
                         },
                       }}
-                      onClick={() => 
-                        handleDownloadClick(boardFile)}
+                      onClick={() => handleDownloadClick(boardFile)}
                     >
                       <DownloadIcon />
                     </IconButton>

@@ -9,7 +9,6 @@ import {
   deleteCommentApi,
   editCommentApi,
 } from "../../apis/commentApis";
-import {getProfileApi } from "../../apis/fileApis";
 
 interface CommentMainProps {
   boardId: number;
@@ -22,9 +21,6 @@ export default function CommentMain({ boardId }: CommentMainProps) {
   const { user } = useUserStore();
   const [refresh, setRefresh] = useState(1);
   const [editStates, setEditStates] = useState<{ [key: number]: boolean }>({});
-  const [profileImages, setProfileImages] = useState<{
-    [key: string]: string | null;
-  }>({});
 
   const token = localStorage.getItem("token");
   const refreshToken = localStorage.getItem("refreshToken");
