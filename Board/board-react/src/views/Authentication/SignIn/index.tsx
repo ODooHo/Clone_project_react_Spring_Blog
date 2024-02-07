@@ -16,7 +16,6 @@ export default function SignIn(props: Props) {
   const [loginError, setLoginError] = useState<boolean>(false);
   //const [refreshToken, setRefreshToken] = useState<string>("");
 
-  const [cookies, setCookies] = useCookies();
   const { user, setUser } = useUserStore();
   const { setAuthView } = props;
 

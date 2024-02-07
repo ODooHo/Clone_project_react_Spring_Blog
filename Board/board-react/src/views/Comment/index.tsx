@@ -17,7 +17,6 @@ interface CommentMainProps {
 export default function CommentMain({ boardId }: CommentMainProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentContent, setCommentContent] = useState<string>("");
-  const [cookies, setCookies] = useCookies();
   const { user } = useUserStore();
   const [refresh, setRefresh] = useState(1);
   const [editStates, setEditStates] = useState<{ [key: number]: boolean }>({});
