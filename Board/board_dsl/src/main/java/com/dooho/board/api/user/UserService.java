@@ -7,6 +7,7 @@ import com.dooho.board.api.board.dto.BoardDto;
 import com.dooho.board.api.user.dto.MyPageDto;
 import com.dooho.board.api.user.dto.PatchUserDto;
 import com.dooho.board.api.user.dto.UserDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,7 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<MyPageDto> myPage(String userEmail) {
+    public ResponseEntity<ResponseDto<MyPageDto>> myPage(String userEmail) {
         UserEntity user = null;
         user = userRepository.findById(userEmail).orElse(null);
         if(user == null){
@@ -42,7 +43,7 @@ public class UserService {
         return ResponseDto.setSuccess("Success", dto);
     }
 
-    public ResponseDto<UserDto> patchUser(PatchUserDto requestBody, String userEmail) {
+    public ResponseEntity<ResponseDto<UserDto>> patchUser(PatchUserDto requestBody, String userEmail) {
 
         UserEntity userEntity = null;
         String userNickname = requestBody.userNickname();

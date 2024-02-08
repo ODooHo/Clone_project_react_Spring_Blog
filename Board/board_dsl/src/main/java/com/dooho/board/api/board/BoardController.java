@@ -5,6 +5,7 @@ import com.dooho.board.api.board.dto.BoardDetailDto;
 import com.dooho.board.api.board.dto.BoardDto;
 import com.dooho.board.api.board.dto.PatchBoardDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +21,7 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/register")
-    public ResponseDto<String> register(
+    public ResponseEntity<ResponseDto<String>> register(
             @AuthenticationPrincipal String userEmail,
             @RequestParam("boardTitle") String boardTitle,
             @RequestParam("boardContent") String boardContent,
@@ -33,20 +34,20 @@ public class BoardController {
     }
 
     @GetMapping("/top3")
-    public ResponseDto<List<BoardDto>> getTop3(){
+    public ResponseEntity<ResponseDto<List<BoardDto>>> getTop3(){
         return boardService.getTop3();
     }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/list")
-    public ResponseDto<List<BoardDto>> getList(){
+    public ResponseEntity<ResponseDto<List<BoardDto>>> getList(){
         return boardService.getList();
     }
 
 
     @CrossOrigin(origins = "*")
     @GetMapping("/{boardId}")
-    public ResponseDto<BoardDetailDto> getBoardWithComments(@PathVariable Integer boardId){
+    public ResponseEntity<ResponseDto<BoardDetailDto>> getBoardWithComments(@PathVariable Integer boardId){
         return boardService.getBoardDetail(boardId);
     }
 
@@ -57,13 +58,13 @@ public class BoardController {
 
 
     @GetMapping  ("/{boardId}/delete")
-    public ResponseDto<String> deleteBoard(@PathVariable Integer boardId){
+    public ResponseEntity<ResponseDto<String>> deleteBoard(@PathVariable Integer boardId){
         return boardService.deleteBoard(boardId);
     }
 
     @CrossOrigin(origins = "*")
     @PatchMapping("{boardId}/edit")
-    public ResponseDto<BoardDto> editBoard(
+    public ResponseEntity<ResponseDto<BoardDto>> editBoard(
             @PathVariable Integer boardId,
             @RequestBody PatchBoardDto requestBody){
         return boardService.editBoard(boardId,requestBody);

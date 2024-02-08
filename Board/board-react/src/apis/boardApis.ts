@@ -38,6 +38,7 @@ export const BoardRegisterApi = async (token: string | null, refreshToken: strin
     const url = `${testUrl}/api/board/register`;
     const config = { method: 'post', url, data: data, headers: { "Content-Type": "multipart/form-data" } };
     const response = await axiosRequest(config, token, refreshToken);
+    console.log(response)
     return response?.data || null;
 }
 

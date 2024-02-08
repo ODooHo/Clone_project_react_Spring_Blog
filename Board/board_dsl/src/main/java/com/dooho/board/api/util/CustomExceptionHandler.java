@@ -1,9 +1,9 @@
 package com.dooho.board.api.util;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.dooho.board.api.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,43 +15,58 @@ import java.io.IOException;
 public class CustomExceptionHandler {
 
     @ExceptionHandler({RuntimeException.class})
-    public ResponseDto<?> runtimeHandler(RuntimeException e) {
+    public ResponseEntity<String> runtimeHandler(RuntimeException e) {
         log.warn("Runtime Exception!!");
         log.error("Error log: {}", e.getMessage());
 
-        return ResponseDto.setFailed(e.getMessage(),HttpStatus.BAD_REQUEST);
+        return ResponseEntity
+                .badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("{\"message\": \"failed\", \"data\": \"" + e.getMessage() + "\"}");
     }
 
     @ExceptionHandler({BadCredentialsException.class})
-    public ResponseDto<?> credentialsHandler(BadCredentialsException e) {
+    public ResponseEntity<String> credentialsHandler(BadCredentialsException e) {
         log.warn("BadCredentials Exception!!");
         log.error("Error log: {}", e.getMessage());
 
-        return ResponseDto.setFailed(e.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity
+                .badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("{\"message\": \"failed\", \"data\": \"" + e.getMessage() + "\"}");
     }
 
     @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseDto<?> argumentHandler(IllegalArgumentException e) {
+    public ResponseEntity<String> argumentHandler(IllegalArgumentException e) {
         log.warn("Illegal Argument Exception!!");
         log.error("Error log: {}", e.getMessage());
 
-        return ResponseDto.setFailed(e.getMessage(),HttpStatus.BAD_REQUEST);
+        return ResponseEntity
+                .badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("{\"message\": \"failed\", \"data\": \"" + e.getMessage() + "\"}");
     }
 
     @ExceptionHandler({IOException.class})
-    public ResponseDto<?> ioHandler(IOException e){
+    public ResponseEntity<String> ioHandler(IOException e) {
         log.warn("IO Exception!!");
-        log.error("Error log: {}",e.getMessage());
+        log.error("Error log: {}", e.getMessage());
 
-        return ResponseDto.setFailed(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-
+        return ResponseEntity
+                .internalServerError()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("{\"message\": \"failed\", \"data\": \"" + e.getMessage() + "\"}");
     }
 
     @ExceptionHandler({AmazonS3Exception.class})
-    public ResponseDto<?> amazonHandler(AmazonS3Exception e){
+    public ResponseEntity<Object> amazonHandler(AmazonS3Exception e) {
         log.warn("AmazonS3 Exception!!");
         log.error("Error log: {}", e.getMessage());
 
-        return ResponseDto.setFailed(e.getMessage(),HttpStatus.NOT_FOUND);
+        return ResponseEntity
+                .notFound()
+                .build();
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body("{\"message\": \"failed\", \"data\": \"" + e.getMessage() + "\"}");
     }
 }

@@ -9,6 +9,7 @@ import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
 import com.dooho.board.api.user.dto.UserDto;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +35,7 @@ public class BoardService {
     }
 
 
-    public ResponseDto<String> register(
+    public ResponseEntity<ResponseDto<String>> register(
             String userEmail,
             String boardTitle,
             String boardContent,
@@ -61,7 +62,7 @@ public class BoardService {
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<BoardDetailDto> getBoardDetail(Integer boardId) {
+    public ResponseEntity<ResponseDto<BoardDetailDto>> getBoardDetail(Integer boardId) {
         BoardDetailDto board = boardRepository.findById(boardId)
                 .map(BoardDetailDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("게시글 없음"));
@@ -70,7 +71,7 @@ public class BoardService {
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<BoardDto>> getTop3() {
+    public ResponseEntity<ResponseDto<List<BoardDto>>> getTop3() {
         LocalDate date = LocalDate.now().minusDays(365);
         List<BoardDto> boardList = boardRepository.findTop3(date)
                 .stream()
@@ -81,7 +82,7 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<BoardDto>> getList() {
+    public ResponseEntity<ResponseDto<List<BoardDto>>> getList() {
         List<BoardDto> boardList = boardRepository.findList()
                 .stream()
                 .map(BoardDto::from)
@@ -90,7 +91,7 @@ public class BoardService {
     }
 
 
-    public ResponseDto<String> deleteBoard(Integer boardId) {
+    public ResponseEntity<ResponseDto<String>> deleteBoard(Integer boardId) {
         boardRepository.deleteById(boardId);
         return ResponseDto.setSuccess("Success", "Delete Board Success");
     }
@@ -102,7 +103,7 @@ public class BoardService {
         boardRepository.save(boardEntity);
     }
 
-    public ResponseDto<BoardDto> editBoard(Integer boardId, PatchBoardDto dto) {
+    public ResponseEntity<ResponseDto<BoardDto>> editBoard(Integer boardId, PatchBoardDto dto) {
         String boardTitle = dto.boardTitle();
         String boardContent = dto.boardContent();
         BoardEntity board = boardRepository.getReferenceById(boardId);

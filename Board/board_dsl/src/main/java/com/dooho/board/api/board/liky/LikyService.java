@@ -6,6 +6,7 @@ import com.dooho.board.api.board.BoardRepository;
 import com.dooho.board.api.board.liky.dto.LikyDto;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,7 @@ public class LikyService {
         this.userRepository = userRepository;
     }
 
-    public ResponseDto<String> like(String userEmail, Integer boardId){
+    public ResponseEntity<ResponseDto<String>> like(String userEmail, Integer boardId){
         LikyEntity check = likyRepository.findByBoard_IdAndUser_UserEmail(boardId, userEmail);
         if(check == null){
             UserEntity user = userRepository.getReferenceById(userEmail);
@@ -42,13 +43,13 @@ public class LikyService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<Integer> getLikyCount(Integer boardId){
+    public ResponseEntity<ResponseDto<Integer>> getLikyCount(Integer boardId){
         Integer temp = likyRepository.countByBoard_Id(boardId);
         return ResponseDto.setSuccess("Success",temp);
     }
 
 
-    public ResponseDto<List<LikyDto>> getLiky(Integer boardId){
+    public ResponseEntity<ResponseDto<List<LikyDto>>> getLiky(Integer boardId){
         List<LikyDto> likeList = likyRepository.findByBoard_Id(boardId)
                 .stream()
                 .map(LikyDto::from)

@@ -2,7 +2,6 @@ package com.dooho.board.api.file;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
-import com.amazonaws.util.IOUtils;
 import com.dooho.board.api.ResponseDto;
 import com.dooho.board.api.board.BoardEntity;
 import com.dooho.board.api.user.UserEntity;
@@ -10,17 +9,12 @@ import com.dooho.board.api.board.BoardRepository;
 import com.dooho.board.api.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -78,7 +72,7 @@ public class FileService {
     }
 
 
-    public ResponseDto<String> setProfile(MultipartFile file, String userEmail) throws IOException {
+    public ResponseEntity<ResponseDto<String>> setProfile(MultipartFile file, String userEmail) throws IOException {
         UserEntity user = userRepository.findById(userEmail).orElse(null);
         String fileName = user.getUserEmail() + "." + "jpg";
         // S3 버킷에 파일 업로드

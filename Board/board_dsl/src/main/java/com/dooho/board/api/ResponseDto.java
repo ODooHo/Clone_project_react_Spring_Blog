@@ -1,22 +1,18 @@
 package com.dooho.board.api;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.springframework.http.HttpStatus;
 
-@Data
-@AllArgsConstructor(staticName = "set")
-public class ResponseDto<D>{
-    private boolean result;
-    private String message;
-    private D data;
-    private HttpStatus statusCode;
-    public static <D> ResponseDto<D> setSuccess(String message, D data){
-        return ResponseDto.set(true,message,data,HttpStatus.OK);
-    }
+import jakarta.annotation.Nullable;
+import org.springframework.http.ResponseEntity;
 
-    public static <D> ResponseDto<D> setFailed(String message, HttpStatus statusCode){
-        return ResponseDto.set(false,message,null,statusCode);
+public record ResponseDto<D>(
+        String message,
+        D data
+){
+
+    public static <D> ResponseEntity<ResponseDto<D>> setSuccess(String message, D data) {
+        ResponseDto<D> responseDto = new ResponseDto<>(message,data);
+        return ResponseEntity.ok(responseDto);
     }
 
 }
+

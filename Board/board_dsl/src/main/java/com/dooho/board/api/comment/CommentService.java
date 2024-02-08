@@ -7,6 +7,7 @@ import com.dooho.board.api.comment.dto.CommentDto;
 import com.dooho.board.api.comment.dto.PatchCommentDto;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,7 @@ public class CommentService {
     }
 
 
-    public ResponseDto<String> register(String userEmail, Integer boardId, CommentDto dto) {
+    public ResponseEntity<ResponseDto<String>> register(String userEmail, Integer boardId, CommentDto dto) {
         UserEntity user = userRepository.getReferenceById(userEmail);
         BoardEntity board = boardRepository.getReferenceById(boardId);
         CommentEntity commentEntity = CommentEntity.of(null, LocalDate.now(), dto.commentContent(), board, user);
@@ -41,7 +42,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<CommentDto>> getComment(Integer boardId) {
+    public ResponseEntity<ResponseDto<List<CommentDto>>> getComment(Integer boardId) {
         List<CommentDto> commentList = commentRepository.findAllByBoard_Id(boardId)
                 .stream()
                 .map(CommentDto::from)
@@ -49,7 +50,7 @@ public class CommentService {
         return ResponseDto.setSuccess("Success", commentList);
     }
 
-    public ResponseDto<CommentDto> editComment(Integer boardId, Integer commentId, PatchCommentDto dto) {
+    public ResponseEntity<ResponseDto<CommentDto>> editComment(Integer boardId, Integer commentId, PatchCommentDto dto) {
         CommentEntity comment = null;
         String commentContent = dto.commentContent();
         LocalDate commentWriteDate = dto.commentWriteDate();
@@ -65,7 +66,7 @@ public class CommentService {
     }
 
 
-    public ResponseDto<String> deleteComment(Integer commentId) {
+    public ResponseEntity<ResponseDto<String>> deleteComment(Integer commentId) {
         commentRepository.deleteById(commentId);
         return ResponseDto.setSuccess("Success", "Delete Comment Success");
     }

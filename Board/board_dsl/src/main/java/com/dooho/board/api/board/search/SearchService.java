@@ -6,6 +6,7 @@ import com.dooho.board.api.board.dto.BoardDto;
 import com.dooho.board.api.board.search.dto.PopularSearchDto;
 import com.dooho.board.api.board.search.dto.SearchDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ public class SearchService {
         this.searchRepository = searchRepository;
     }
 
-    public ResponseDto<List<BoardDto>> getSearchList(SearchDto dto){
+    public ResponseEntity<ResponseDto<List<BoardDto>>> getSearchList(SearchDto dto){
         String searchWord = dto.searchWord();
         SearchEntity searchEntity = searchRepository.findById(searchWord).orElse(null);
 
@@ -46,7 +47,7 @@ public class SearchService {
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<PopularSearchDto>> getPopularSearchList(){
+    public ResponseEntity<ResponseDto<List<PopularSearchDto>>> getPopularSearchList(){
         List<PopularSearchDto> searchList = searchRepository.findTop10()
                 .stream()
                 .map(PopularSearchDto::from)

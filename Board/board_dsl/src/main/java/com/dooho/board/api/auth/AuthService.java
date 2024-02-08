@@ -8,6 +8,7 @@ import com.dooho.board.api.auth.dto.SignUpDto;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
 import com.dooho.board.global.security.TokenProvider;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,7 +29,7 @@ public class AuthService {
         this.tokenProvider = tokenProvider;
     }
 
-    public ResponseDto<String> signUp(SignUpDto dto) {
+    public ResponseEntity<ResponseDto<String>> signUp(SignUpDto dto) {
         //이메일 중복 확인
         if (userRepository.existsById(dto.userEmail())) {
             throw new IllegalArgumentException("Already Exists email");
@@ -54,7 +55,7 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<SignInResponseDto> signIn(SignInDto dto) {
+    public ResponseEntity<ResponseDto<SignInResponseDto>> signIn(SignInDto dto) {
         UserEntity userEntity = null;
 
         userEntity = userRepository.findById(dto.userEmail()).orElse(null);
@@ -79,7 +80,7 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<RefreshResponseDto> getAccess(String refreshToken) {
+    public ResponseEntity<ResponseDto<RefreshResponseDto>> getAccess(String refreshToken) {
         String accessToken = tokenProvider.createAccessTokenFromRefreshToken(refreshToken);
 
         Integer exprTime = 1800000;

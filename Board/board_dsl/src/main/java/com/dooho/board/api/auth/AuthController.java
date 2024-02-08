@@ -6,6 +6,7 @@ import com.dooho.board.api.auth.dto.SignInDto;
 import com.dooho.board.api.auth.dto.SignInResponseDto;
 import com.dooho.board.api.auth.dto.SignUpDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,17 +22,17 @@ public class AuthController {
 
 
     @PostMapping("/signUp")
-    public ResponseDto<String> signUp(@RequestBody SignUpDto requestBody){
+    public ResponseEntity<ResponseDto<String>> signUp(@RequestBody SignUpDto requestBody){
         return authService.signUp(requestBody);
     }
 
     @PostMapping("/signIn")
-    public ResponseDto<SignInResponseDto> signIn(@RequestBody SignInDto requestBody){
+    public ResponseEntity<ResponseDto<SignInResponseDto>> signIn(@RequestBody SignInDto requestBody){
         return authService.signIn(requestBody);
     }
 
     @PostMapping("/getAccess")
-    public ResponseDto<RefreshResponseDto> getAccess(@RequestBody String refreshToken){
+    public ResponseEntity<ResponseDto<RefreshResponseDto>> getAccess(@RequestBody String refreshToken){
         return authService.getAccess(refreshToken);
     }
 }

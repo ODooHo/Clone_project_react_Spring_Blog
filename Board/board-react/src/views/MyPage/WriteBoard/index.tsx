@@ -56,7 +56,7 @@ export default function WriteBoard({ onMainClick }: WriteBoardProps) {
       alert("게시글 작성(파일)에 실패했습니다.");
       return;
     }
-    if (!uploadReponse.result) {
+    if (uploadReponse.message === "failed") {
       alert("게시글 작성(파일)에 실패했습니다.");
       return;
     }
