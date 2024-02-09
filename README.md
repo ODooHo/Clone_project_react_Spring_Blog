@@ -48,6 +48,11 @@
 - Spring Data JPA를 활용한 인기 검색어, 연간 Top3 게시글 추천 로직 구현, 추후 QueryDSL과 결합하여 코드 복잡도 개선
 ### Java to Kotlin 리팩토링 진행
 
+### 2024 기준 새로 배운 기술들, 방법들을 활용한 다양한 기능 리팩토링
+- 예외 핸들러 정의 및 구현
+- ResponseEntity와 ResponseDto 병행 사용
+- Dto - Entity의 확실한 구분
+- 이외 다양한 리팩토링 진행중
 <br>
 
 ## 회고
