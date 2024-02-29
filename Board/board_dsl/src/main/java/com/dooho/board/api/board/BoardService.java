@@ -4,6 +4,8 @@ import com.dooho.board.api.ResponseDto;
 import com.dooho.board.api.board.dto.BoardDetailDto;
 import com.dooho.board.api.board.dto.BoardDto;
 import com.dooho.board.api.board.dto.PatchBoardDto;
+import com.dooho.board.api.exception.BoardApplicationException;
+import com.dooho.board.api.exception.ErrorCode;
 import com.dooho.board.api.file.FileService;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
@@ -35,17 +37,13 @@ public class BoardService {
     }
 
 
-    public ResponseEntity<ResponseDto<String>> register(
+    public void register(
             String userEmail,
             String boardTitle,
             String boardContent,
             MultipartFile boardImage,
             MultipartFile boardVideo,
             MultipartFile boardFile) throws IOException {
-
-        if (boardRepository.existsByTitle(boardTitle)) {
-            throw new IllegalArgumentException("BoardTitle Already Exists");
-        }
 
         UserEntity user = userRepository.getReferenceById(userEmail);
         BoardDto boardDto = BoardDto.of(boardTitle, boardContent, null, null, null, LocalDate.now(), 0, 0, 0, UserDto.from(user));
@@ -57,60 +55,55 @@ public class BoardService {
             throw new RuntimeException("Error Occurred in file save");
         }
 
-        return ResponseDto.setSuccess("Success", "Success");
     }
 
 
     @Transactional(readOnly = true)
-    public ResponseEntity<ResponseDto<BoardDetailDto>> getBoardDetail(Integer boardId) {
-        BoardDetailDto board = boardRepository.findById(boardId)
+    public BoardDetailDto getBoardDetail(Integer boardId) {
+        return boardRepository.findById(boardId)
                 .map(BoardDetailDto::from)
-                .orElseThrow(() -> new EntityNotFoundException("게시글 없음"));
-        return ResponseDto.setSuccess("Success", board);
+                .orElseThrow(() -> new BoardApplicationException(ErrorCode.BOARD_NOT_FOUND, String.format("boardId is %d", boardId)));
     }
 
 
     @Transactional(readOnly = true)
-    public ResponseEntity<ResponseDto<List<BoardDto>>> getTop3() {
+    public List<BoardDto> getTop3() {
         LocalDate date = LocalDate.now().minusDays(365);
-        List<BoardDto> boardList = boardRepository.findTop3(date)
+        return boardRepository.findTop3(date)
                 .stream()
                 .map(BoardDto::from)
                 .toList();
-
-        return ResponseDto.setSuccess("Success", boardList);
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<ResponseDto<List<BoardDto>>> getList() {
-        List<BoardDto> boardList = boardRepository.findList()
+    public List<BoardDto> getList() {
+        return boardRepository.findList()
                 .stream()
                 .map(BoardDto::from)
                 .toList();
-        return ResponseDto.setSuccess("Success", boardList);
     }
 
 
-    public ResponseEntity<ResponseDto<String>> deleteBoard(Integer boardId) {
+    public void deleteBoard(Integer boardId) {
         boardRepository.deleteById(boardId);
-        return ResponseDto.setSuccess("Success", "Delete Board Success");
     }
 
-    public void increaseView(Integer boardId, Integer increase) {
-        BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
-        Integer boardClick = boardEntity.getClickCount();
-        boardEntity.setClickCount(boardClick + increase);
+    public void increaseView(Integer boardId) {
+        BoardEntity boardEntity = boardRepository.findById(boardId).orElseThrow(
+                () -> new BoardApplicationException(ErrorCode.BOARD_NOT_FOUND,String.format("boardId is %d",boardId))
+        );
+        int boardClick = boardEntity.getClickCount();
+        boardEntity.setClickCount(boardClick + 1);
         boardRepository.save(boardEntity);
     }
 
-    public ResponseEntity<ResponseDto<BoardDto>> editBoard(Integer boardId, PatchBoardDto dto) {
+    public BoardDto editBoard(Integer boardId, PatchBoardDto dto) {
         String boardTitle = dto.boardTitle();
         String boardContent = dto.boardContent();
         BoardEntity board = boardRepository.getReferenceById(boardId);
         board.setTitle(boardTitle);
         board.setContent(boardContent);
         boardRepository.save(board);
-        BoardDto response = BoardDto.from(board);
-        return ResponseDto.setSuccess("Success!", response);
+        return BoardDto.from(board);
     }
 }

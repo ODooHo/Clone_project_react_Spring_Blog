@@ -5,6 +5,8 @@ import com.dooho.board.api.board.BoardEntity;
 import com.dooho.board.api.board.BoardRepository;
 import com.dooho.board.api.comment.dto.CommentDto;
 import com.dooho.board.api.comment.dto.PatchCommentDto;
+import com.dooho.board.api.exception.BoardApplicationException;
+import com.dooho.board.api.exception.ErrorCode;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
 import org.springframework.http.ResponseEntity;
@@ -30,45 +32,37 @@ public class CommentService {
     }
 
 
-    public ResponseEntity<ResponseDto<String>> register(String userEmail, Integer boardId, CommentDto dto) {
+    public void register(String userEmail, Integer boardId, CommentDto dto) {
         UserEntity user = userRepository.getReferenceById(userEmail);
         BoardEntity board = boardRepository.getReferenceById(boardId);
         CommentEntity commentEntity = CommentEntity.of(null, LocalDate.now(), dto.commentContent(), board, user);
         commentRepository.save(commentEntity);
-
-
-        return ResponseDto.setSuccess("Success", "Success");
-
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<ResponseDto<List<CommentDto>>> getComment(Integer boardId) {
-        List<CommentDto> commentList = commentRepository.findAllByBoard_Id(boardId)
+    public List<CommentDto> getComment(Integer boardId) {
+        return commentRepository.findAllByBoard_Id(boardId)
                 .stream()
                 .map(CommentDto::from)
                 .toList();
-        return ResponseDto.setSuccess("Success", commentList);
     }
 
-    public ResponseEntity<ResponseDto<CommentDto>> editComment(Integer boardId, Integer commentId, PatchCommentDto dto) {
-        CommentEntity comment = null;
+    public CommentDto editComment(Integer commentId, PatchCommentDto dto) {
         String commentContent = dto.commentContent();
         LocalDate commentWriteDate = dto.commentWriteDate();
-
-        comment = commentRepository.findById(commentId).orElse(null);
+        CommentEntity comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new BoardApplicationException(ErrorCode.COMMENT_NOT_FOUND,String.format("commentId is %d",commentId))
+        );
         comment.setCommentContent(commentContent);
         comment.setCommentWriteDate(commentWriteDate);
 
         commentRepository.save(comment);
-
-        CommentDto response = CommentDto.from(comment);
-        return ResponseDto.setSuccess("Success!", response);
+        return CommentDto.from(comment);
     }
 
 
-    public ResponseEntity<ResponseDto<String>> deleteComment(Integer commentId) {
+    public void deleteComment(Integer commentId) {
         commentRepository.deleteById(commentId);
-        return ResponseDto.setSuccess("Success", "Delete Comment Success");
     }
 
 

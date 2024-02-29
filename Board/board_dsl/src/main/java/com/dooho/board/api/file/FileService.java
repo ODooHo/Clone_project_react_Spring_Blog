@@ -4,6 +4,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.dooho.board.api.ResponseDto;
 import com.dooho.board.api.board.BoardEntity;
+import com.dooho.board.api.exception.BoardApplicationException;
+import com.dooho.board.api.exception.ErrorCode;
 import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.board.BoardRepository;
 import com.dooho.board.api.user.UserRepository;
@@ -72,14 +74,15 @@ public class FileService {
     }
 
 
-    public ResponseEntity<ResponseDto<String>> setProfile(MultipartFile file, String userEmail) throws IOException {
-        UserEntity user = userRepository.findById(userEmail).orElse(null);
+    public void setProfile(MultipartFile file, String userEmail) throws IOException {
+        UserEntity user = userRepository.findById(userEmail).orElseThrow(
+                () -> new BoardApplicationException(ErrorCode.USER_NOT_FOUND,String.format("userEmail is %s",userEmail))
+        );
         String fileName = user.getUserEmail() + "." + "jpg";
         // S3 버킷에 파일 업로드
         String url = uploadFileToS3(file, uploadDir + "img/" + fileName);
         user.setUserProfile(url);
         userRepository.save(user);
-        return ResponseDto.setSuccess("Success", fileName);
     }
 
     private String uploadFileToS3(MultipartFile file, String s3Key) throws IOException, AmazonS3Exception {

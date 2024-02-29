@@ -4,6 +4,8 @@ package com.dooho.board.api.user;
 import com.dooho.board.api.ResponseDto;
 import com.dooho.board.api.board.BoardRepository;
 import com.dooho.board.api.board.dto.BoardDto;
+import com.dooho.board.api.exception.BoardApplicationException;
+import com.dooho.board.api.exception.ErrorCode;
 import com.dooho.board.api.user.dto.MyPageDto;
 import com.dooho.board.api.user.dto.PatchUserDto;
 import com.dooho.board.api.user.dto.UserDto;
@@ -28,39 +30,28 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    public ResponseEntity<ResponseDto<MyPageDto>> myPage(String userEmail) {
-        UserEntity user = null;
-        user = userRepository.findById(userEmail).orElse(null);
-        if(user == null){
-            throw new BadCredentialsException("UnAuthorized Request");
-        }
+    public MyPageDto myPage(String userEmail) {
+        UserEntity user = userRepository.findById(userEmail).orElseThrow(
+                () -> new BoardApplicationException(ErrorCode.USER_NOT_FOUND,String.format("userEmail is %s",userEmail))
+        );
         List<BoardDto> board = boardRepository.findByUser_UserEmail(userEmail)
                 .stream()
                 .map(BoardDto::from)
                 .toList();
-        MyPageDto dto = MyPageDto.of(userEmail,user.getUserNickname(),user.getUserProfile(),board);
 
-        return ResponseDto.setSuccess("Success", dto);
+        return MyPageDto.of(userEmail,user.getUserNickname(),user.getUserProfile(),board);
     }
 
-    public ResponseEntity<ResponseDto<UserDto>> patchUser(PatchUserDto requestBody, String userEmail) {
-
-        UserEntity userEntity = null;
+    public UserDto patchUser(PatchUserDto requestBody, String userEmail) {
         String userNickname = requestBody.userNickname();
+        UserEntity user = userRepository.findById(userEmail).orElseThrow(
+                () -> new BoardApplicationException(ErrorCode.USER_NOT_FOUND,String.format("userEmail is %s",userEmail))
+        );
+        user.setUserNickname(userNickname);
+        userRepository.save(user);
+        user.setUserPassword("");
 
-        userEntity = userRepository.findById(userEmail).orElse(null);
-        if (userEntity == null) {
-            throw new BadCredentialsException("UnAuthorized Request");
-        }
-        userEntity.setUserNickname(userNickname);
-
-        userRepository.save(userEntity);
-
-        userEntity.setUserPassword("");
-
-        UserDto response = UserDto.from(userEntity);
-
-        return ResponseDto.setSuccess("Success", response);
+        return UserDto.from(user);
     }
 
 }

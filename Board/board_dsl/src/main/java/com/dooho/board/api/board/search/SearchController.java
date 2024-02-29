@@ -5,7 +5,6 @@ import com.dooho.board.api.board.dto.BoardDto;
 import com.dooho.board.api.board.search.dto.PopularSearchDto;
 import com.dooho.board.api.board.search.dto.SearchDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +17,14 @@ public class SearchController {
     private final SearchService searchService;
 
     @PostMapping("")
-    public ResponseEntity<ResponseDto<List<BoardDto>>> searchBoard(@RequestBody SearchDto requestBody){
-        return searchService.getSearchList(requestBody);
+    public ResponseDto<List<BoardDto>> searchBoard(@RequestBody SearchDto requestBody){
+        List<BoardDto> response = searchService.getSearchList(requestBody);
+        return ResponseDto.setSuccess(response);
     }
 
     @GetMapping("/popularSearchList")
-    public ResponseEntity<ResponseDto<List<PopularSearchDto>>> getPopularSearchList(){
-        return searchService.getPopularSearchList();
+    public ResponseDto<List<PopularSearchDto>> getPopularSearchList(){
+        List<PopularSearchDto> response = searchService.getPopularSearchList();
+        return ResponseDto.setSuccess(response);
     }
 }

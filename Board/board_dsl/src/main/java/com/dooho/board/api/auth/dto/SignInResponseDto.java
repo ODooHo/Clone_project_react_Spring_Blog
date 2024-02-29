@@ -10,4 +10,7 @@ public record SignInResponseDto(
         Integer refreshExprTime,
         UserEntity user
 ) {
+    public static SignInResponseDto of (String token, Integer tokenExprTime, String refreshToken, Integer refreshExprTime, UserEntity user) {
+        return new SignInResponseDto(token, tokenExprTime, refreshToken, refreshExprTime, user);
+    }
 }
