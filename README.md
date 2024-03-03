@@ -51,7 +51,9 @@
 - ResponseEntity와 ResponseDto 병행 사용
 - Dto - Entity의 확실한 구분
 - 사용 언어 리팩토링
-  - Java에서 Kotlin으로 리팩토링 진행, 추가적인 변경 사항 반영 예정 
+  - Java에서 Kotlin으로 리팩토링 진행, 추가적인 변경 사항 반영 예정
+- 검색 엔진 최적화 예정
+  - 단순 JPA 만을 활용했던 것을 개선할 예정 
 <br>
 
 
