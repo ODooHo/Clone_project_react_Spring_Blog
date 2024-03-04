@@ -11,15 +11,15 @@ spring:
         url: ${DB_URL}
         username: ${DB_USERNAME}
         password: ${DB_PASSWORD}
-        driver-class-name: com.mysql.cj.jdbc.Driver
-    jpa:
-        open-in-view: true
-        defer-datasource-initialization: true
-        hibernate.ddl-auto: create
-        properties:
-            hibernate.format_sql: true
-            hibernate.default_batch_fetch_size: 100
-    sql.init.mode: always
+        driver-class-name: org.mariadb.jdbc.Driver
+#    jpa:
+#        open-in-view: true
+#        defer-datasource-initialization: true
+#        hibernate.ddl-auto: create
+#        properties:
+#            hibernate.format_sql: true
+#            hibernate.default_batch_fetch_size: 100
+#    sql.init.mode: always
     messages:
         encoding: UTF-8
 
@@ -44,10 +44,7 @@ cloud:
 file:
     upload-dir: blog/
 
-default:
-    image:
-        extension: .jpg
-    video:
-        extension: .mp4
-    file:
-        extension: .txt
+
+elasticsearch:
+    host: 127.0.0.1
+    port: 9200

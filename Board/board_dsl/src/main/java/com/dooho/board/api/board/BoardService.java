@@ -11,6 +11,7 @@ import com.dooho.board.api.user.UserEntity;
 import com.dooho.board.api.user.UserRepository;
 import com.dooho.board.api.user.dto.UserDto;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,21 +22,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Transactional
+@RequiredArgsConstructor
 @Service
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final BoardSearchRepository boardSearchRepository;
     private final FileService fileService;
     private final UserRepository userRepository;
-
-
-    public BoardService(BoardRepository boardRepository, FileService fileService,
-                        UserRepository userRepository) {
-        this.boardRepository = boardRepository;
-        this.fileService = fileService;
-        this.userRepository = userRepository;
-    }
-
 
     public void register(
             String userEmail,
@@ -60,7 +54,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public BoardDetailDto getBoardDetail(Integer boardId) {
-        return boardRepository.findById(boardId)
+        return boardSearchRepository.findById(boardId)
                 .map(BoardDetailDto::from)
                 .orElseThrow(() -> new BoardApplicationException(ErrorCode.BOARD_NOT_FOUND, String.format("boardId is %d", boardId)));
     }
@@ -69,7 +63,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public List<BoardDto> getTop3() {
         LocalDate date = LocalDate.now().minusDays(365);
-        return boardRepository.findTop3(date)
+        return boardSearchRepository.findTop3ByLikesCountOrderByBoardWriteDateDesc()
                 .stream()
                 .map(BoardDto::from)
                 .toList();
