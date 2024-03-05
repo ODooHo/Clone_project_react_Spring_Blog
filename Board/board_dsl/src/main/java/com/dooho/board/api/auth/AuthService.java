@@ -61,9 +61,9 @@ public class AuthService {
         );
 
 
-        if (!passwordEncoder.matches(dto.userPassword(),userEntity.getUserPassword())) {
-            throw new BoardApplicationException(ErrorCode.INVALID_PASSWORD);
-        }
+//        if (!passwordEncoder.matches(dto.userPassword(),userEntity.getUserPassword())) {
+//            throw new BoardApplicationException(ErrorCode.INVALID_PASSWORD);
+//        }
 
         userEntity.setUserPassword("");
 

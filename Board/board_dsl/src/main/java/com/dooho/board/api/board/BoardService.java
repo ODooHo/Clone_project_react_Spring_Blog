@@ -27,9 +27,9 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final BoardSearchRepository boardSearchRepository;
     private final FileService fileService;
     private final UserRepository userRepository;
+    private final BoardSearchRepository boardSearchRepository;
 
     public void register(
             String userEmail,
@@ -54,7 +54,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public BoardDetailDto getBoardDetail(Integer boardId) {
-        return boardSearchRepository.findById(boardId)
+        return boardRepository.findById(boardId)
                 .map(BoardDetailDto::from)
                 .orElseThrow(() -> new BoardApplicationException(ErrorCode.BOARD_NOT_FOUND, String.format("boardId is %d", boardId)));
     }
@@ -63,7 +63,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public List<BoardDto> getTop3() {
         LocalDate date = LocalDate.now().minusDays(365);
-        return boardSearchRepository.findTop3ByLikesCountOrderByBoardWriteDateDesc()
+        return boardRepository.findTop3(date)
                 .stream()
                 .map(BoardDto::from)
                 .toList();
